@@ -47,7 +47,6 @@ public class TCPServer {
                 }
 
 
-//                System.out.println(socket.getRemoteSocketAddress());
 
             } catch (IOException e1) {
                 // do nothing
