@@ -18,11 +18,11 @@ import java.util.function.Function;
 /*<-- niezbędne import */
 public class Main {
   public static void main(String[] args) throws IOException {
-    Function<String, List<String>> flines = fname -> {
+    ThrowingExeption<String, List<String>> flines = fname -> {
       List<String> list = new ArrayList<>();
 
-      BufferedReader reader = null;
-      try {
+      BufferedReader reader;
+
         reader = new BufferedReader(new FileReader(fname));
 
         String line = reader.readLine();
@@ -31,9 +31,7 @@ public class Main {
           line = reader.readLine();
         }
         reader.close();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+
       return list;
     };
 
@@ -89,7 +87,7 @@ public class Main {
      *  - sum - zwraca sumę elmentów listy liczb całkowitych
      */
 
-    String fname = System.getProperty("user.home") + "/LamComFile.txt"; 
+    String fname = System.getProperty("user.home") + "/LamComFile.txt";
     InputConverter<String> fileConv = new InputConverter<>(fname);
     List<String> lines = fileConv.convertBy(flines);
     String text = fileConv.convertBy(flines, join);

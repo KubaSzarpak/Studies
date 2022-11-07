@@ -91,7 +91,7 @@ public class Main {
      *  - sum - zwraca sumę elmentów listy liczb całkowitych
      */
 
-    String fname = System.getProperty("user.home") + "/LamComFile.txt"; 
+    String fname = System.getProperty("user.home") + "/LamComFile.txt";
     InputConverter<String> fileConv = new InputConverter<>(fname);
     List<String> lines = fileConv.convertBy(flines);
     String text = fileConv.convertBy(flines, join);
