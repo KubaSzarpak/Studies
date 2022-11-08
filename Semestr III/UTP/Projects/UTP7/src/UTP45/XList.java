@@ -1,10 +1,7 @@
 package UTP45;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -14,7 +11,7 @@ public class XList<T> extends ArrayList<T> {
 
     @SafeVarargs
     public XList(T... args) {
-        super.addAll(List.of(args));
+        super.addAll(Arrays.asList(args));
     }
 
     public XList(Collection<? extends T> c) {
@@ -82,7 +79,7 @@ public class XList<T> extends ArrayList<T> {
     @SafeVarargs
     public final XList<T> union(T... args) {
         XList<T> tmp = new XList<>(this);
-        tmp.addAll(List.of(args));
+        tmp.addAll(Arrays.asList(args));
         return tmp;
     }
 
@@ -128,25 +125,30 @@ public class XList<T> extends ArrayList<T> {
     }
 
     public XList<XList<T>> combine(){
-        XList<XList<T>> xList = combine(0, (XList<XList<T>>) this);
-        xList.forEach(list -> Collections.reverse(list));
-        return xList;
+        XList<XList<T>> tmp = combine(0, (XList<List<T>>) this);
+        tmp.forEach(Collections::reverse);
+        return tmp;
     }
-    private static <T> XList<XList<T>> combine(int index, XList<XList<T>> args) {
-        XList<XList<T>> a = new XList<>();
+    private static <X> XList<XList<X>> combine(int index, XList<List<X>> args) {
+        XList<List<X>> tmp = new XList<>();
 
         if (index == args.size()) {
-            a.add(new XList<>());
+            tmp.add(new XList<>());
         } else {
             for (Object obj : args.get(index)) {
-                for (XList<T> item : combine(index + 1, args)) {
-                    item.add((T) obj);
-                    a.add(item);
+                for (XList<X> item : combine(index + 1, args)) {
+                    item.add((X) obj);
+                    tmp.add(item);
                 }
             }
         }
+        XList<XList<X>> result = new XList<XList<X>>();
 
-        return a;
+        for (List item : tmp){
+            result.add(XList.of(item));
+        }
+
+        return result;
     }
 
     public <X> XList<X> collect(Function<T, X> func) {

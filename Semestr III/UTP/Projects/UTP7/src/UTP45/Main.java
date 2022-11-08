@@ -7,7 +7,10 @@
 package UTP45;
 
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 // Plik Main.java może być dowolnie modyfikowany, 
 // ale punkty uzyskuje się za właściwe dzialanie poszczególnych pokazanych tu metod klasy XList.
@@ -68,8 +71,8 @@ public class Main {
     System.out.println(uniq);
 
     // kombinacje (kolejność jest istotna)
-    XList<String> sa = XList.of( "a", "b");
-    XList<String> sb = XList.of( "X", "Y", "Z" );
+    List<String> sa = Arrays.asList( "a", "b");
+    List<String> sb = Arrays.asList( "X", "Y", "Z" );
     XList<String> sc = XList.charsOf( "12" );
     XList toCombine = XList.of(sa, sb, sc);
     System.out.println(toCombine);

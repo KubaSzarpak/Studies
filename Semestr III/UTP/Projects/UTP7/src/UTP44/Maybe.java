@@ -7,29 +7,32 @@ import java.util.function.Predicate;
 
 public class Maybe<T> {
     T item;
-    public Maybe(T param){
+
+    public Maybe(T param) {
         item = param;
     }
-    public Maybe(){
+
+    public Maybe() {
     }
-    public static <X> Maybe<X> of (X x) {
+
+    public static <X> Maybe<X> of(X x) {
         return new Maybe<X>(x);
     }
 
     public void ifPresent(Consumer cons) {
-        if(this.item != null)
+        if (this.item != null)
             cons.accept(this.item);
     }
 
     public <X> Maybe<X> map(Function<T, X> func) {
-        if(this.item != null){
+        if (this.item != null) {
             return new Maybe<X>((X) func.apply(this.item));
         }
         return new Maybe<X>();
     }
 
     public T get() {
-        if(this.item == null)
+        if (this.item == null)
             throw new NoSuchElementException();
         else
             return this.item;
@@ -47,10 +50,12 @@ public class Maybe<T> {
     }
 
     public Maybe<T> filter(Predicate<T> pred) {
-        if(pred.test(this.item) || this.item == null)
+        if (this.item == null)
             return this;
-        else
-            return new Maybe<T>();
+        if (pred.test(this.item))
+            return this;
+
+        return new Maybe<T>();
     }
 
     @Override

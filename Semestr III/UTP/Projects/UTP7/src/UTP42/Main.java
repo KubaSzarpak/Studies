@@ -18,7 +18,7 @@ import java.util.function.Function;
 /*<-- niezbędne import */
 public class Main {
   public static void main(String[] args) throws IOException {
-    ThrowingExeption<String, List<String>> flines = fname -> {
+    FunctionThrowingExeption<String, List<String>> flines = fname -> {
       List<String> list = new ArrayList<>();
 
       BufferedReader reader;
