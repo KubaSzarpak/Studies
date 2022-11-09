@@ -16,8 +16,8 @@ public class TCPClient {
         Socket socket = null;
         PrintWriter out = null;
         BufferedReader in = null;
-        String address = "10.21.12.16";
-        int port = 30512;
+        String address = "172.23.66.174";
+        int port = 1122;
 
         try {
             socket = new Socket();
