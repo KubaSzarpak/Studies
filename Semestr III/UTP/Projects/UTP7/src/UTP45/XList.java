@@ -125,8 +125,8 @@ public class XList<T> extends ArrayList<T> {
     }
 
     public XList<XList<T>> combine(){
+        Collections.reverse(this);
         XList<XList<T>> tmp = combine(0, (XList<List<T>>) this);
-        tmp.forEach(Collections::reverse);
         return tmp;
     }
     private static <X> XList<XList<X>> combine(int index, XList<List<X>> args) {
@@ -142,7 +142,7 @@ public class XList<T> extends ArrayList<T> {
                 }
             }
         }
-        XList<XList<X>> result = new XList<XList<X>>();
+        XList<XList<X>> result = new XList<>();
 
         for (List item : tmp){
             result.add(XList.of(item));
@@ -172,9 +172,10 @@ public class XList<T> extends ArrayList<T> {
     public String join (String sep) {
         StringBuilder sb = new StringBuilder();
 
-        for (T item : this) {
-            sb.append(item + sep);
+        for (int i = 0; i < this.size()-1; i++) {
+            sb.append(this.get(i) + sep);
         }
+        sb.append(this.get(this.size()-1));
         return sb.toString();
     }
 
