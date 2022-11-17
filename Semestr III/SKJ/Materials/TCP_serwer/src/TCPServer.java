@@ -10,10 +10,12 @@ import java.util.List;
 
 public class TCPServer {
     private static int numberOfClients;
+    public static int numberOfAnswers;
     private final List<Integer> listOfClientPorts;
 
     public TCPServer() {
         this.listOfClientPorts = new ArrayList<>();
+        numberOfAnswers = 0;
     }
 
     public static class ServerThread extends Thread {
@@ -30,20 +32,62 @@ public class TCPServer {
             try {
                 BufferedReader read = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
                 PrintWriter write = new PrintWriter(socketClient.getOutputStream(), true);
+                StringBuilder clientsGivenNumber = new StringBuilder();
 
                 String odp = read.readLine();
+                clientsGivenNumber.append(odp);
+                odp = read.readLine();
+                clientsGivenNumber.append(odp);
+                odp = read.readLine();
+                clientsGivenNumber.append(odp);
 
-                while (odp != null) {
-                    System.out.println(odp);
+                if (odp != null)
+                    numberOfAnswers++;
 
-                    /*
+                write.println(clientsGivenNumber);
+                write.println(numberOfAnswers);
+
+                System.out.println("Liczba odpowiedzi - krok pierwszy: " + numberOfAnswers);
+
+                int[] arr = new int[2];
+
+                arr[0] = Integer.parseInt(read.readLine());
+                odp = read.readLine();
+                arr[1] = Integer.parseInt(odp);
+
+                if (odp != null)
+                    numberOfAnswers++;
+
+
+                System.out.println("Liczba odpowiedzi - krok drugi: " + numberOfAnswers);
+
+//                System.out.println("tablica: " + arr[0] + ", " + arr[1] + "; port: " + socketClient.getPort());
+//                System.out.println("NWD: " + NWD(arr[0], arr[1]) + "; port: " + socketClient.getPort());
+
+                write.println(NWD(arr[0], arr[1]));
+                write.println(numberOfAnswers);
+
+                System.out.println("flaga: " + read.readLine());
+
+
+
+                /*while (odp != null) {
+
+
+                    *//*
                      * code here
-                     */
+                     *//*
 
                     odp = read.readLine();
-                } //if odp is null that means client has disconnected, so loop end and socketClient can be closed
+                }*/
+                /*
+                * this is used if you want to manualy contact with client
+                * if odp is null that means client has disconnected, so loop end and socketClient can be closed
+                */
+
 
                 socketClient.close();
+//                numberOfClients--;
                 System.out.println("client closed");
             } catch (IOException e) {
                 // if there is any problem during connection, the socketClient need to be closed
@@ -53,6 +97,16 @@ public class TCPServer {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+            }
+        }
+        public synchronized static int NWD(int pierwsza, int druga)
+        {
+            if (druga == 0)
+            {
+                return pierwsza;
+            }
+            else {
+                return NWD(druga, pierwsza%druga);  // dwóch liczb.
             }
         }
 
@@ -77,11 +131,13 @@ public class TCPServer {
             try {
                 client = server.accept();
 
-                if (check(client.getLocalPort())) {
+                if (check(client.getPort())) {
                     numberOfClients++;
-                    listOfClientPorts.add(client.getPort());
-                    System.out.println("Numbre of Clients: " + numberOfClients);
-                } // counts new clients
+                    listOfClientPorts.add(client.getLocalPort());
+                    System.out.println("Number of Clients: " + numberOfClients);
+                } else {
+                    System.out.println("Client with this port already was connected"); // counts new clients
+                }
 
             } catch (IOException e) {
                 System.out.println("Accept failed");
@@ -100,7 +156,7 @@ public class TCPServer {
                 return false;
         }
         return true;
-    } //checks if client port already is in array of connected clients
+    } //checks if client port already is in list of connected clients
 
     public static void main(String[] args) {
 
