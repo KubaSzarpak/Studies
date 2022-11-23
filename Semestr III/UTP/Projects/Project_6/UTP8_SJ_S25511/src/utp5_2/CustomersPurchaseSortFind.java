@@ -7,8 +7,6 @@
 package utp5_2;
 
 
-import jdk.nashorn.internal.ir.LiteralNode;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -55,7 +53,7 @@ public class CustomersPurchaseSortFind {
     }
 
     public void showPurchaseFor(String id) {
-        System.out.println("\n" + id);
+        System.out.println("\nKlient " + id);
         for (Purchase item : purchaseList) {
             if (item.getId_klienta().equals(id))
                 System.out.println(item);

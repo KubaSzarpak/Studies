@@ -20,9 +20,6 @@ public class Anagrams {
         allwords = new ArrayList<>();
 
         readFile(path);
-
-
-//        System.out.println(allwords);
     }
 
     void readFile(String path) {
