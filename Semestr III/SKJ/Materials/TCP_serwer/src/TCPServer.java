@@ -72,18 +72,15 @@ public class TCPServer {
 
 
                 /*while (odp != null) {
-
-
-                    *//*
-                     * code here
-                     *//*
-
+                 *//*
+                 * code here
+                 *//*
                     odp = read.readLine();
                 }*/
                 /*
-                * this is used if you want to manualy contact with client
-                * if odp is null that means client has disconnected, so loop end and socketClient can be closed
-                */
+                 * this is used if you want to manualy contact with client
+                 * if odp is null that means client has disconnected, so loop end and socketClient can be closed
+                 */
 
 
                 socketClient.close();
