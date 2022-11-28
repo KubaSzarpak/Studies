@@ -14,7 +14,7 @@ public class Futil{
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     final FileWriter writer = new FileWriter(resultFileName, true);
-                    Scanner reader = new Scanner(new FileReader(file.toFile()));
+                    Scanner reader = new Scanner(file, "windows-1250");
 
 
 

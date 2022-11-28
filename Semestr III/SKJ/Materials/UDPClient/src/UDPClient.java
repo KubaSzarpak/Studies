@@ -2,7 +2,7 @@
 import java.io.IOException;
 import java.net.*;
 
-public class UDPSerwer {
+public class UDPClient {
 
     private static int port;
     private static int clientPort;
@@ -10,7 +10,7 @@ public class UDPSerwer {
     private DatagramSocket socket;
     private InetAddress address;
 
-    public UDPSerwer(){
+    public UDPClient(){
         try {
             socket = new DatagramSocket(port); //port na którym nasłuchuję
             address = InetAddress.getByName(ip);
@@ -62,7 +62,7 @@ public class UDPSerwer {
         port = 4445;
         clientPort = 0000;
 
-        UDPSerwer client = new UDPSerwer();
+        UDPClient client = new UDPClient();
         client.sendMsg("Message");
 
         String odp = client.reciveMsg();
