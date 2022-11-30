@@ -1,11 +1,9 @@
 package utp7_3;
 
-import javafx.scene.layout.Pane;
-
 import javax.swing.*;
 import java.awt.*;
 
-import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class Window extends JFrame {
@@ -22,9 +20,9 @@ public class Window extends JFrame {
         list = new JList<>();
         model = new DefaultListModel<>();
 
-        Future<String> f1 = new TMP("A").run("AB", 1000);
-        Future<String> f2 = new TMP("B").run("BC", 2000);
-        Future<String> f3 = new TMP("C").run("CD", 5000);
+        Future<String> f1 = new ExecutorOperator(new Thread("A")).getFuture("AB", 1000);
+        Future<String> f2 = new ExecutorOperator(new Thread("B")).getFuture("BC", 2000);
+        Future<String> f3 = new ExecutorOperator(new Thread("B")).getFuture("CD", 5000);
 
         model.addElement(f1);
         model.addElement(f2);
@@ -49,8 +47,20 @@ public class Window extends JFrame {
 
         list.getSelectionModel().addListSelectionListener(e -> {
             Future<String> future = list.getSelectedValue();
+            String message = "Future: isDone = " + future.isDone() + " ::: " + "Is canceled: " + future.isCancelled();
+            if (future.isDone()){
+                try {
+                    if (future.isCancelled()){
+                        message += " ::: " + "Result: " + "Canceled";
+                    } else
+                        message += " ::: " + "Result: " + future.get(); //future.get() gives the result of call method if is not canceled
+                } catch (InterruptedException | ExecutionException ex) {
+                    //If thread is interrupted
+                    ex.printStackTrace();
+                }
+            }
+            label.setText(message);
 
-            label.setText("Future: isDone = " + future.isDone() + "| Is canceled: " + future.isCancelled());
             button.setFuture(future);
         });
 
