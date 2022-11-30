@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2d033843-2300-472a-bf05-ae9e5cb0568b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPServer$ServerThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPServer$ServerThread.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/src/TCPClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/src/TCPClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/src/TCPServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../SKJ/Materials/TCP_serwer/src/TCPServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
-    </list>
+    <list default="true" id="2d033843-2300-472a-bf05-ae9e5cb0568b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,7 +16,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../.." />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -33,15 +26,15 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/kubas/Desktop/Studia/Semestr III/UTP/Projects/UTP8",
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/kubas/Desktop/Studia/Semestr III/UTP/Projects/UTP8&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="UTP41" />
@@ -151,6 +144,8 @@
       <workItem from="1667729468313" duration="908000" />
       <workItem from="1667732093534" duration="42000" />
       <workItem from="1668637264205" duration="193000" />
+      <workItem from="1668848261405" duration="3248000" />
+      <workItem from="1668852453907" duration="4000" />
     </task>
     <servers />
   </component>

@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8eac00b6-db68-4e50-a186-4eff4fb7fe2f" name="Changes" comment="" />
+    <list default="true" id="8eac00b6-db68-4e50-a186-4eff4fb7fe2f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../../../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPServer$ServerThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPServer$ServerThread.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/out/production/TCP_serwer/TCPServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/src/TCPClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/src/TCPClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/src/TCPServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../SKJ/Materials/TCP_serwer/src/TCPServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Project_6/UTP8_SJ_S25511/src/utp5_1/Anagrams.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Project_6/UTP8_SJ_S25511/src/utp5_1/Anagrams.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Project_6/UTP8_SJ_S25511/src/utp5_1/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Project_6/UTP8_SJ_S25511/src/utp5_1/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Project_6/UTP8_SJ_S25511/src/utp5_2/CustomersPurchaseSortFind.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../Project_6/UTP8_SJ_S25511/src/utp5_2/CustomersPurchaseSortFind.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,7 +26,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../.." />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -25,17 +36,17 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/kubas/Desktop/Studia/Semestr III/UTP/Projects/Project_8/UTP10_SJ_S25511&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/kubas/Desktop/Studia/Semestr III/UTP/Projects/UTP9",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="utp6_2" />
@@ -47,10 +58,10 @@
       <recent name="C:\Users\kubas\Desktop\Studia\Semestr III\UTP\Projects\Project_7\UTP9_SJ_S25511\src\utp6_2" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.utp6_1.Main">
+  <component name="RunManager" selected="Application.utp6_2.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="UTP21.Main" />
-      <module name="UTP_9" />
+      <module name="UTP_2" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="UTP21.*" />
@@ -63,14 +74,14 @@
     </configuration>
     <configuration name="Test" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Test" />
-      <module name="UTP_9" />
+      <module name="UTP_2" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration name="UTP31.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="UTP31.Main" />
-      <module name="UTP_9" />
+      <module name="UTP_2" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="UTP31.*" />
@@ -83,7 +94,7 @@
     </configuration>
     <configuration name="utp6_1.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="utp6_1.Main" />
-      <module name="UTP_9" />
+      <module name="UTP_2" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="utp6_1.*" />
@@ -96,7 +107,7 @@
     </configuration>
     <configuration name="utp6_2.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="utp6_2.Main" />
-      <module name="UTP_9" />
+      <module name="UTP_2" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="utp6_2.*" />
@@ -109,8 +120,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.utp6_1.Main" />
         <item itemvalue="Application.utp6_2.Main" />
+        <item itemvalue="Application.utp6_1.Main" />
         <item itemvalue="Application.UTP31.Main" />
         <item itemvalue="Application.Main" />
       </list>
@@ -161,30 +172,11 @@
       <workItem from="1669121247786" duration="6475000" />
       <workItem from="1669134841670" duration="5007000" />
       <workItem from="1669140916543" duration="13000" />
-      <workItem from="1669207645238" duration="302000" />
-      <workItem from="1669208323512" duration="40000" />
-      <workItem from="1669366764418" duration="639000" />
-      <workItem from="1669369203601" duration="285000" />
-      <workItem from="1669369588830" duration="30000" />
-      <workItem from="1669399170314" duration="3903000" />
-      <workItem from="1669634336286" duration="15000" />
-      <workItem from="1669658281368" duration="763000" />
-      <workItem from="1669663829858" duration="7000" />
+      <workItem from="1669207645238" duration="671000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/utp6_1/Finder.java</url>
-          <line>149</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -40,7 +40,7 @@
   <component name="RunManager" selected="Application.UTP31.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="UTP21.Main" />
-      <module name="UTP_6" />
+      <module name="UTP_2" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="UTP21.*" />
@@ -53,26 +53,13 @@
     </configuration>
     <configuration name="UTP31.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="UTP31.Main" />
-      <module name="UTP_6" />
+      <module name="UTP_2" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="UTP31.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="UTP_6" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="UTP_6" />
-      <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -122,6 +109,9 @@
       <workItem from="1666619549177" duration="2819000" />
       <workItem from="1666623138115" duration="110000" />
       <workItem from="1666633158072" duration="18000" />
+      <workItem from="1668446196588" duration="611000" />
+      <workItem from="1668533000623" duration="35000" />
+      <workItem from="1668635858978" duration="58000" />
     </task>
     <servers />
   </component>

@@ -1,0 +1,192 @@
+﻿Country	Capital	Population	Falg
+Islandia	Rejkiawik	338	is	
+Czarnogora	Podgorica	672	me	
+Brunei	Bandar Seri Begawan	381	bn	
+Bangladesz	Dhaka	162221	bd	
+Barbados	Bridgetown	281	bb	
+Antigua i Barbuda	Saint John’s	85	ag	
+Irlandia	Dublin	4784	ie	
+Portugalia	Lisbona	10310	pt	
+Hiszpania	Madryt	46720	es	
+Wielka Brytania	Londyn	66040	gb	
+Francja	Paryz	66990	fr	
+Holandia	Amsterdam	17080	nl	
+Belgia	Bruksela	11350	be	
+Luksemburg	Luksemburg	590	lu	
+Andora	Andora	84	ad	
+Szwajcaria	Berno	8420	ch	
+Wlochy	Rzym	60590	it	
+Norwegia	Oslo	5258	no	
+Dania	Kopenhaga	5749	dk	
+Niemcy	Berlin	82790	de	
+Liechtenstein	Vaduz	37	li	
+Malta	Valletta	460	mt	
+Szwecja	Sztokholm	9995	se	
+Polska	Warszawa	38430	pl	
+Republika Czeska	Praga	10580	cz	
+Slowacja	Bratyslawa	5435	sk	
+Austria	Wieden	8773	at	
+Wegry	Budapeszt	9798	hu	
+Slowenia	Lublana	2066	si	
+Chorwacja	Zagrzeb	4154	hr	
+Bosnia i Hercegowina	Sarajewo	3507	ba	
+Serbia	Belgrad	7022	rs	
+Albania	Tirana	2873	al	
+Macedonia	Skopie	2074	mk	
+Grecja	Ateny	10770	gr	
+Finlandia	Helsinki	5503	fi	
+Estonia	Tallin	1316	ee	
+Eswatini	Mbabane	1138	sz	
+Lotwa	Ryga	1950	lv	
+Litwa	Wilno	2848	lt	
+Grenada	Saint George’s	89	gd	
+Bialorus	Minsk	9508	by	
+Ukraina	Kijow	44830	ua	
+Rumunia	Bukareszt	19640	ro	
+Moldawia	Kiszyniow	3550	md	
+Bulgaria	Sofia	7102	bg	
+Turcja	Ankara	79810	tr	
+Cypr	Nikozja	854	cy	
+Rosja	Moskwa	144500	ru	
+Liban	Bejrut	6082	lb	
+Izrael	Tel Awiw	8712	il	
+Syria	Damaszek	18270	sy	
+Monako	Monako	32	mc	
+Jordania	Amman	9702	jo	
+Seszele	Victoria	86	sc	
+Gruzja	Tbilisi	3717	ge	
+Azerbejdzan	Baku	9862	az	
+Armenia	Erywan	2930	am	
+Irak	Bagdad	38270	iq	
+Arabia Saudyjska	Rijad	32940	sa	
+Kuwejt	Kuwejt	4137	kw	
+Jemen	Sana	28250	ye	
+Oman	Maskat	4636	om	
+ZEA	Abu-Zabi	9400	ae	
+Bahrajn	Al-Manama	1493	bh	
+Katar	Al-Dauha	2639	qa	
+Iran	Teheran	81160	ir	
+Mauritius	Port Louis	1230	mu	
+Kazachstan	Alma-Ata (Astana)	18040	kz	
+Uzbekistan	Taszkent	32390	uz	
+Tuvalu	Vaiaku	12	tv	
+Kirgistan	Biszkek	6202	kg	
+Turkmenistan	Aszchabad	5758	tm	
+Tadzykistan	Duszanbe	8921	tj	
+Afganistan	Kabul	35530	af	
+Pakistan	Islamabad	197000	pk	
+Indie	Delhi	1339000	in	
+Palau	Ngerulmud	20	pw	
+Sri Lanka	Kolombo	21440	lk	
+Nepal	Katmandu	29300	np	
+Bhutan	Thimphu	807	bt	
+Chiny	Pekin	1386000	cn	
+Mongolia	Ulan-Bator	3076	mn	
+Tajlandia	Bangkok	69040	th	
+Laos	Wientian	6858	la	
+Wietnam	Hanoi	95540	vn	
+Kambodza	Phnom Penh	16010	kh	
+Malezja	Kuala Lumpur	31620	my	
+Indonezja	Dzakarta	264000	id	
+Filipiny	Manila	104900	ph	
+Watykan	Watykan	1	va	
+Wyspy Salomona	Honiara	552	sb	
+Wyspy Marshalla	Majuro	59	mh	
+Korea Polnocna	Pjongjang	25490	kp	
+Korea Poludniowa	Seul	51470	kr	
+Vanuatu	Port Vila	243	vu	
+Japonia	Tokjo	126800	jp	
+Singapur	Singapur	5612	sg	
+Maroko	Rabat	35740	ma	
+Algieria	Algier	41320	dz	
+Tunezja	Tunis	11530	tn	
+Saint Vincent i Grenadyny	Kingstown	119	vc	
+Saint Lucia	Castries	164	lc	
+Saint Kitts i Nevis	Basseterre	38	kn	
+Republika Zielonego Przyladka	Praia	499	cv	
+Libia	Trypolis	6375	ly	
+Egipt	Kair	97550	eg	
+Mauretania	Nawakszut	4420	mr	
+Mali	Bamako	18540	ml	
+Niger	Niamej	21480	ne	
+Czad	Ndzamena	14900	td	
+Sudan	Chartum	40530	sd	
+Erytrea	Asmara	4475	er	
+Senegal	Dakar	15850	sn	
+Gambia	Bandzul	2101	gm	
+Timor Wschodni	Dili	1109	tl	
+Gwinea Bissau	Bissau	1861	gw	
+Gwinea Równikowa	Malabo	616	gq	
+Gwinea	Konkary	12720	gn	
+Sierra Leone	Freetown	7557	sl	
+Liberia	Monrowia	4732	lr	
+WKS	Jamusukro	24290	ci	
+Burkina Faso	Wagadugu	19190	bf	
+Ghana	Akra	28830	gh	
+Togo	Lome	7798	tg	
+Tonga	Nukuʻalofa	119	to	
+Trynidad i Tobago	Port-of-Spain	1229	tt	
+Malediwy	Male	396	mv	
+Benin	Porto Novo	11180	bj	
+Nigeria	Abudza	190900	ng	
+Kamerun	Jaunde	24050	cm	
+Republika Srodkowej Afryki	Bangi	4659	cf	
+Etiopia	Addis Abeba	105000	et	
+Dzibuti	Dzibuti	957	dj	
+Samoa	Apia	177	ws	
+San Marino	San Marino	31	sm	
+Somalia	Mogadiszu	14740	so	
+Gabon	Libre Ville	2025	ga	
+Kongo	Brazza Ville	5261	cg	
+Demokratyczna Republika Konga	Kinszasa	81340	cd	
+Uganda	Kampala	42860	ug	
+Rwanda	Kigali	12210	rw	
+Burundi	Buzumbura	10860	bi	
+Kenia	Nairobi	49700	ke	
+Komory	Moroni	671	km	
+Tanzania	Dodoma	57310	tz	
+Angola	Luanada	29780	ao	
+Zambia	Lusaka	17090	zm	
+Malawi	Lilongwe	18620	mw	
+Namibia	Windhuk	2534	na	
+Botswana	Gaborone	2292	bw	
+Zimbabwe	Harare	16530	zw	
+Mozambik	Maputo	29670	mz	
+Madagaskar	Antanarywa	25570	mg	
+RPA	Pretoria	56720	za	
+Lesotho	Maseru	2233	ls	
+Kanada	Ottawa	37060	ca	
+USA	Waszyngton	327200	us	
+Meksyk	Meksyk	129200	mx	
+Kuba	Hawana	11480	cu	
+Jamajka	Kingston	2700	jm	
+Bahamy	Nassau	395	bs	
+Haiti	Port-Au-Prince	10980	ht	
+Dominikana	Santo Domingo	10770	do	
+Dominika	Roseau	72	dm	
+Gwatemala	Gwatemala	16910	gt	
+Belize	Belmopan	374	bz	
+Salwador	San Salwador	6378	sv	
+Honduras	Tegucigalpa	9265	hn	
+Nikaragua	Managua	6218	ni	
+Kostaryka	San Jose	4906	cr	
+Panama	Panama	4099	pa	
+Kolumbia	Bogota	49070	co	
+Wenezuela	Caracas	31980	ve	
+Gujana	Georgetown	777	gy	
+Surinam	Paramaribo	563	sr	
+Ekwador	Quito	16620	ec	
+Peru	Lima	32170	pe	
+Fidzi	Suva	849	fj	
+Brazylia	Brasilia	209300	br	
+Boliwia	La Paz	11050	bo	
+Chile	Santiago	18050	cl	
+Argentyna	Buenos Aires	44270	ar	
+Paragwaj	Asuncion	6811	py	
+Urugwaj	Montevideo	3457	uy	
+Australia	Canberra	24600	au	
+Nowa Gwinea	Port Moresby	9000	pg	
+Nowa Zelandia	Wellington	4794	nz	
+Kiribati	Bairiki	103	ki	
+Mikronezja	Palikir	135	fm	
+Nauru	Yaren	14	nr	
