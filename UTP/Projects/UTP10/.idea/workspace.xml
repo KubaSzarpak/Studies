@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8eac00b6-db68-4e50-a186-4eff4fb7fe2f" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2GGVSadSCmEpPOg5YRGzhj3eUna" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/kubas/Desktop/Studia/Semestr III/UTP/Projects/Project_8/UTP10_SJ_S25511/src&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="utp7_1" />
+      <recent name="utp6_2" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\kubas\Desktop\Studia\Semestr III\UTP\Projects\Project_8\UTP10_SJ_S25511\src" />
+      <recent name="C:\Users\kubas\Desktop\Studia\Semestr III\UTP\Projects\Project_3\UTP5_SJ_S25511\src\UTP31" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\kubas\Desktop\Studia\Semestr III\UTP\Projects\Project_7\UTP9_SJ_S25511\src\utp6_2" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="utp7_4" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.utp7_1.Main">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="UTP21.Main" />
+      <module name="UTP_2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="UTP21.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Test" />
+      <module name="UTP_2" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UTP31.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="UTP31.Main" />
+      <module name="UTP_2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="UTP31.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="utp6_1.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="utp6_1.Main" />
+      <module name="UTP_2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="utp6_1.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="utp6_2.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="utp6_2.Main" />
+      <module name="UTP_2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="utp6_2.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="utp7_1.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="utp7_1.Main" />
+      <module name="UTP_2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="utp7_1.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.utp7_1.Main" />
+        <item itemvalue="Application.utp6_2.Main" />
+        <item itemvalue="Application.utp6_1.Main" />
+        <item itemvalue="Application.UTP31.Main" />
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8eac00b6-db68-4e50-a186-4eff4fb7fe2f" name="Changes" comment="" />
+      <created>1666014907570</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1666014907570</updated>
+      <workItem from="1666014908774" duration="93000" />
+      <workItem from="1666015072779" duration="6831000" />
+      <workItem from="1666022095602" duration="371000" />
+      <workItem from="1666027107071" duration="1831000" />
+      <workItem from="1666029260754" duration="160000" />
+      <workItem from="1666029568711" duration="4000" />
+      <workItem from="1666031021160" duration="58000" />
+      <workItem from="1666031258864" duration="3000" />
+      <workItem from="1666031363172" duration="2874000" />
+      <workItem from="1666037775062" duration="998000" />
+      <workItem from="1666038998836" duration="87000" />
+      <workItem from="1666096029266" duration="2000" />
+      <workItem from="1666096167085" duration="16000" />
+      <workItem from="1666108184954" duration="23000" />
+      <workItem from="1666172330286" duration="3332000" />
+      <workItem from="1666177239492" duration="2399000" />
+      <workItem from="1666181951496" duration="576000" />
+      <workItem from="1666184730097" duration="1053000" />
+      <workItem from="1666187491487" duration="83000" />
+      <workItem from="1666214469566" duration="600000" />
+      <workItem from="1666284649568" duration="231000" />
+      <workItem from="1666608625020" duration="30000" />
+      <workItem from="1666608663262" duration="2000" />
+      <workItem from="1666613514396" duration="4163000" />
+      <workItem from="1666619090310" duration="248000" />
+      <workItem from="1666619351552" duration="22000" />
+      <workItem from="1666620793490" duration="1599000" />
+      <workItem from="1666623249740" duration="96000" />
+      <workItem from="1666627621203" duration="2191000" />
+      <workItem from="1666633177386" duration="37000" />
+      <workItem from="1668635918066" duration="621000" />
+      <workItem from="1669120532656" duration="52000" />
+      <workItem from="1669120588247" duration="3000" />
+      <workItem from="1669120609602" duration="573000" />
+      <workItem from="1669121247786" duration="6475000" />
+      <workItem from="1669134841670" duration="5007000" />
+      <workItem from="1669140916543" duration="13000" />
+      <workItem from="1669207645238" duration="671000" />
+      <workItem from="1669634352288" duration="3952000" />
+      <workItem from="1669650800091" duration="4796000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
