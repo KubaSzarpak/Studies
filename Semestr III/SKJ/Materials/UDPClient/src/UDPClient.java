@@ -12,7 +12,7 @@ public class UDPClient {
 
     public UDPClient(){
         try {
-            socket = new DatagramSocket(port); //port na którym nasłuchuję
+            socket = new DatagramSocket(port); /** The port you listen on */
             address = InetAddress.getByName(ip);
         } catch (UnknownHostException e) {
             System.out.println("Unknown Host");
@@ -25,7 +25,7 @@ public class UDPClient {
 
     public void sendMsg(String msg){
         byte[] buf = msg.getBytes();
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, clientPort); //port na jaki chcę wysłać wiadomość
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, clientPort); /** port on which you want to send message */
 
         try {
             socket.send(packet);
@@ -36,15 +36,13 @@ public class UDPClient {
         }
     }
 
-    public String reciveMsg(){
+    public String receiveMsg(){
         byte[] buf = new byte[100];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
         try {
-            System.out.println("Czekam na porcie: " + port + '\n');
             socket.receive(packet);
-        }
-        catch (IOException e){
+        } catch (IOException e){
             System.out.println("No IO");
             System.exit(-1);
         }
@@ -57,18 +55,40 @@ public class UDPClient {
     }
 
     public static void main(String[] args){
+        /**
+        * If someone wants to communicate with you, he needs to have the same ip as you
+        */
+        ip = "192.168.5.105";
 
-        ip = "172.23.129.28";
+        /**
+        * Your port on which messages can be sent
+        */
         port = 4445;
+
+        /**
+        * If you want to send back messages to recipient, you need to specify his port
+        * If you want to start the communication by sending a message, you need to specify port of the recipient
+        */
         clientPort = 0000;
 
         UDPClient client = new UDPClient();
-        client.sendMsg("Message");
+        System.out.println("Waiting on port: " + port + '\n');
 
-        String odp = client.reciveMsg();
+        /**
+        * String message that you receive
+        */
+        String response;
 
+        /**
+        * Operations which you can make
+        */
+        {
+
+            client.sendMsg("");
+
+            response = client.receiveMsg();
+
+        }
         client.close();
-        System.out.println(odp);
-
     }
 }
