@@ -9,6 +9,7 @@ public class UDPClient {
     private static String ip;
     private DatagramSocket socket;
     private InetAddress address;
+    private InetAddress clientAddress;
 
     /**
      * UDP client constructor
@@ -32,7 +33,7 @@ public class UDPClient {
      * @param msg String text that you want to send*/
     public void sendMsg(String msg){
         byte[] buf = msg.getBytes();
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, clientPort); /** port on which you want to send message */
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, clientAddress, clientPort); /** port and address on which you want to send message */
 
         try {
             socket.send(packet);
@@ -58,6 +59,12 @@ public class UDPClient {
             System.exit(-1);
         }
 
+        /**
+         * Gets client port and address
+         */
+        clientPort = packet.getPort();
+        clientAddress = packet.getAddress();
+
         return new String(packet.getData(),0, packet.getLength());
     }
 
@@ -73,7 +80,7 @@ public class UDPClient {
         /**
         * If someone wants to communicate with you, he needs to have the same ip as you
         */
-        ip = "192.168.5.105";
+        ip = "172.23.129.38";
 
         /**
         * Your port on which messages can be sent
@@ -99,11 +106,36 @@ public class UDPClient {
         */
         {
 
-            client.sendMsg("");
+            response = client.receiveMsg();
+            System.out.println(response);
+
+            int sum = Integer.parseInt(response) * 2;
+
+            client.sendMsg(String.valueOf(sum));
 
             response = client.receiveMsg();
+            System.out.println(response);
 
         }
         client.close();
+    }
+
+    class NWD {
+        int nwd(int[] arr) {
+            int nwdv = arr[0];
+            for (int i = 1; i < arr.length; i++)
+                nwdv = nwd(nwdv, arr[i]);
+            return nwdv;
+        }
+
+        int nwd(int a, int b) {
+            int c;
+            while (b != 0) {
+                c = a % b;
+                a = b;
+                b = c;
+            }
+            return a;
+        }
     }
 }
