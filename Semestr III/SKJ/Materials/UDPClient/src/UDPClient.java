@@ -10,6 +10,10 @@ public class UDPClient {
     private DatagramSocket socket;
     private InetAddress address;
 
+    /**
+     * UDP client constructor
+     * creates new socket and address
+     */
     public UDPClient(){
         try {
             socket = new DatagramSocket(port); /** The port you listen on */
@@ -23,6 +27,9 @@ public class UDPClient {
         }
     }
 
+    /**
+     * Method that sends message to client on his port
+     * @param msg String text that you want to send*/
     public void sendMsg(String msg){
         byte[] buf = msg.getBytes();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, address, clientPort); /** port on which you want to send message */
@@ -36,6 +43,10 @@ public class UDPClient {
         }
     }
 
+    /**
+     * Method that receives message that comes to you
+     * Returns String value of this message
+     */
     public String receiveMsg(){
         byte[] buf = new byte[100];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -50,6 +61,10 @@ public class UDPClient {
         return new String(packet.getData(),0, packet.getLength());
     }
 
+    /**
+     * Method that closes this datagram socket
+     * Uses method close() from DatagramSocket class
+     */
     public void close() {
         socket.close();
     }
