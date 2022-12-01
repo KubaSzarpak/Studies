@@ -107,14 +107,7 @@ public class UDPClient {
         {
 
             response = client.receiveMsg();
-            System.out.println(response);
-
-            int sum = Integer.parseInt(response) * 2;
-
-            client.sendMsg(String.valueOf(sum));
-
-            response = client.receiveMsg();
-            System.out.println(response);
+            client.sendMsg("");
 
         }
         client.close();
