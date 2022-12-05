@@ -25,13 +25,11 @@ public class Letters {
 
                     try {
                         System.out.println(name.charAt(i));
-                        sleep(1000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        return;
                     }
                 }
-                super.run();
-
             }
         });
     }
@@ -44,8 +42,7 @@ public class Letters {
 
     public void stopThreads() {
         for (Thread t : threads) {
-            t.stop();
-            t.suspend();
+            t.interrupt();
         }
     }
 

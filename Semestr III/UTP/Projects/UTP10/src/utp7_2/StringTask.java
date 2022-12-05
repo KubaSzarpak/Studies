@@ -1,23 +1,19 @@
 package utp7_2;
 
 
+public class StringTask implements Runnable {
 
-public class StringTask implements Runnable{
-
+    private final Thread thread;
     private final String word;
     private final long multiplications;
     private String result;
     private boolean isDone;
-    private boolean running;
-
     private TaskState state;
 
-    private Thread thread;
 
-    public StringTask (String word, long multiplications){
+    public StringTask(String word, long multiplications) {
         this.state = TaskState.CREATED;
         this.isDone = false;
-        this.running = true;
         this.word = word;
         this.result = "";
         this.multiplications = multiplications;
@@ -27,31 +23,27 @@ public class StringTask implements Runnable{
 
     @Override
     public void run() {
-
         state = TaskState.RUNNING;
-        for (int i = 0; i < multiplications; i++){
+
+        for (int i = 0; i < multiplications; i++) {
             result = result + word;
-            if (!running) {
-                isDone = true;
+            if (thread.isInterrupted()) {
                 state = TaskState.ABORTED;
+                isDone = true;
                 return;
             }
-
         }
         isDone = true;
         state = TaskState.READY;
-
     }
 
 
-    public void start(){
+    public void start() {
         thread.start();
     }
 
-    public void abort(){
-        thread.stop();
-        state = TaskState.ABORTED;
-        isDone = true;
+    public void abort() {
+        thread.interrupt();
     }
 
 
