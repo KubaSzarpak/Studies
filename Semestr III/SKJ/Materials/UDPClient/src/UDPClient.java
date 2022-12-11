@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.*;
 
 public class UDPClient {
@@ -8,7 +9,6 @@ public class UDPClient {
     private static int clientPort;
     private static String ip;
     private DatagramSocket socket;
-    private InetAddress address;
     private InetAddress clientAddress;
 
     /**
@@ -18,7 +18,7 @@ public class UDPClient {
     public UDPClient(){
         try {
             socket = new DatagramSocket(port); /** The port you listen on */
-            address = InetAddress.getByName(ip);
+            InetAddress.getByName(ip);
         } catch (UnknownHostException e) {
             System.out.println("Unknown Host");
             System.exit(-1);
@@ -80,7 +80,7 @@ public class UDPClient {
         /**
         * If someone wants to communicate with you, he needs to have the same ip as you
         */
-        ip = "172.23.129.38";
+        ip = "172.23.129.14";
 
         /**
         * Your port on which messages can be sent
@@ -107,7 +107,11 @@ public class UDPClient {
         {
 
             response = client.receiveMsg();
+
             client.sendMsg("");
+
+
+
 
         }
         client.close();
