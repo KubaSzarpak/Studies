@@ -6,9 +6,9 @@ public class StringTask implements Runnable {
     private final Thread thread;
     private final String word;
     private final long multiplications;
-    private String result;
-    private boolean isDone;
-    private TaskState state;
+    private volatile String result;
+    private volatile boolean isDone;
+    private volatile TaskState state;
 
 
     public StringTask(String word, long multiplications) {

@@ -5,18 +5,15 @@ import java.util.concurrent.*;
 
 public class ExecutorOperator {
     private String result;
-    private final Thread thread;
 
-    public ExecutorOperator(Thread thread) {
-        this.thread = thread;
+    public ExecutorOperator() {
         this.result = "";
-
     }
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
-            return new Thread(thread.getThreadGroup(), r);
+            return new Thread(r, "Test");
         }
     });
 

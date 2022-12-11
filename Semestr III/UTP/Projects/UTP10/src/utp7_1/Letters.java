@@ -17,21 +17,17 @@ public class Letters {
     }
 
     private void createThreads(char c) {
-        threads.add(new Thread("Thread " + c) {
+        threads.add(new Thread(() -> {
+            for (int i = 0; i < name.length(); i++) {
 
-            @Override
-            public void run() {
-                for (int i = 0; i < name.length(); i++) {
-
-                    try {
-                        System.out.println(name.charAt(i));
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        return;
-                    }
+                try {
+                    System.out.println(name.charAt(i));
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    return;
                 }
             }
-        });
+        }, "Thread " + c));
     }
 
     public void runThreads() {

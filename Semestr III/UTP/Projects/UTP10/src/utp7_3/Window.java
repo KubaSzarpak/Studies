@@ -20,15 +20,17 @@ public class Window extends JFrame {
         list = new JList<>();
         model = new DefaultListModel<>();
 
-        Future<String> f1 = new ExecutorOperator(new Thread("A")).getFuture("AB", 1000);
-        Future<String> f2 = new ExecutorOperator(new Thread("B")).getFuture("BC", 2000);
-        Future<String> f3 = new ExecutorOperator(new Thread("B")).getFuture("CD", 5000);
+        Future<String> f1 = new ExecutorOperator().getFuture("AB", 1000);
+        Future<String> f2 = new ExecutorOperator().getFuture("BC", 2000);
+        Future<String> f3 = new ExecutorOperator().getFuture("CD", 5000);
 
         model.addElement(f1);
         model.addElement(f2);
         model.addElement(f3);
 
+
         list.setModel(model);
+
 
         label = new JLabel();
         panel = new JPanel();
