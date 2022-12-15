@@ -14,7 +14,7 @@ public class TCPClient {
         Socket socket = null;
         PrintWriter out = null;
         BufferedReader in = null;
-        String address = "172.23.65.91";
+        String address = "192.168.8.176";
         int port = 4445;
 
         try {
@@ -31,11 +31,10 @@ public class TCPClient {
         }
 
         try {
-            out.println(105425);
+            out.println("Client");
+
             System.out.println(in.readLine());
-            out.println("172.23.129.66:1122");
-            System.out.println(in.readLine());
-            in.readLine();
+
         } catch (IOException e) {
             System.out.println("Error during communication");
             System.exit(-1);
