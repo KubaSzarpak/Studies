@@ -4,7 +4,7 @@
  *
  */
 
-package src.utp8_1;
+package utp8_1;
 
 
 public class Main {

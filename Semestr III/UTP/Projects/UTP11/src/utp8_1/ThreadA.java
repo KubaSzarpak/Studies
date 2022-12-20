@@ -1,4 +1,4 @@
-package src.utp8_1;
+package utp8_1;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,7 +22,7 @@ public class ThreadA extends Thread {
     public synchronized void run() {
         Scanner reader;
         try {
-            reader = new Scanner(new File(System.getProperty("user.home")+"/Towary.txt"));
+            reader = new Scanner(new File("../Towary.txt"));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
