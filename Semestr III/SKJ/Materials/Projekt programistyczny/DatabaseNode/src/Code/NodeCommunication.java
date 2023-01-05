@@ -1,4 +1,4 @@
-package Distributed_database;
+package Code;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,14 +8,15 @@ import java.net.SocketException;
 
 public class NodeCommunication {
     private DatagramSocket nodeSocket;
-    private final DatabaseNode node;
+    private final DatabaseNodeCenter node;
     private int sourcePort;
     private InetAddress sourceAddress;
 
-    public NodeCommunication(DatabaseNode node) {
+    public NodeCommunication(DatabaseNodeCenter node) {
         this.node = node;
         new RequestListener().start();
     }
+
     public void createSocket(int localPort) {
         try {
             nodeSocket = new DatagramSocket(localPort);
@@ -36,7 +37,6 @@ public class NodeCommunication {
             sourcePort = packet.getPort();
             sourceAddress = packet.getAddress();
         } catch (IOException e) {
-//            System.out.println("No IO receive");
             return "null";
         }
         System.out.println("Message received from " + sourcePort + " " + new String(packet.getData(), 0, packet.getLength()));
@@ -49,14 +49,14 @@ public class NodeCommunication {
 
         try {
             nodeSocket.send(packet);
-            System.out.println("Message sent from " + nodeSocket.getLocalPort() + " to " + destinationPort + " " + msg);
+            System.out.println("Message send from " + nodeSocket.getLocalPort() + " to " + destinationPort + " " + msg);
         } catch (IOException e) {
-            System.out.println("No IO send");
+            System.out.println("Message send ERROR");
             System.exit(-1);
         }
     }
 
-    public void setTimeOut (int timeOut) {
+    public void setTimeOut(int timeOut) {
         try {
             nodeSocket.setSoTimeout(timeOut);
         } catch (SocketException e) {
@@ -77,9 +77,13 @@ public class NodeCommunication {
                     int tmpPort = sourcePort;
                     String msg = node.operate(receivedMsg);
                     if (!msg.equals("null")) {
+
+                        System.out.println("recived: " + receivedMsg);
+
                         System.out.println(msg);
                         sendMsg(msg, tmpAddress, tmpPort);
-                        System.out.println("Wysłano");
+                        System.out.println("SENT");
+
                     }
                 }
             }

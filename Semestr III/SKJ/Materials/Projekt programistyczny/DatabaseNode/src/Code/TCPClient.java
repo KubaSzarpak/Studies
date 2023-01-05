@@ -1,4 +1,4 @@
-package Distributed_database;
+package Code;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,9 +8,9 @@ import java.net.Socket;
 
 public class TCPClient extends Thread {
     private final Socket clientSocket;
-    private final DatabaseNode node;
+    private final DatabaseNodeCenter node;
 
-    public TCPClient(Socket socket, DatabaseNode node) {
+    public TCPClient(Socket socket, DatabaseNodeCenter node) {
         super("Client");
         this.node = node;
         this.clientSocket = socket;

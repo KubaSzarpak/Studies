@@ -1,4 +1,4 @@
-package Distributed_database;
+package Code;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import static java.net.InetAddress.getByName;
 
-public class DatabaseNode {
+public class DatabaseNodeCenter {
     public final int PORT;
     public final String ADDRESS;
     private int nextNodePort;
@@ -28,7 +28,7 @@ public class DatabaseNode {
     public boolean running;
     private boolean sendNext;
 
-    public DatabaseNode(int port, String address) {
+    public DatabaseNodeCenter(int port, String address) {
         this.running = true;
         this.PORT = port;
         this.ADDRESS = address;
@@ -54,7 +54,7 @@ public class DatabaseNode {
         }
     }
 
-    public DatabaseNode(int port, String address, int key, int value) {
+    public DatabaseNodeCenter(int port, String address, int key, int value) {
         this.running = true;
         this.PORT = port;
         this.ADDRESS = address;
@@ -108,13 +108,24 @@ public class DatabaseNode {
             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
             writer.println("Node");
-            nextNodePort = Integer.parseInt(read.readLine());
-            nextNodeAddress = getByName(read.readLine());
+            writer.println(PORT);
+
+            String line = read.readLine();
+
+            if (line.equals("ERROR")) {
+                System.out.println(line);
+                System.out.println(read.readLine());
+                return;
+            } else {
+                nextNodePort = Integer.parseInt(line);
+                nextNodeAddress = getByName(read.readLine());
+                nodeCommunication.sendMsg("newPrevious " + InetAddress.getByName(ADDRESS) + ":" + PORT, nextNodeAddress, nextNodePort);
+
+                previousNodeAddress = new InetSocketAddress(destinationAddress, destinationPort).getAddress();
+                previousNodePort = destinationPort;
+            }
 
             socket.close();
-
-            previousNodeAddress = new InetSocketAddress(destinationAddress, destinationPort).getAddress();
-            previousNodePort = destinationPort;
 
             System.out.println("Connected to the node");
         } catch (IOException e) {
@@ -148,6 +159,7 @@ public class DatabaseNode {
         Pattern terminatePattern = Pattern.compile("terminate");
         Pattern newNextPattern = Pattern.compile("newNext");
         Pattern newPreviousPattern = Pattern.compile("newPrevious");
+        Pattern findPortPattern = Pattern.compile("find-port");
 
         Matcher matcher = checkPortPattern.matcher(task.substring(0, 4));
 
@@ -158,56 +170,80 @@ public class DatabaseNode {
             addYourPort = true;
             sendNext = (nextNodePort != PORT);
         }
+        matcher = findPortPattern.matcher(task);
+        if (matcher.find()) {
+            answer = findPort(Integer.parseInt(task.substring(matcher.end() + 1)),
+                    addYourPort ? "" : task.substring(0, matcher.start()),
+                    addYourPort);
+            return endOperate(task, answer);
+        }
 
         matcher = setValuePattern.matcher(task);
         if (matcher.find()) {
             String[] tmp = task.substring(matcher.end() + 1).split(":");
-            answer += setValue(Integer.parseInt(tmp[0]),
-                    addYourPort ? "" : task.substring(0, matcher.start()),
+            answer = setValue(Integer.parseInt(tmp[0]),
                     Integer.parseInt(tmp[1]),
+                    addYourPort ? "" : task.substring(0, matcher.start()),
                     addYourPort);
-
+            return endOperate(task, answer);
         }
 
         matcher = getValuePattern.matcher(task);
         if (matcher.find()) {
-            answer += getValue(Integer.parseInt(task.substring(matcher.end() + 1)),
+            answer = getValue(Integer.parseInt(task.substring(matcher.end() + 1)),
                     addYourPort ? "" : task.substring(0, matcher.start()),
                     addYourPort);
+            return endOperate(task, answer);
         }
 
         matcher = findKeyPattern.matcher(task);
         if (matcher.find()) {
-            answer += findKey(Integer.parseInt(task.substring(matcher.end() + 1)),
+            answer = findKey(Integer.parseInt(task.substring(matcher.end() + 1)),
                     addYourPort ? "" : task.substring(0, matcher.start()),
                     addYourPort);
+            return endOperate(task, answer);
         }
 
         matcher = getMaxPattern.matcher(task);
         if (matcher.find()) {
-            answer += getMax(0,
-                    addYourPort ? "" : task.substring(0, matcher.start()),
-                    addYourPort);
+            if (task.substring(4).length() > getMaxPattern.pattern().length()) {
+                answer = getMax(Integer.parseInt(task.substring(matcher.end() + 1)),
+                        addYourPort ? "" : task.substring(0, matcher.start()),
+                        addYourPort);
+            } else {
+                answer = getMax(this.value,
+                        addYourPort ? "" : task.substring(0, matcher.start()),
+                        addYourPort);
+            }
+            return endOperate(task, answer);
         }
 
         matcher = getMinPattern.matcher(task);
         if (matcher.find()) {
-            answer += getMin(9999999,
-                    addYourPort ? "" : task.substring(0, matcher.start()),
-                    addYourPort);
+            if (task.substring(4).length() > getMaxPattern.pattern().length()) {
+                answer = getMin(Integer.parseInt(task.substring(matcher.end() + 1)),
+                        addYourPort ? "" : task.substring(0, matcher.start()),
+                        addYourPort);
+            } else {
+                answer = getMin(this.value,
+                        addYourPort ? "" : task.substring(0, matcher.start()),
+                        addYourPort);
+            }
+            return endOperate(task, answer);
         }
 
         matcher = newRecordPattern.matcher(task);
         if (matcher.find()) {
             String[] tmp = task.substring(matcher.end() + 1).split(":");
             newRecord(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]));
-            answer += "OK";
+            answer = "OK";
+            return endOperate(task, answer);
         }
 
         matcher = terminatePattern.matcher(task);
         if (matcher.find()) {
             terminate();
-            answer += "OK";
+            answer = "OK";
             new Thread(() -> {
                 try {
                     running = false;
@@ -217,6 +253,7 @@ public class DatabaseNode {
                 }
                 System.exit(7);
             }).start();
+            return endOperate(task, answer);
         }
 
         matcher = newNextPattern.matcher(task);
@@ -225,6 +262,8 @@ public class DatabaseNode {
             try {
                 nextNodeAddress = getByName(tmp[0].substring(1));
                 nextNodePort = Integer.parseInt(tmp[1]);
+                answer = "null";
+                return endOperate(task, answer);
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
@@ -236,90 +275,62 @@ public class DatabaseNode {
             try {
                 previousNodeAddress = InetAddress.getByName(tmp[0].substring(1));
                 previousNodePort = Integer.parseInt(tmp[1]);
+                answer = "null";
+                return endOperate(task, answer);
             } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
         }
 
+
+        return endOperate(task, answer);
+    }
+
+    private String endOperate(String task, String answer) {
         prepareCommunication(500);
         wait = false;
-
-        if (answer.isEmpty())
-            return task;
-        return answer;
+        return answer.isEmpty() ? task : answer;
     }
 
-    private String setValue(int key, String predicate, int value, boolean addYourPort) {
-        String answer;
+    private String forwardRequest(String msg, String failure) {
+        if (sendNext) {
+            nodeCommunication.sendMsg(msg, nextNodeAddress, nextNodePort);
+            return nodeCommunication.receiveMsg();
+        } else {
+            return failure;
+        }
+    }
 
+    private String setValue(int key, int value, String prefix, boolean addYourPort) {
         if (this.key == key) {
             this.value = value;
-            answer = "OK";
-        } else {
-            if (sendNext) {
-                String msg = addYourPort ? PORT + "set-value " : predicate + "set-value ";
-                nodeCommunication.sendMsg(msg + key + ":" + value, nextNodeAddress, nextNodePort);
-                answer = nodeCommunication.receiveMsg();
-            } else {
-                answer = "ERROR";
-            }
+            return "OK";
         }
-        return answer;
+        return forwardRequest((addYourPort ? PORT + "set-value " : prefix + "set-value ") + key + ":" + value, "ERROR");
     }
 
-    private String getValue(int key, String predicate, boolean addYourPort) {
-        String answer;
+    private String getValue(int key, String prefix, boolean addYourPort) {
+        if (this.key == key)
+            return key + ":" + value;
+        return forwardRequest((addYourPort ? PORT + "get-value " : prefix + "get-value ") + key, "ERROR");
 
-        if (this.key == key) {
-            answer = key + ":" + value;
-        } else {
-            if (sendNext) {
-                String msg = addYourPort ? PORT + "get-value " : predicate + "get-value ";
-                nodeCommunication.sendMsg(msg + key, nextNodeAddress, nextNodePort);
-                answer = nodeCommunication.receiveMsg();
-            } else {
-                answer = "ERROR";
-            }
-        }
-        return answer;
     }
 
-    private String findKey(int key, String predicate, boolean addYourPort) {
-        String answer;
-        if (this.key == key) {
-            answer = ADDRESS + ":" + PORT;
-        } else {
-            if (sendNext) {
-                String msg = addYourPort ? PORT + "find-key " : predicate + "find-key ";
-                nodeCommunication.sendMsg(msg + key, nextNodeAddress, nextNodePort);
-                answer = nodeCommunication.receiveMsg();
-            } else {
-                answer = "ERROR";
-            }
-        }
-        return answer;
+    private String findKey(int key, String prefix, boolean addYourPort) {
+        if (this.key == key)
+            return ADDRESS + ":" + PORT;
+        return forwardRequest((addYourPort ? PORT + "find-key " : prefix + "find-key ") + key, "ERROR");
+
     }
 
-    private String getMax(int max, String predicate, boolean addYourPort) {
+    private String getMax(int max, String prefix, boolean addYourPort) {
         int newMax = Math.max(this.value, max);
-
-        if (sendNext) {
-            String msg = addYourPort ? PORT + "get-max " : predicate + "get-max ";
-            nodeCommunication.sendMsg(msg + newMax, nextNodeAddress, nextNodePort);
-            return nodeCommunication.receiveMsg();
-        }
-        return String.valueOf(newMax);
+        return forwardRequest((addYourPort ? PORT + "get-max " : prefix + "get-max ") + newMax, String.valueOf(newMax));
     }
 
-    private String getMin(int min, String predicate, boolean addYourPort) {
+    private String getMin(int min, String prefix, boolean addYourPort) {
         int newMin = Math.min(this.value, min);
-
-        if (sendNext) {
-            String msg = addYourPort ? PORT + "get-min " : predicate + "get-min ";
-            nodeCommunication.sendMsg(msg + newMin, nextNodeAddress, nextNodePort);
-            return nodeCommunication.receiveMsg();
-        }
-        return String.valueOf(newMin);
+        return forwardRequest((addYourPort ? PORT + "get-min " : prefix + "get-min ") + newMin, String.valueOf(newMin));
     }
 
     private void newRecord(int key, int value) {
@@ -328,12 +339,13 @@ public class DatabaseNode {
     }
 
     private void terminate() {
-        if (sendNext)
-            nodeCommunication.sendMsg("newPrevious " + previousNodeAddress + ":" + previousNodePort, nextNodeAddress, nextNodePort);
-
-        if (previousNodePort != -1 && previousNodeAddress != null)
-            nodeCommunication.sendMsg("newNext " + nextNodeAddress + ":" + nextNodePort, previousNodeAddress, previousNodePort);
+        nodeCommunication.sendMsg("newPrevious " + previousNodeAddress + ":" + previousNodePort, nextNodeAddress, nextNodePort);
+        nodeCommunication.sendMsg("newNext " + nextNodeAddress + ":" + nextNodePort, previousNodeAddress, previousNodePort);
     }
 
-
+    public String findPort(int port, String prefix, boolean addYourPort) {
+        if (PORT == port)
+            return "ERROR";
+        return forwardRequest((addYourPort ? PORT + "find-port " : prefix + "find-port ") + port, "OK");
+    }
 }

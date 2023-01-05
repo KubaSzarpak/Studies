@@ -1,22 +1,21 @@
-package Distributed_database;
+package Code;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class SocketListener extends Thread {
-    private final DatabaseNode node;
+    private final DatabaseNodeCenter node;
 
-    public SocketListener (DatabaseNode node) {
+    public SocketListener(DatabaseNodeCenter node) {
         this.node = node;
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
         ServerSocket server = null;
         Socket client = null;
 
@@ -47,21 +46,37 @@ public class SocketListener extends Thread {
             PrintWriter write = new PrintWriter(socket.getOutputStream(), true);
 
             switch (read.readLine()) {
-                case "Node" -> {
-                    write.println(node.getNextNodePort());
-                    write.println(node.getNextNodeAddress().getHostAddress());
-                    node.setNextNodeAddress(socket.getInetAddress());
-                    node.setNextNodePort(4446);
-                    System.out.println("Node connected");
+                case "Node" : {
+                    int nodePort = Integer.parseInt(read.readLine());
+
+                    switch (node.operate("find-port " + nodePort)) {
+                        case "OK":
+                            write.println(node.getNextNodePort());
+                            write.println(node.getNextNodeAddress().getHostAddress());
+                            node.setNextNodeAddress(socket.getInetAddress());
+                            node.setNextNodePort(nodePort);
+                            System.out.println("Node connected");
+                            break;
+                        case "ERROR":
+                            write.println("ERROR");
+                            write.println("PORT ALREADY CONNECTED");
+                            System.out.println("Node rejected");
+                            break;
+                    }
+
+                    socket.close();
                 }
-                case "Client" -> {
+                    break;
+                case "Client" : {
                     new TCPClient(socket, node).start();
                     System.out.println("Client connected");
                 }
+                    break;
 
-                default -> {
+                default : {
                     write.println("Not recognized");
                     System.out.println("Not recognized socket :: ip = " + socket.getInetAddress());
+                    socket.close();
                 }
             }
 

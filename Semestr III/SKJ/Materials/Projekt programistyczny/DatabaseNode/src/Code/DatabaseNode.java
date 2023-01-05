@@ -1,9 +1,9 @@
-package Distributed_database;
+package Code;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Main {
+public class DatabaseNode {
     private static int port;
     private static int destinationPort;
     private static String destinationAddress;
@@ -14,11 +14,11 @@ public class Main {
     public static void main(String[] args) {
         recognizeCommand(args);
 
-        DatabaseNode server;
+        DatabaseNodeCenter server;
         if (key != -1 && value != -1) {
-            server = new DatabaseNode(port, "192.168.8.176", key, value);
+            server = new DatabaseNodeCenter(port, "192.168.8.176", key, value);
         } else {
-            server = new DatabaseNode(port, "192.168.8.176");
+            server = new DatabaseNodeCenter(port, "192.168.8.176");
         }
 
         if (destinationPort != -1 && !destinationAddress.equals(""))
