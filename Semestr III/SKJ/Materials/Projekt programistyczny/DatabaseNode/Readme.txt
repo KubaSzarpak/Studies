@@ -3,19 +3,45 @@ Author: Jakub Szarpak
 
 Description:
 
+This project is a distributed database. To create a database you need to connect few DatabaseNode using "-connect <address>:<port>" operation.
+
+To generate database node you need to run "src/DatabaseNode/Main/DatabaseNode.java" with "-tcpport <port number> -record <key>:<value>" arguments. The "-connect <address>:<port>" is additional command which is used to connect this node to another.
+This distributed database has ring topology, which means, no mater how you connect the nodes, they will always create a ring "Image_15.jpg".
+Database with first node looks like "Image_1.jpg". Node points to next node (Image_2.jpg) and previous node (Image_3.jpg). At first, next node and previous node are the same node (node points at itself). Better look to what are next node and previous node is in "Image_16.jpg".
+Adding second node changes database to look like "Image_4.jpg". Now node's next node is "new node" and node's previous node is "new node". New node's next node is "node" and new node's previous node is "node".
+Adding third node to first node looks like "Image_5.jpg".
+Adding third node to second node looks like "Image_6.jpg".
+
+Client can affect the database. Exemplary database client "src/DatabaseNode/DatabaseClient/DatabaseClient.java". It should run with arguments "-gateway <address>:<port number> -operation <operation with parameters>".
+Client have few allowed operations:
+    -set-value <key>:<value> - set value on key <key> to <value>. Returns communicate "OK" if key was found and value is set or "ERROR" if key was not found and value is not set.
+    -get-value <key> - returns communique "<key>:<value>" if key was found or "ERROR" if kay was not found.
+    -find-key <key> - returns "<address>:<value>" if key was found or "ERROR" if key was not found.
+    -get-max - returns communique "<key>:<value>" of the biggest value in database.
+    -get-min - returns communique "<key>:<value>" of the smallest value in database.
+    -new-record <key>:<value> - sets new key and new value on node to which the request was sent.
+    -terminate - shutdown the node to which the request was sent.
+Client can use one operation at the time.
+Few clients can connect to database at the same time.
+
+The trip of request looks like images from "Image_7.jpg" to "Image_14.jpg".
+Client connects to node. If this node have information, then it returns result of an operation. If this node does not have information, then request is forwarded to its next node (Image_8.jpg).
+It goes till information is found or node's next node it the starting one.
+In first case, if some node has required information, then result of an operation start its way back (Image_11.jpg). It finally goes to the client (Image_14.jpg).
+In second case, "ERROR" message goes back to client.
+Operations like "get-max" or "get-min" every time go to every node of the web.
+Operation "terminate" goes only to one node of the web, but this node sends notifications to his next node and previous node to inform them about shutdown. It uses "newPrevious <address>:<port>" operation for that.
 
 
+Description of the individual elements of the DistributedDatabase:
 
+- DatabaseNode:
+    DatabaseNode class is Main class. It recognizes information given in arguments of project to start the server. It uses "recognizeCommand()" method to assign the fields.
+    After recognizing and assigning the fields, "main()" method can set up the server.
 
-Description of how the individual elements of the code work:
-
-- Code:
-    Code class recognizes information given in arguments of project, to start the server. It uses "recognizeCommand()" method to assign the fields.
-    After recognizing and assigning the fields, Main can set up the server.
-
-    Code can be created with or without stored value.
+    DatabaseNode can be created with or without stored value.
     If server need to be hooked to the web, then "connect()" method need to be called with destination address and destination port.
-    Connecting server to the node have to be done very precisely, because if node that you try to connect already have connected node, then you should not try to connect with it. It will break the existing connection and replace it with yours.
+    Connecting server to the node replaces node's next node with server, and node's next node's previous node is set to this server. So this server is added between node and node's next node (Image_5.jpg, Image_6.jpg).
     Now server is set up.
 
     * recognizeCommand(String[] commands):
@@ -46,7 +72,7 @@ Description of how the individual elements of the code work:
         "running" - public filed which tells if server is running.
         "sendNext" - private field which tells if request can be sent to next node.
 
-    There are two constructors whose only deference is that one accepts value to be stored and second does not. Their task is to assign fields.
+    There are two constructors whose only deference is that one accepts key and value to be stored and second does not. Their task is to assign fields.
     There are getters and setters for "nextNodePort" and "nextNodeAddress".
 
     * connect(String destinationAddress, int destinationPort):
@@ -187,7 +213,7 @@ Description of how the individual elements of the code work:
     NodeCommunication class is a UDP server, which task is to communicate with other node's UDP servers.
     It has four fields:
         "nodeSocket" - private field with reference to DatagramSocket.
-        "node" - private final field with references to its node DatagramNode.
+        "node" - private final field with reference to DatagramNode which "this" node.
         "sourcePort" - private field with port of the UDP server from whom a message was received.
         "sourceAddress" - private field with address of the UDP server from whom a message was received.
 
@@ -219,4 +245,49 @@ Description of how the individual elements of the code work:
         Then it sends the result of "operate()" method back to UDP server on "sourceAddress" and "sourcePort".
 
 - SocketListener:
-    This class is a TCP server
+    This class is a TCP server thread, which task is to handle TCP connections.
+    It has one field:
+        "node" - private final field with reference to DatagramNode which "this" node.
+
+    There is a constructor which job is to assign "node" field.
+
+    * run():
+        This method is run method from Runnable interface. Its listens for incoming TCP connections.
+        In constant while loop "socket" variable, which is a Socket, is assigned by calling "accept()" on "server" variable, which is ServerSocket.
+        Then this assigned "socket" variable is sent to "recognizeSocket()" method.
+
+    * recognizeSocket(Socket socket):
+        This method communicate with given "socket" and handle it properly.
+        It communicates by BufferedReader "read" variable and PrintWriter "write" variable.
+        Firstly, it reads first message.
+            If it is "Node", then it means a node is tying to connect to this node. Then next message is read. This message is this new node's port. Then "operate()" method is called with "find-port <port>" operation.
+                If its response is "Ok", it means that there is no node in the web with this port and this new node can be connected.
+                    Then "nextNodePort" and "nextNodeAddress" are got from "node" field, and they are sent using "println()" method on "write" variable.
+                    Then "nextNodePort" and "nextNodeAddress" from "node" field are set to socket's address and given socket port.
+                    Next "Node connected" message is printed.
+
+                If its response is "ERROR", it means there is node with this port in the web and connection can not be done.
+                    Messages "ERROR" and "PORT ALREADY CONNECTED" are sent using "println()" method on "write" variable and "Node rejected" is printed.
+
+                After all socket is closed.
+
+            If it is "Client", then it means a client is trying to communicate with this node.
+                new TCPClient is stared to handle this client and "Client connected" is printed.
+
+                After all socket is still not closed.
+
+            If it is any other option, then is means the node can not recognize it and sends "Not recognized" message using "println()" method on "write" variable.
+                Then "Not recognized socket :: ip = " with address of given "socket" is printed and socket is closed.
+
+- TCPClient
+    This class is a thread that handles a TCP client which communicated with this node.
+    It has two fields:
+        "clientSocket" - private final field with reference to socket that connected to this node.
+        "node" - private final field with reference to DatagramNode which "this" node.
+
+    There is a constructor which task is to assign two fields.
+
+    * run():
+        This method is run method from Runnable interface. Anything that need to be done with client is handled here.
+        It reads message that should be one of the operations. Then it sends this message to "operate()" method on "node" field and resends the answer to connected client.
+        After that "clientSocket" is closed.
