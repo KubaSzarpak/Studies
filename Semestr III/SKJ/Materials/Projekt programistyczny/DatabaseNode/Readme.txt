@@ -5,14 +5,16 @@ Description:
 
 This project is a distributed database. To create a database you need to connect few DatabaseNode using "-connect <address>:<port>" operation.
 
-To generate database node you need to run "src/DatabaseNode/Main/DatabaseNode.java" with "-tcpport <port number> -record <key>:<value>" arguments. The "-connect <address>:<port>" is additional command which is used to connect this node to another.
+To generate database node you need to run "src/DatabaseNode/Main/DatabaseNode.java" with "-tcpport <port number> -record <key>:<value>" arguments. The "-connect <address>:<port>" operation is additional command which is used to connect this node to another.
 This distributed database has ring topology, which means, no mater how you connect the nodes, they will always create a ring "Image_15.jpg".
-Database with first node looks like "Image_1.jpg". Node points to next node (Image_2.jpg) and previous node (Image_3.jpg). At first, next node and previous node are the same node (node points at itself). Better look to what are next node and previous node is in "Image_16.jpg".
-Adding second node changes database to look like "Image_4.jpg". Now node's next node is "new node" and node's previous node is "new node". New node's next node is "node" and new node's previous node is "node".
+Database with first node looks like "Image_1.jpg". Node points to next node "Image_2.jpg" and previous node "Image_3.jpg". At first, next node and previous node are the same node (node points at itself "Image_1.jpg"). Better look to what are next node and previous node is in "Image_16.jpg".
+Adding second node changes database to look like "Image_4.jpg". Now node's next node is "new node" and node's previous node is also "new node". New node's next node is "node" and new node's previous node is also "node".
 Adding third node to first node looks like "Image_5.jpg".
 Adding third node to second node looks like "Image_6.jpg".
+You can add as many nodes as you like and structure will always be the same "Image_15.jpg".
 
-Client can affect the database. Exemplary database client "src/DatabaseNode/DatabaseClient/DatabaseClient.java". It should run with arguments "-gateway <address>:<port number> -operation <operation with parameters>".
+Client can affect the database. Exemplary database client "src/DatabaseNode/DatabaseClient/DatabaseClient.java".
+Client should run with arguments "-gateway <address>:<port number> -operation <operation with parameters>".
 Client have few allowed operations:
     -set-value <key>:<value> - set value on key <key> to <value>. Returns communicate "OK" if key was found and value is set or "ERROR" if key was not found and value is not set.
     -get-value <key> - returns communique "<key>:<value>" if key was found or "ERROR" if kay was not found.
@@ -24,10 +26,10 @@ Client have few allowed operations:
 Client can use one operation at the time.
 Few clients can connect to database at the same time.
 
-The trip of request looks like images from "Image_7.jpg" to "Image_14.jpg".
-Client connects to node. If this node have information, then it returns result of an operation. If this node does not have information, then request is forwarded to its next node (Image_8.jpg).
+The trip of request is shown in images from "Image_7.jpg" to "Image_14.jpg".
+Client connects to node. If this node have information, then it returns result of an operation. If this node does not have information, then request is forwarded to its next node "Image_8.jpg".
 It goes till information is found or node's next node it the starting one.
-In first case, if some node has required information, then result of an operation start its way back (Image_11.jpg). It finally goes to the client (Image_14.jpg).
+In first case, if some node has required information, then result of an operation start its way back "Image_11.jpg". It finally goes to the client "Image_14.jpg".
 In second case, "ERROR" message goes back to client.
 Operations like "get-max" or "get-min" every time go to every node of the web.
 Operation "terminate" goes only to one node of the web, but this node sends notifications to his next node and previous node to inform them about shutdown. It uses "newPrevious <address>:<port>" operation for that.
@@ -36,15 +38,15 @@ Operation "terminate" goes only to one node of the web, but this node sends noti
 Description of the individual elements of the DistributedDatabase:
 
 - DatabaseNode:
-    DatabaseNode class is Main class. It recognizes information given in arguments of project to start the server. It uses "recognizeCommand()" method to assign the fields.
+    DatabaseNode class is the Main class. It recognizes information given in arguments of project to start the server. It uses "recognizeCommand()" method to assign the fields.
     After recognizing and assigning the fields, "main()" method can set up the server.
 
     DatabaseNode can be created with or without stored value.
-    If server need to be hooked to the web, then "connect()" method need to be called with destination address and destination port.
-    Connecting server to the node replaces node's next node with server, and node's next node's previous node is set to this server. So this server is added between node and node's next node (Image_5.jpg, Image_6.jpg).
+    If server need to be hooked to the web, then "connect()" method need to be called with destination address and destination port values.
+    Connecting server to the node replaces node's next node with server, and node's next node's previous node is set to this server. So this server is added between node and node's next node "Image_5.jpg", "Image_6.jpg".
     Now server is set up.
 
-    * recognizeCommand(String[] commands):
+    * recognizeCommand(String[] commands):x
         This method recognizes and divides commands from "commands" array.
         At first, fields are set to error values like "" or -1.
         Then three patterns are created:
@@ -83,8 +85,8 @@ Description of the individual elements of the DistributedDatabase:
         If response is "ERROR", then it means that connection can not be executed.
         The previous node responses are printed and "connect" method ends.
         Printed information should look like this:
-            "ERROR
-            PORT ALREADY CONNECTED"
+            "ERROR"
+            "PORT ALREADY CONNECTED"
 
         If response is not "ERROR", then connection can be executed and "nextNodePort" field is declared.
         Next, by reading next line "nextNodeAddress" field is declared.

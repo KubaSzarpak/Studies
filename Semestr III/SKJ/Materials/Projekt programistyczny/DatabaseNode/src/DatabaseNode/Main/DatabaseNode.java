@@ -2,6 +2,9 @@ package DatabaseNode.Main;
 
 import DatabaseNode.Brain.DatabaseNodeCenter;
 
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +28,7 @@ public class DatabaseNode {
      *  value - value that you will be storing in this server.
      */
     private static int port;
+    private static String address;
     private static int destinationPort;
     private static String destinationAddress;
     private static int key;
@@ -34,17 +38,23 @@ public class DatabaseNode {
      * Handles information given in args by calling recognizeCommand() method.
      * Information are assigned to the corresponding fields.
      * Then DatabaseNodeCenter class is created with the corresponding values from the fields.
+     * If "port" field has value of -1, then it means the node tried to be created without "-tcpport" command. This means the node can not be created. "Error arguments - please correct issues" is printed and program exits with code -1.
      *
      * @param args arguments given while running program. For example "-tcpport 4445 -record 17:256".
      */
     public static void main(String[] args) {
         recognizeCommand(args);
 
+        if (port == -1){
+            System.out.println("Error arguments - please correct issues");
+            System.exit(-1);
+        }
+
         DatabaseNodeCenter server;
         if (key != -1 && value != -1) {
-            server = new DatabaseNodeCenter(port, "192.168.5.102", key, value);
+            server = new DatabaseNodeCenter(port, address, key, value);
         } else {
-            server = new DatabaseNodeCenter(port, "192.168.5.102");
+            server = new DatabaseNodeCenter(port, address);
         }
 
         if (destinationPort != -1 && !destinationAddress.equals(""))
@@ -53,7 +63,8 @@ public class DatabaseNode {
 
     /**
      * Recognizes commands and corresponding values and assigns them to corresponding fields.
-     * No value assigns error value to corresponding field. Error values are "-1" and "".
+     * It starts by assigning error values to corresponding fields. Error values are "-1" and "".
+     * Then it assigns local host ip address to "address" field and recognizes rest of the values given in parameter.
      * @param commands arguments given while running program. For example "-tcpport 4445 -record 17:256".
      */
     private static void recognizeCommand(String[] commands) {
@@ -62,6 +73,16 @@ public class DatabaseNode {
 
         destinationPort = -1;
         destinationAddress = "";
+
+        port = -1;
+
+        try {
+            address = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+
+
 
         Pattern portPattern = Pattern.compile("-tcpport");
         Pattern connectionPattern = Pattern.compile("-connect");
@@ -79,7 +100,11 @@ public class DatabaseNode {
             matcher = connectionPattern.matcher(commands[i]);
             if (matcher.find()) {
                 String[] tmp = commands[i + 1].split(":");
-                destinationAddress = tmp[0];
+                if (tmp[0].equals("localhost")){
+                    destinationAddress = address;
+                } else {
+                    destinationAddress = tmp[0];
+                }
                 destinationPort = Integer.parseInt(tmp[1]);
                 continue;
             }

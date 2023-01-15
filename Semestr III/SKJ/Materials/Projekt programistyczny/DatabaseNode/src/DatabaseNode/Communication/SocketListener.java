@@ -41,13 +41,13 @@ public class SocketListener extends Thread {
         while (true) {
             try {
                 socket = server.accept();
+                recognizeSocket(socket);
             } catch (IOException e) {
                 System.out.println("Accept failed");
                 System.exit(-1);
             }
 
-            recognizeSocket(socket);
-        } //listens for new connection
+        } //listens for coming TCP connections
     }
 
     /**
