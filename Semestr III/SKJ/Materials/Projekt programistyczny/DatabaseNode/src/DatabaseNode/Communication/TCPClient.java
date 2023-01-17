@@ -2,10 +2,7 @@ package DatabaseNode.Communication;
 
 import DatabaseNode.Brain.DatabaseNodeCenter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -15,10 +12,14 @@ import java.net.Socket;
 public class TCPClient extends Thread {
     private final Socket clientSocket;
     private final DatabaseNodeCenter node;
+    private final BufferedReader read;
+    private final PrintWriter write;
 
-    public TCPClient(Socket socket, DatabaseNodeCenter node) {
+    public TCPClient(Socket socket, DatabaseNodeCenter node, BufferedReader read, PrintWriter write) {
         this.node = node;
         this.clientSocket = socket;
+        this.read = read;
+        this.write = write;
     }
 
     /**
@@ -28,10 +29,6 @@ public class TCPClient extends Thread {
      */
     public void run() {
         try {
-            BufferedReader read = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter write = new PrintWriter(clientSocket.getOutputStream(), true);
-
-
             String request = read.readLine();
             String response = node.operate(request);
             write.println(response);

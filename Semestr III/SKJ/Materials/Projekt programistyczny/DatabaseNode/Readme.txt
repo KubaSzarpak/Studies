@@ -243,8 +243,8 @@ Description of the individual elements of the DistributedDatabase:
         If "node.wait" field is true, then is does not call "receiveMsg()" method.
         Else if nodeSocket exists it receives messages and checks if this message not equals "null".
         If no, then it means there was no message, just some message receiving problem.
-        If yes, then it means there was actual message received. Then it remembers "sourceAddress" and "sourcePort", calls "operate()" method with that received message on "node".
-        Then it sends the result of "operate()" method back to UDP server on "sourceAddress" and "sourcePort".
+        If yes, then it means there was actual message received. Then it remembers "sourceAddress" and "sourcePort", calls "operate()" method with that received message on "node" field.
+        Then it prints the result of "operate()" method and sends it back to UDP server on "sourceAddress" and "sourcePort".
 
 - SocketListener:
     This class is a TCP server thread, which task is to handle TCP connections.

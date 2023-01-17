@@ -88,7 +88,7 @@ public class SocketListener extends Thread {
                 }
                     break;
                 case "Client" : {
-                    new TCPClient(socket, node).start();
+                    new TCPClient(socket, node, read, write).start();
                     System.out.println("Client connected");
                 }
                     break;
