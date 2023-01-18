@@ -1,8 +1,10 @@
-package DatabaseNode.Communication;
+package DatabaseNode;
 
-import DatabaseNode.Brain.DatabaseNodeCenter;
+import DatabaseNode.DatabaseNodeCenter;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
@@ -29,6 +31,7 @@ public class TCPClient extends Thread {
      */
     public void run() {
         try {
+            while (node.wait){}
             String request = read.readLine();
             String response = node.operate(request);
             write.println(response);

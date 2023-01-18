@@ -1,7 +1,4 @@
-package DatabaseNode.Brain;
-
-import DatabaseNode.Communication.NodeCommunication;
-import DatabaseNode.Communication.SocketListener;
+package DatabaseNode;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -214,24 +211,11 @@ public class DatabaseNodeCenter {
     }
 
     /**
-     * Method which set nodeCommunication timeout to given in parameter.
-     * It sleeps current thread for 500 milliseconds to give time nodeCommunication to re-roll.
-     * @param timeout value of nodeCommunication timeout.
-     */
-    private void prepareCommunication(int timeout) {
-        try {
-            Thread.sleep(500);
-            nodeCommunication.setTimeOut(timeout);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * This method is a brain of the server.
      * It recognizes request and calls corresponding methods.
      * <p>
-     * Firstly, it creates needed patterns.
+     * Firstly, it sets answer variable to "", sets wait field to true, tries to sleep current thread for nodeConnection's timeout and sets nodeConnection's timeout to 0 (it means there will be no timeout).
+     * Then it creates needed patterns.
      * Then it trys to match them with given requestMessage. If it matches, then it calls corresponding method and returns the answer.
      *
      * @param requestMessage the request that comes to the node.
@@ -241,7 +225,12 @@ public class DatabaseNodeCenter {
         String answer = "";
         boolean addYourPort;
         wait = true;
-        prepareCommunication(0);
+        try {
+            Thread.sleep(nodeCommunication.getTimeout());
+            nodeCommunication.setTimeOut(0);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         Pattern checkPortPattern = Pattern.compile("\\d\\d\\d\\d");
         Pattern setValuePattern = Pattern.compile("set-value");
@@ -381,13 +370,13 @@ public class DatabaseNodeCenter {
     }
 
     /**
-     * Formalities that need to be done before operate() method end.
+     * This method sets nodeCommunication timeout to 1, then sets wait field to false. These are formalities that need to be done before operate() method could end;
      * @param requestMessage the request that comes to the node.
      * @param answer the result of methods.
      * @return given answer if it is not empty. If it is empty then it returns given requestedMessage.
      */
     private String endOperate(String requestMessage, String answer) {
-        prepareCommunication(500);
+        nodeCommunication.setTimeOut(1);
         wait = false;
         return answer.isEmpty() ? requestMessage : answer;
     }

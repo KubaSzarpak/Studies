@@ -1,6 +1,6 @@
-package DatabaseNode.Communication;
+package DatabaseNode;
 
-import DatabaseNode.Brain.DatabaseNodeCenter;
+import DatabaseNode.DatabaseNodeCenter;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -15,6 +15,7 @@ import java.net.SocketException;
 public class NodeCommunication {
     private DatagramSocket nodeSocket;
     private final DatabaseNodeCenter node;
+    private int timeout;
     /**
      * Port and ip address of UDP server that sent a message.
      */
@@ -39,7 +40,8 @@ public class NodeCommunication {
     public void createSocket(int localPort) {
         try {
             nodeSocket = new DatagramSocket(localPort);
-            nodeSocket.setSoTimeout(500);
+            nodeSocket.setSoTimeout(1);
+            timeout = 1;
 
         } catch (SocketException e) {
             System.out.println("Connection error");
@@ -91,14 +93,19 @@ public class NodeCommunication {
 
     /**
      * Sets timeout of the server.
-     * @param timeOut value od timeout.
+     * @param timeout value od timeout.
      */
-    public void setTimeOut(int timeOut) {
+    public void setTimeOut(int timeout) {
         try {
-            nodeSocket.setSoTimeout(timeOut);
+            nodeSocket.setSoTimeout(timeout);
+            this.timeout = timeout;
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public int getTimeout() {
+        return timeout;
     }
 
     /**

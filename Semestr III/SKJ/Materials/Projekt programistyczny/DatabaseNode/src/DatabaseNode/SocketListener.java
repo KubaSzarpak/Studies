@@ -1,6 +1,4 @@
-package DatabaseNode.Communication;
-
-import DatabaseNode.Brain.DatabaseNodeCenter;
+package DatabaseNode;
 
 import java.io.BufferedReader;
 import java.io.IOException;

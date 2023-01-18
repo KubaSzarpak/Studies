@@ -1,15 +1,30 @@
 # Distributed Database
 # Jakub Szarpak
 
+---
+## How to run this program:
+
+---
+To generate database node you need to run "src/DatabaseNode/Main/DatabaseNode.java" with "-tcpport port" arguments.  
+The "-connect address:port" and "-record key:value" operations are additional commands.  
+"-connect address:port" - this command connects server to the node on **address** and **port**.  
+"-record key:value" - this command stores **value** under **key** on this server.
+
+You can also use this script: "".
+
+---
 ## Description:
 
+---
 This project is a distributed database. To create a database you need to connect few DatabaseNode using "-connect address:port" operation.
 
-To generate database node you need to run "src/DatabaseNode/Main/DatabaseNode.java" with "-tcpport port number -record key:value" arguments.  
-The "-connect address:port" operation is additional command which is used to connect this node to another.
+To generate database node you need to run "src/DatabaseNode/Main/DatabaseNode.java" with "-tcpport port" arguments.  
+The "-connect address:port" and "-record key:value" operations are additional commands.  
+"-connect address:port" - this command connects server to the node on **address** and **port**.  
+"-record key:value" - this command stores **value** under **key** on this server.  
 
 This distributed database has **ring topology**, which means, no mater how you connect the nodes, they will always create a ring.  
-![Image_15.jpg](./Images/Image_15.jpg)  
+![Image_15.jpg](Images/Image_15.jpg)
 
 #### Database with first node:  
 ![Image_1.jpg](Images/Image_1.jpg)  
@@ -27,7 +42,7 @@ New node's next node is **node** and new node's previous node is also **node**.
 ![Image_6.jpg](Images/Image_6.jpg)
 
 **Client** can affect the database. [Exemplary database client]("./DatabaseNode/DatabaseClient/DatabaseClient.java").  
-Client should run with arguments "-**gateway** address:port -**operation** operation with parameters".
+Client should run with arguments "**-gateway** address:port **-operation** operation with parameters".
 Client have few allowed operations:
 - **set-value** key:value - set value on **key** to **value**. Returns communicate "OK" if **key** was found and **value** is set or "ERROR" if **key** was not found and **value** is not set.
 - **get-value** key - returns communique "key:value" if **key** was found or "ERROR" if **key** was not found.
@@ -45,7 +60,7 @@ To the database can connect few clients at the same time. (I run test with 50 cl
 Client connects to node. If this node have information, then it returns result of an operation. If this node does not have information, then request is forwarded to its next node.  
 It goes till information is found or node's next node it the starting one.
 
-If first node forwards request then an **prefix**, which is **port** of this node, is added to the request. This **prefix** informs other nodes that this request comes from a node which port is this **prefix**. This **prefix** also is used by checking if request can be forwarded. If current node's next node port is the same as the **prefix**, then request can not be forwarded.  
+If first node forwards request then a **prefix**, which is **port** of this node, is added to the request. This **prefix** informs other nodes that this request comes from a node which port is this **prefix**. This **prefix** also is used by checking if request can be forwarded. If current node's next node port is the same as the **prefix**, then request can not be forwarded.  
 If current node does have required information, then result of an operation start its way back. It finally goes to the corresponding client.  
 If current node does not have required information and request can not be forwarded, then "ERROR" message is returned and this communique start its way back to the first node and finally to corresponding client.  
 Operations like "get-max" or "get-min" every time go to every node of the web.  
@@ -123,10 +138,6 @@ Operation "terminate" goes only to one node of the web, but this node sends noti
 > Next it assigns **previous node** port and address to **previousNodeAddress** and **previousNodePort** fields.  
 > At the end, TCP connection can be closed by calling **Socket.close()** method and information "Connected to the node" is printed.
 
-- #### prepareCommunication(int timeout):
-> This method is used to do operations that helps with reliability of the communication between nodes. Its parameter is int "timeout", which is a timeOut of UDP connection between this server and nodes.
-> it sleeps current thread for 500 milliseconds to let and node communication re-roll. Then it sets nodeCommunication timeout to given "timeout" in the parameter using "setTimeOut()" method.
-
 - #### operate(String task):
 > This method coordinates every request.
 > If either node or client sends any request, then this method is called to divide tasks.
@@ -137,7 +148,7 @@ Operation "terminate" goes only to one node of the web, but this node sends noti
 > - String **answer** and makes it an empty text
 > - boolean **addYourPort** which tells if node should add its port to the request that is forwarded.
 > 
-> Then setting **wait** field to true, and finally by calling **prepareCommunication(int timeout)** method with **timeout 0**, which means, there will be no timeout.  
+> Then sets **wait** field to true.Then tries to sleep current thread for **nodeCommunication's** timeout and sets **nodeCommunication's** timeout to 0, which means there will be no timeout.  
 > Then it creates ten patterns. Any but the first and last two are for every possible client operation. Last two are only for nodes.
 > First one for checking if first four characters of request are a digits.
 > If yes, then it means this is a request from node which port is that for digits.
@@ -155,7 +166,7 @@ Operation "terminate" goes only to one node of the web, but this node sends noti
 > - "find-port" - for recognizing "find-port" operation which is used to search if some node in the web already has that given port. This operation is used only in SocketListener if some node wants to connect to the web.
 >
 > Then it checks if forwarding the request is possible, by matching first pattern.
-> If pattern is found, then it checks if **nextNodePort** not equals founded port. Result is assigned to **sendNext**" field.
+> If pattern is found, then it checks if **nextNodePort** not equals founded port. Result is assigned to **sendNext** field.
 > If pattern is not found, then it checks if **nextNodePort** not equals current node's port. Result is assigned to **sendNext** field.
 >
 > It checks every next pattern till some is matched, because it allows only one operation at the time to be done.
@@ -168,9 +179,10 @@ Operation "terminate" goes only to one node of the web, but this node sends noti
 
 - #### endOperate(String task, String answer):
 > This method does everything that need to be done before **operate()** method could end.
+> It sets **nodeConnection** timeout to 1 and sets **wait** field to false.  
 > Its parameters are String **task** and String **answer**, whose are task and answer from operate.
 >
-> Firstly, it calls **repareCommunication(int timeout)** method with 500 milliseconds timeout to reset **nodeCommunication**.
+> Firstly, it sets **nodeCommunication's** timeout to 1.
 > Next **wait** field is changed to false.
 > Finally, if returns given **answer** or if **answer** is empty, then it returns given **task**.
 
@@ -252,10 +264,12 @@ If no, then it if request needs to be forwarded, request will have the same **pr
   It has four fields:
   - **nodeSocket** - private field with reference to DatagramSocket.
   - **node** - private final field with reference to DatagramNode which "this" node.
+  - **timeout** - privet field which is a UDP server receiving soTimeout.
   - **sourcePort** - private field with port of the UDP server from whom a message was received.
   - **sourceAddress** - private field with address of the UDP server from whom a message was received.
 
   There is a constructor which job is to assign **node** field and start **RequestListener** thread.
+  There is a getter for **timeout**.
 
 ---
 #### Methods:
@@ -346,3 +360,12 @@ If no, then it if request needs to be forwarded, request will have the same **pr
 > This method is run method from Runnable interface. Anything that need to be done with client is handled here.
 > It reads message that should be one of the operations. Then it sends this message to **operate()** method on **node** field and resends the answer to connected client.
 > After that **clientSocket** is closed.
+
+---
+## Things that do not work at the moment
+
+---
+
+1. There con be connected few clients at the same time (less than a 1000), but they can only be connected to the same node.
+If you want to connect client to another node, you have to make sure there is no other client connected to different node.
+This is huge issue, and I have not found solution yet.

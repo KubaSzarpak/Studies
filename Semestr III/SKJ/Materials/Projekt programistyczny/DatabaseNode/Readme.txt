@@ -95,15 +95,11 @@ Description of the individual elements of the DistributedDatabase:
         At the end, TCP connection can be closed by calling "Socket.close()"" method.
         Information "Connected to the node" is printed.
 
-    * prepareCommunication(int timeout):
-        This method is used to do operations that helps with reliability of the communication between nodes. Its parameter is int "timeout", which is a timeOut of UDP connection between this server and nodes.
-        it sleeps current thread for 500 milliseconds to let and node communication re-roll. Then it sets nodeCommunication timeout to given "timeout" in the parameter using "setTimeOut()" method.
-
     * operate(String task):
         This method coordinates every request. If either node or client sends any request, then this method is called to divide tasks. Its parameter is "String task", which is a line of request that was given to this server.
         Thanks to project structure this is one of two synchronized parts of whole project.
 
-        At first, it prepares by creating variables "String answer" and makes it an empty text, "boolean addYourPort", which tells if node should add its port to the request that is forwarded, then setting "wait" field to true, and finally by calling "prepareCommunication" method with timeout 0, which means, there will be no timeout.
+        At first, it prepares by creating variables "String answer" and makes it an empty text, "boolean addYourPort", which tells if node should add its port to the request that is forwarded, then setting "wait" field to true, and finally tries to sleep current thread for "nodeCommunication" field timeout and sets "nodeCommunication" field timeout to 0, which means there will be no timeout.
         Then it creates ten patterns. Any but the first and last two are for every possible client operation. Last two are only for nodes.
             "checkPortPattern" - for checking if first four characters of request are a digits.
                                     If yes, then it means this is a request from node which port are that for digits.
@@ -132,10 +128,10 @@ Description of the individual elements of the DistributedDatabase:
         In case no pattern matches, same thing happens at the end of "operate()" method.
 
     * endOperate(String task, String answer):
-        This method does everything that need to be done before "operate()" method could end.
+        This method does everything that need to be done before "operate()" method could end. It sets nodeConnection timeout to 1 and sets wait field to false.
         Its parameters are String "task" and String "answer", whose are task and answer from operate.
 
-        Firstly, it calls "prepareCommunication()" method with 500 milliseconds timeout to reset nodeCommunication to initial setting.
+        Firstly, it sets **nodeCommunication's** timeout to 1.
         Next "wait" field is changed to false.
         Finally, if returns given "task" if given "answer" is empty or given "answer" if it is not empty.
 
@@ -216,6 +212,7 @@ Description of the individual elements of the DistributedDatabase:
     It has four fields:
         "nodeSocket" - private field with reference to DatagramSocket.
         "node" - private final field with reference to DatagramNode which "this" node.
+        "timeout" - privet field which is a UDP server receiving soTimeout.
         "sourcePort" - private field with port of the UDP server from whom a message was received.
         "sourceAddress" - private field with address of the UDP server from whom a message was received.
 
@@ -293,3 +290,11 @@ Description of the individual elements of the DistributedDatabase:
         This method is run method from Runnable interface. Anything that need to be done with client is handled here.
         It reads message that should be one of the operations. Then it sends this message to "operate()" method on "node" field and resends the answer to connected client.
         After that "clientSocket" is closed.
+
+
+
+Things that do not work at the moment:
+
+1. There con be connected few clients at the same time (less than a 1000), but they can only be connected to the same node.
+    If you want to connect client to another node, you have to make sure there is no other client connected to different node.
+    This is huge issue, and I have not found solution yet.

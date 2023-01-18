@@ -1,9 +1,8 @@
-package DatabaseNode.Main;
+package DatabaseNode;
 
-import DatabaseNode.Brain.DatabaseNodeCenter;
+import DatabaseNode.DatabaseNodeCenter;
 
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
