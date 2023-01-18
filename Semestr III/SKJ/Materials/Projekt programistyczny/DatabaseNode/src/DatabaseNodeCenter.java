@@ -1,5 +1,3 @@
-package DatabaseNode;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -330,11 +328,11 @@ public class DatabaseNodeCenter {
             new Thread(() -> {
                 try {
                     running = false;
-                    Thread.sleep(5000);
+                    Thread.sleep(500);
+                    System.exit(0);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                System.exit(7);
             }).start();
             return endOperate(requestMessage, answer);
         }
@@ -376,6 +374,11 @@ public class DatabaseNodeCenter {
      * @return given answer if it is not empty. If it is empty then it returns given requestedMessage.
      */
     private String endOperate(String requestMessage, String answer) {
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         nodeCommunication.setTimeOut(1);
         wait = false;
         return answer.isEmpty() ? requestMessage : answer;

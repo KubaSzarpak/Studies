@@ -366,6 +366,6 @@ If no, then it if request needs to be forwarded, request will have the same **pr
 
 ---
 
-1. There con be connected few clients at the same time (less than a 1000), but they can only be connected to the same node.
+1. There can be connected few clients at the same time (less than a 100), but they can only be connected to the same node.
 If you want to connect client to another node, you have to make sure there is no other client connected to different node.
 This is huge issue, and I have not found solution yet.
