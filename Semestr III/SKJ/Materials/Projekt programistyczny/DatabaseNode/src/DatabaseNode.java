@@ -71,11 +71,7 @@ public class DatabaseNode {
 
         port = -1;
 
-        try {
-            address = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
+        address = "localhost";
 
 
 
@@ -95,11 +91,8 @@ public class DatabaseNode {
             matcher = connectionPattern.matcher(commands[i]);
             if (matcher.find()) {
                 String[] tmp = commands[i + 1].split(":");
-                if (tmp[0].equals("localhost")){
-                    destinationAddress = address;
-                } else {
-                    destinationAddress = tmp[0];
-                }
+                destinationAddress = tmp[0];
+
                 destinationPort = Integer.parseInt(tmp[1]);
                 continue;
             }

@@ -2,23 +2,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.net.*;
 
 import static java.net.InetAddress.getByName;
 
 /**
  * This class represents DatabaseNode hearth. It does operations that are required.
  * It is based on TCP protocol and UDP protocol.
- *  Using TCP protocol, it handles nodes that try to connect and clients that want to communicate.
- *  Using UDP protocol, it handles communication between nodes which are in the distributed database web.
+ * Using TCP protocol, it handles nodes that try to connect and clients that want to communicate.
+ * Using UDP protocol, it handles communication between nodes which are in the distributed database web.
  * <p>
  * Operation's methods are designed to be used with unlimited amount of node in distributed database web.
  * These method work in recursive way. If this node does not have required information then request is sent to next node. Result of this request in next node comes back to this node and is returned.
+ *
  * @author Jakub Szarpak
  */
 public class DatabaseNodeCenter {
@@ -39,42 +35,30 @@ public class DatabaseNodeCenter {
      */
     private int previousNodePort;
     private InetAddress previousNodeAddress;
-    /**
-     * Node's classes which deal with communication.
-     */
-    private final NodeCommunication nodeCommunication;
+
     private final SocketListener socketListener;
     /**
      * Stored key and value.
      */
     private int key;
-    public int value;
-    /**
-     * Boolean field which help with communication.
-     * wait field says to NodeCommunication's RequestListener inner class to wait or not.
-     * running field says if server is running or not.
-     * sendNext says if request can be sent to next node.
-     */
-    public boolean wait;
+    private int value;
     public boolean running;
     private boolean sendNext;
 
     /**
      * Constructor without key and value that will be stored.
      *
-     * @param port port of this server.
+     * @param port    port of this server.
      * @param address ip address of this server.
      */
     public DatabaseNodeCenter(int port, String address) {
         this.running = true;
         this.PORT = port;
         this.ADDRESS = address;
-        this.nodeCommunication = new NodeCommunication(this);
         this.socketListener = new SocketListener(this);
         this.socketListener.start();
-        this.wait = false;
         this.sendNext = true;
-        this.nodeCommunication.createSocket(PORT);
+        new RequestListener().start();
 
         try {
             this.nextNodePort = PORT;
@@ -94,21 +78,19 @@ public class DatabaseNodeCenter {
     /**
      * Constructor with key and value that will be stored.
      *
-     * @param port port of this server.
+     * @param port    port of this server.
      * @param address ip address of this server.
-     * @param key key of a value that will be stored.
-     * @param value value that will be stored.
+     * @param key     key of a value that will be stored.
+     * @param value   value that will be stored.
      */
     public DatabaseNodeCenter(int port, String address, int key, int value) {
         this.running = true;
         this.PORT = port;
         this.ADDRESS = address;
-        this.nodeCommunication = new NodeCommunication(this);
         this.socketListener = new SocketListener(this);
         this.socketListener.start();
-        this.wait = false;
         this.sendNext = true;
-        this.nodeCommunication.createSocket(PORT);
+        new RequestListener().start();
 
         this.key = key;
         this.value = value;
@@ -156,22 +138,26 @@ public class DatabaseNodeCenter {
         this.nextNodePort = nextNodePort;
     }
 
+    public void addOperateThread(String requestMessage, PrintWriter writer) {
+        new OperateThread(requestMessage, writer).start();
+    }
+
     /**
      * This method creates TCP connection with another node to connect this node to it.
      * It sends:
-     *  "Node" which informs, that it is a node.
-     *  "PORT" which is value from PORT field.
+     * "Node" which informs, that it is a node.
+     * "PORT" which is value from PORT field.
      * <p>
      * Then it reads:
-     *  Line that informs if connection can be done or not.
-     *      If not than it read another line which is the reason.
-     *      If yes, then message will be port of first node of the distributed database web.
-     *  Line with address of first node of the distributed database web.
+     * Line that informs if connection can be done or not.
+     * If not than it read another line which is the reason.
+     * If yes, then message will be port of first node of the distributed database web.
+     * Line with address of first node of the distributed database web.
      * <p>
-     *  If there is any problem with connection then it prints "No I/O" message.
+     * If there is any problem with connection then it prints "No I/O" message.
      *
      * @param destinationAddress ip address of node that it trys to connect.
-     * @param destinationPort port of node that is trys to connect.
+     * @param destinationPort    port of node that is trys to connect.
      */
     public void connect(String destinationAddress, int destinationPort) {
         try {
@@ -193,7 +179,7 @@ public class DatabaseNodeCenter {
             } else {
                 nextNodePort = Integer.parseInt(line);
                 nextNodeAddress = getByName(read.readLine());
-                nodeCommunication.sendMsg("newPrevious " + ADDRESS + ":" + PORT, nextNodeAddress, nextNodePort);
+                new OperateThread(PORT + " newPrevious " + ADDRESS + ":" + PORT).start();
 
                 previousNodeAddress = new InetSocketAddress(destinationAddress, destinationPort).getAddress();
                 previousNodePort = destinationPort;
@@ -208,289 +194,383 @@ public class DatabaseNodeCenter {
         }
     }
 
-    /**
-     * This method is a brain of the server.
-     * It recognizes request and calls corresponding methods.
-     * <p>
-     * Firstly, it sets answer variable to "", sets wait field to true, tries to sleep current thread for nodeConnection's timeout and sets nodeConnection's timeout to 0 (it means there will be no timeout).
-     * Then it creates needed patterns.
-     * Then it trys to match them with given requestMessage. If it matches, then it calls corresponding method and returns the answer.
-     *
-     * @param requestMessage the request that comes to the node.
-     * @return result of matching operation or given requestMessage if it does not match any pattern.
-     */
-    public synchronized String operate(String requestMessage) {
-        String answer = "";
-        boolean addYourPort;
-        wait = true;
-        try {
-            Thread.sleep(nodeCommunication.getTimeout());
-            nodeCommunication.setTimeOut(0);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
 
-        Pattern checkPortPattern = Pattern.compile("\\d\\d\\d\\d");
-        Pattern setValuePattern = Pattern.compile("set-value");
-        Pattern getValuePattern = Pattern.compile("get-value");
-        Pattern findKeyPattern = Pattern.compile("find-key");
-        Pattern getMaxPattern = Pattern.compile("get-max");
-        Pattern getMinPattern = Pattern.compile("get-min");
-        Pattern newRecordPattern = Pattern.compile("new-record");
-        Pattern terminatePattern = Pattern.compile("terminate");
-        Pattern newNextPattern = Pattern.compile("newNext");
-        Pattern newPreviousPattern = Pattern.compile("newPrevious");
-        Pattern findPortPattern = Pattern.compile("find-port");
+    private class OperateThread extends Thread {
+        private final String operation;
+        private final String values;
+        private final String prefix;
+        private DatagramSocket socket;
+        private InetAddress sourceAddress;
+        private int sourcePort;
+        private final boolean isFirst;
+        private PrintWriter writer;
 
-        Matcher matcher = checkPortPattern.matcher(requestMessage.substring(0, 4));
+        public OperateThread(String requestMessage, InetAddress sourceAddress, int sourcePort) {
+            this.isFirst = false;
+            this.sourceAddress = sourceAddress;
+            this.sourcePort = sourcePort;
+            String[] tmpArr = requestMessage.split(" ");
 
-        if (matcher.matches()) {
-            addYourPort = false;
-            sendNext = (nextNodePort != Integer.parseInt(requestMessage.substring(0, 4)));
-        } else {
-            addYourPort = true;
-            sendNext = (nextNodePort != PORT);
-        }
-        matcher = findPortPattern.matcher(requestMessage);
-        if (matcher.find()) {
-            answer = findPort(Integer.parseInt(requestMessage.substring(matcher.end() + 1)),
-                    addYourPort ? "" : requestMessage.substring(0, matcher.start()),
-                    addYourPort);
-            return endOperate(requestMessage, answer);
-        }
-
-        matcher = setValuePattern.matcher(requestMessage);
-        if (matcher.find()) {
-            String[] tmp = requestMessage.substring(matcher.end() + 1).split(":");
-            answer = setValue(Integer.parseInt(tmp[0]),
-                    Integer.parseInt(tmp[1]),
-                    addYourPort ? "" : requestMessage.substring(0, matcher.start()),
-                    addYourPort);
-            return endOperate(requestMessage, answer);
-        }
-
-        matcher = getValuePattern.matcher(requestMessage);
-        if (matcher.find()) {
-            answer = getValue(Integer.parseInt(requestMessage.substring(matcher.end() + 1)),
-                    addYourPort ? "" : requestMessage.substring(0, matcher.start()),
-                    addYourPort);
-            return endOperate(requestMessage, answer);
-        }
-
-        matcher = findKeyPattern.matcher(requestMessage);
-        if (matcher.find()) {
-            answer = findKey(Integer.parseInt(requestMessage.substring(matcher.end() + 1)),
-                    addYourPort ? "" : requestMessage.substring(0, matcher.start()),
-                    addYourPort);
-            return endOperate(requestMessage, answer);
-        }
-
-        matcher = getMaxPattern.matcher(requestMessage);
-        if (matcher.find()) {
-            if (requestMessage.substring(4).length() > getMaxPattern.pattern().length()) {
-                answer = getMax(Integer.parseInt(requestMessage.substring(matcher.end() + 1)),
-                        addYourPort ? "" : requestMessage.substring(0, matcher.start()),
-                        addYourPort);
+            if (tmpArr.length == 3) {
+                this.prefix = tmpArr[0];
+                this.operation = tmpArr[1];
+                this.values = tmpArr[2];
             } else {
-                answer = getMax(this.value,
-                        addYourPort ? "" : requestMessage.substring(0, matcher.start()),
-                        addYourPort);
+                this.prefix = tmpArr[0];
+                this.operation = tmpArr[1];
+                this.values = String.valueOf(PORT);
             }
-            return endOperate(requestMessage, answer);
+
+            sendNext = Integer.parseInt(prefix) != nextNodePort;
+
+            createSocket();
         }
 
-        matcher = getMinPattern.matcher(requestMessage);
-        if (matcher.find()) {
-            if (requestMessage.substring(4).length() > getMaxPattern.pattern().length()) {
-                answer = getMin(Integer.parseInt(requestMessage.substring(matcher.end() + 1)),
-                        addYourPort ? "" : requestMessage.substring(0, matcher.start()),
-                        addYourPort);
+        public OperateThread(String requestMessage, PrintWriter writer) {
+            this.isFirst = true;
+            this.writer = writer;
+            String[] tmpArr = requestMessage.split(" ");
+
+            this.prefix = String.valueOf(PORT);
+            if (tmpArr.length == 2) {
+                this.operation = tmpArr[0];
+                this.values = tmpArr[1];
             } else {
-                answer = getMin(this.value,
-                        addYourPort ? "" : requestMessage.substring(0, matcher.start()),
-                        addYourPort);
+                this.operation = tmpArr[0];
+                this.values = String.valueOf(value);
             }
-            return endOperate(requestMessage, answer);
+
+            sendNext = Integer.parseInt(prefix) != nextNodePort;
+
+            createSocket();
         }
 
-        matcher = newRecordPattern.matcher(requestMessage);
-        if (matcher.find()) {
-            String[] tmp = requestMessage.substring(matcher.end() + 1).split(":");
-            newRecord(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]));
-            answer = "OK";
-            return endOperate(requestMessage, answer);
+        public OperateThread(String requestMessage) {
+            this.isFirst = true;
+
+            String[] tmpArr = requestMessage.split(" ");
+
+            this.prefix = tmpArr[0];
+            this.operation = tmpArr[1];
+            this.values = tmpArr[2];
+
+            sendNext = true;
+
+            createSocket();
         }
 
-        matcher = terminatePattern.matcher(requestMessage);
-        if (matcher.find()) {
-            terminate();
-            answer = "OK";
+        private void createSocket() {
+            try {
+                this.socket = new DatagramSocket();
+                this.socket.setSoTimeout(500);
+            } catch (SocketException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public void run() {
+            String[] result = new String[2];
+
+            switch (operation) {
+                case "set-value":
+                    result = setValue(values.split(":"));
+                    break;
+                case "get-value":
+                    result = getValue(Integer.parseInt(values));
+                    break;
+                case "find-key":
+                    result = findKey(Integer.parseInt(values));
+                    break;
+                case "get-max":
+                    result = getMax(Integer.parseInt(values));
+                    break;
+                case "get-min":
+                    result = getMin(Integer.parseInt(values));
+                    break;
+                case "new-record":
+                    result = newRecord(values.split(":"));
+                    break;
+                case "terminate":
+                    result = terminate();
+                    break;
+                case "newPrevious":
+                    try {
+                        if (isFirst) {
+                            sendMsg(PORT + " " + operation + " " + values, nextNodeAddress, nextNodePort);
+                        } else {
+                            String[] tmpArr = values.split(":");
+                            previousNodeAddress = InetAddress.getByName(tmpArr[0]);
+                            previousNodePort = Integer.parseInt(tmpArr[1]);
+                        }
+                    } catch (UnknownHostException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return;
+                case "newNext":
+                    try {
+                        if (isFirst) {
+                            sendMsg(PORT + " " + operation + " " + values, previousNodeAddress, previousNodePort);
+                        } else {
+                            String[] tmpArr = values.split(":");
+                            nextNodeAddress = InetAddress.getByName(tmpArr[0]);
+                            nextNodePort = Integer.parseInt(tmpArr[1]);
+                        }
+                    } catch (UnknownHostException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return;
+            }
+
+            switch (result[0]) {
+                case "OK":
+                    if (isFirst) {
+                        writer.println(result[1]);
+                    } else {
+                        sendMsg(result[1], sourceAddress, sourcePort);
+                    }
+                    break;
+                case "ERROR":
+                    if (sendNext) {
+                        sendMsg(result[1], nextNodeAddress, nextNodePort);
+
+                        String response = receiveMsg();
+                        if (!response.equals("NULL")) {
+                            if (isFirst) {
+                                writer.println(response);
+                            } else {
+                                sendMsg(response, sourceAddress, sourcePort);
+                            }
+                        } else {
+                            if (isFirst) {
+                                writer.println(result[0]);
+                            } else {
+                                sendMsg(result[0], sourceAddress, sourcePort);
+                            }
+                        }
+                    } else {
+                        if (isFirst) {
+                            writer.println(result[0]);
+                        } else {
+                            sendMsg(result[0], sourceAddress, sourcePort);
+                        }
+                    }
+                    break;
+                case "ROUND":
+                    if (sendNext) {
+                        sendMsg(result[1], nextNodeAddress, nextNodePort);
+
+                        String response = receiveMsg();
+                        if (!response.equals("NULL")) {
+                            if (isFirst) {
+                                writer.println(response);
+                            } else {
+                                sendMsg(response, sourceAddress, sourcePort);
+                            }
+                        } else {
+                            if (isFirst) {
+                                writer.println(result[1].split(" ")[2]);
+                            } else {
+                                sendMsg(result[1].split(" ")[2], sourceAddress, sourcePort);
+                            }
+                        }
+                    } else {
+                        if (isFirst) {
+                            writer.println(result[1].split(" ")[2]);
+                        } else {
+                            sendMsg(result[1].split(" ")[2], sourceAddress, sourcePort);
+                        }
+                    }
+                    break;
+                default:
+            }
+            if (writer != null)
+                writer.close();
+
+        }
+
+        public String receiveMsg() {
+            byte[] buf = new byte[100];
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+
+            try {
+                socket.receive(packet);
+                System.out.println("Message received from " + packet.getPort() + ": " + new String(packet.getData(), 0, packet.getLength()));
+            } catch (IOException e) {
+                return "NULL";
+            }
+            return new String(packet.getData(), 0, packet.getLength());
+        }
+
+        public void sendMsg(String msg, InetAddress destinationAddress, int destinationPort) {
+            byte[] buf = msg.getBytes();
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, destinationAddress, destinationPort);
+
+            try {
+                socket.send(packet);
+                System.out.println("Message send from " + socket.getLocalPort() + " to " + destinationPort + ": " + msg);
+            } catch (IOException e) {
+                System.out.println("No IO");
+                System.exit(-1);
+            }
+        }
+
+
+        private String[] setValue(String[] values) {
+
+            if (key == Integer.parseInt(values[0])) {
+                value = Integer.parseInt(values[1]);
+                return new String[]{"OK", "OK"};
+            } else {
+                return new String[]
+                        {
+                                "ERROR",
+                                prefix + " set-value " + values[0] + ":" + values[1]
+                        };
+            }
+        }
+
+
+        private String[] getValue(int givenKey) {
+            if (key == givenKey) {
+                return new String[]
+                        {
+                                "OK",
+                                key + ":" + value
+                        };
+            } else {
+                return new String[]
+                        {
+                                "ERROR",
+                                prefix + " get-value " + givenKey
+                        };
+            }
+
+        }
+
+
+        private String[] findKey(int givenKey) {
+            if (key == givenKey) {
+                return new String[]
+                        {
+                                "OK",
+                                ADDRESS + ":" + PORT
+                        };
+            } else {
+                return new String[]
+                        {
+                                "ERROR",
+                                prefix + " find-key " + givenKey
+                        };
+            }
+        }
+
+
+        private String[] getMax(int max) {
+            int newMax = Math.max(value, max);
+
+            return new String[]
+                    {
+                            "ROUND",
+                            prefix + " get-max " + newMax
+                    };
+        }
+
+
+        private String[] getMin(int min) {
+            int newMin = Math.min(value, min);
+
+            return new String[]
+                    {
+                            "ROUND",
+                            prefix + " get-min " + newMin
+                    };
+        }
+
+
+        private String[] newRecord(String[] values) {
+            key = Integer.parseInt(values[0]);
+            value = Integer.parseInt(values[1]);
+
+            return new String[]
+                    {
+                            "OK",
+                            "OK"
+                    };
+        }
+
+        /**
+         * Method informing previous and next nodes about server shutdown.
+         */
+        private String[] terminate() {
+            sendMsg(PORT + " newPrevious " + previousNodeAddress.getHostAddress() + ":" + previousNodePort, nextNodeAddress, nextNodePort);
+            sendMsg(PORT + " newNext " + nextNodeAddress.getHostAddress() + ":" + nextNodePort, previousNodeAddress, previousNodePort);
+
             new Thread(() -> {
                 try {
-                    running = false;
                     Thread.sleep(500);
+                    writer.close();
+                    socket.close();
                     System.exit(0);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }).start();
-            return endOperate(requestMessage, answer);
-        }
 
-        matcher = newNextPattern.matcher(requestMessage);
-        if (matcher.find()) {
-            String[] tmp = requestMessage.substring(matcher.end() + 1).split(":");
+            return new String[]
+                    {
+                            "OK",
+                            "OK"
+                    };
+        }
+    }
+
+    private class RequestListener extends Thread {
+        private final DatagramSocket socket;
+        /**
+         * Port and ip address of UDP server that sent a message.
+         */
+        private int sourcePort;
+        private InetAddress sourceAddress;
+
+        public RequestListener() {
             try {
-                nextNodeAddress = getByName(tmp[0]);
-                nextNodePort = Integer.parseInt(tmp[1]);
-                answer = "null";
-                return endOperate(requestMessage, answer);
-            } catch (UnknownHostException e) {
+                socket = new DatagramSocket(PORT);
+            } catch (SocketException e) {
+                System.out.println("Connection error");
                 throw new RuntimeException(e);
             }
         }
 
-        matcher = newPreviousPattern.matcher(requestMessage);
-        if (matcher.find()) {
-            String[] tmp = requestMessage.substring(matcher.end() + 1).split(":");
+
+        @Override
+        public void run() {
+            while (running) {
+                String receivedMsg = receiveMsg();
+                new OperateThread(receivedMsg, sourceAddress, sourcePort).start();
+            }
+            this.socket.close();
+        }
+
+        /**
+         * Receives massages from UDP clients.
+         * It also prints message "Message received from [source port] [received massage]".
+         *
+         * @return Received message in String format or "null" message it no message has come.
+         */
+        public String receiveMsg() {
+            byte[] buf = new byte[100];
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+
             try {
-                previousNodeAddress = InetAddress.getByName(tmp[0]);
-                previousNodePort = Integer.parseInt(tmp[1]);
-                answer = "null";
-                return endOperate(requestMessage, answer);
-            } catch (UnknownHostException e) {
+                socket.receive(packet);
+                sourcePort = packet.getPort();
+                sourceAddress = packet.getAddress();
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            System.out.println("Message received from " + sourcePort + " : " + new String(packet.getData(), 0, packet.getLength()));
+            return new String(packet.getData(), 0, packet.getLength());
         }
-
-
-        return endOperate(requestMessage, answer);
-    }
-
-    /**
-     * This method sets nodeCommunication timeout to 1, then sets wait field to false. These are formalities that need to be done before operate() method could end;
-     * @param requestMessage the request that comes to the node.
-     * @param answer the result of methods.
-     * @return given answer if it is not empty. If it is empty then it returns given requestedMessage.
-     */
-    private String endOperate(String requestMessage, String answer) {
-        try {
-            Thread.sleep(1);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        nodeCommunication.setTimeOut(1);
-        wait = false;
-        return answer.isEmpty() ? requestMessage : answer;
-    }
-
-    /**
-     * This method is used to forward request to next node.
-     * @param requestMessage request that need to be sent to next node.
-     * @param failure message which will be returned if request can not be sent to next node.
-     * @return Response of next node or given failure message.
-     */
-    private String forwardRequest(String requestMessage, String failure) {
-        if (sendNext) {
-            nodeCommunication.sendMsg(requestMessage, nextNodeAddress, nextNodePort);
-            return nodeCommunication.receiveMsg();
-        } else {
-            return failure;
-        }
-    }
-
-    /**
-     * @param key key of a stored value that need to be changed.
-     * @param value new stored value.
-     * @param prefix a port that precedes the request.
-     * @param addYourPort boolean value that says if this node's port need to be added as a prefix to request or a previous prefix should be added to request.
-     * @return "OK" if value is set or "ERROR" if given key is not found.
-     */
-    private String setValue(int key, int value, String prefix, boolean addYourPort) {
-        if (this.key == key) {
-            this.value = value;
-            return "OK";
-        }
-        return forwardRequest((addYourPort ? PORT + "set-value " : prefix + "set-value ") + key + ":" + value, "ERROR");
-    }
-
-    /**
-     * @param key the key whose value is being searched for
-     * @param prefix a port that precedes the request.
-     * @param addYourPort boolean value that says if this node's port need to be added as a prefix to request or a previous prefix should be added to request.
-     * @return "key:value" message if key is found or "ERROR" it key is not found.
-     */
-    private String getValue(int key, String prefix, boolean addYourPort) {
-        if (this.key == key)
-            return key + ":" + value;
-        return forwardRequest((addYourPort ? PORT + "get-value " : prefix + "get-value ") + key, "ERROR");
-
-    }
-
-    /**
-     *
-     * @param key the key whose value is being searched for
-     * @param prefix a port that precedes the request.
-     * @param addYourPort boolean value that says if this node's port need to be added as a prefix to request or a previous prefix should be added to request.
-     * @return "ip address:port" message of a node that has searched key or "ERROR" if key is not found.
-     */
-    private String findKey(int key, String prefix, boolean addYourPort) {
-        if (this.key == key)
-            return ADDRESS + ":" + PORT;
-        return forwardRequest((addYourPort ? PORT + "find-key " : prefix + "find-key ") + key, "ERROR");
-
-    }
-
-    /**
-     *
-     * @param max current max value.
-     * @param prefix a port that precedes the request.
-     * @param addYourPort boolean value that says if this node's port need to be added as a prefix to request or a previous prefix should be added to request.
-     * @return Max value of entire distributed database.
-     */
-    private String getMax(int max, String prefix, boolean addYourPort) {
-        int newMax = Math.max(this.value, max);
-        return forwardRequest((addYourPort ? PORT + "get-max " : prefix + "get-max ") + newMax, String.valueOf(newMax));
-    }
-    /**
-     *
-     * @param min current min value.
-     * @param prefix a port that precedes the request.
-     * @param addYourPort boolean value that says if this node's port need to be added as a prefix to request or a previous prefix should be added to request.
-     * @return Min value of entire distributed database.
-     */
-    private String getMin(int min, String prefix, boolean addYourPort) {
-        int newMin = Math.min(this.value, min);
-        return forwardRequest((addYourPort ? PORT + "get-min " : prefix + "get-min ") + newMin, String.valueOf(newMin));
-    }
-
-    /**
-     * @param key key of a new stored value.
-     * @param value new stored value.
-     */
-    private void newRecord(int key, int value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    /**
-     * Method informing previous and next nodes about server shutdown.
-     */
-    private void terminate() {
-        nodeCommunication.sendMsg("newPrevious " + previousNodeAddress.getHostAddress() + ":" + previousNodePort, nextNodeAddress, nextNodePort);
-        nodeCommunication.sendMsg("newNext " + nextNodeAddress.getHostAddress() + ":" + nextNodePort, previousNodeAddress, previousNodePort);
-    }
-
-    /**
-     *
-     * @param port port which is looked for.
-     * @param prefix a port that precedes the request.
-     * @param addYourPort boolean value that says if this node's port need to be added as a prefix to request or a previous prefix should be added to request.
-     * @return "OK" if port is found or "ERROR" if port is not found.
-     */
-    public String findPort(int port, String prefix, boolean addYourPort) {
-        if (PORT == port)
-            return "ERROR";
-        return forwardRequest((addYourPort ? PORT + "find-port " : prefix + "find-port ") + port, "OK");
     }
 }
