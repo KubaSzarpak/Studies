@@ -14,7 +14,7 @@ public class Futil {
     public static void processDir(String dirName, String resultFileName) {
 
         try {
-            Files.walkFileTree(Paths.get(dirName), new SimpleFileVisitor<>() {
+            Files.walkFileTree(Paths.get(dirName), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     Charset in = Charset.forName("Cp1250");
@@ -22,16 +22,14 @@ public class Futil {
 
 
                     FileChannel channel = FileChannel.open(Paths.get(file.toUri()));
-                    ByteBuffer byteBuffer = ByteBuffer.allocateDirect((int)channel.size());
+                    ByteBuffer byteBuffer = ByteBuffer.allocateDirect((int) channel.size());
                     channel.read(byteBuffer);
                     byteBuffer.flip();
 
-                    CharBuffer charBuffer = in.decode(byteBuffer);
-                    ByteBuffer byteBufferOut = out.encode(charBuffer);
 
-                    FileChannel channelOut = FileChannel.open(Paths.get(resultFileName), StandardOpenOption.WRITE);
+                    FileChannel channelOut = FileChannel.open(Paths.get(resultFileName), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
-                    channelOut.write(byteBufferOut);
+                    channelOut.write( out.encode(in.decode(byteBuffer)));
 
                     return super.visitFile(file, attrs);
                 }
