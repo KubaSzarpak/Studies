@@ -1,0 +1,2110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="Content-Type"
+ content="text/html; charset=windows-1250"> <meta name="author"
+ content="Krzysztof Barteczko"> <meta name="description"
+ content="Uniwersalne techniki programowania"> <meta name="copyright"
+ content="(c) Krzysztof Barteczko PJWSTK 2010"> <link rel="stylesheet"
+ type="text/css" href="../STYLE/common.css"> <title>Wzorce projektowe
+(2)</title></head>
+<body><br>
+<br>
+<div align="center"><h1>Wzorce projektowe (2)</h1>
+</div><br>
+<hr><p><i>Wyk≥ad zawiera informacje o kilku wybranych, waznych wzorcach
+projektowych.</i><br>
+</p><hr>
+<a name="Wzorce2.1"></a><h2>1. Fabryki (factory method, factory, abstract factory)</h2>
+<div class="def"><!----><a name="ind.5.6"></a>Metoda fabryczna
+definiuje standardowy sposÛb tworzenia obiektÛw w sposÛb niezaleøny od
+ich rodzaju<!----></div><br>
+<br>
+Diagram GoF dla wzorca Factory (Factory Method) wyglπda nastÍpujπco<br>
+<br>
+<img style="width: 454px; height: 271px;" alt=""
+ src="images/factoryMethod.gif">&nbsp;<br>
+<br>
+Jaki jest sens tego wzorca? Wyobraümy sobie, øe mamy dwie
+implementacje jakiejú czynnoúci czÍsto wykonywanej
+w rÛønych miejscach aplikacji. Np. wyúwietlanie komunikatÛw.<br>
+<br>
+<pre>interface MsgDisplay {
+   void show(String msg);
+}
+
+// Mamy dwie rÛzne implementacje
+
+class ConsoleDisplay implements MsgDisplay {
+   public void show(String s) {
+     System.out.println(s);
+   }
+}
+
+class DialogDisplay implements MsgDisplay {
+  public void show(String s) {
+    JOptionPane.showMessageDialog(null, s );
+  }
+}
+</pre>
+<br>
+W kodzie innych klas musimy tworzyÊ obiekty konkretnej klasy, np:<br>
+<br>
+<pre>    MsgDisplay msg = new ConsoleDisplay(); // w wielu miejscach w kodzie!
+    msg.show("Bad");                        // wiele zmian, jeúli zmianiamy impl.&nbsp;</pre>
+<br>
+Teraz chcemy zmieniÊ implementacjÍ. Przy takim sposobie
+programowania oznacza
+to, øe musimy zmieniÊ i rekompilowaÊ kody wielu klas sk≥adajπcych siÍ
+na
+aplikacjÍ.<br>
+<br>
+Wzorzec Factory (Factory Method) pozwala nam tego uniknπÊ.<br>
+Moøemy scentralizowaÊ zmiany kodu w jednym miejscu:<br>
+<br>
+<pre>class MsgDisplayFactory {
+
+  public static MsgDisplay getInstance() {  // <b>zmiana implementacji TYLKO TU</b>
+    return new DialogDisplay();
+  }
+
+}
+</pre>
+<br>
+a kawa≥ki "klienckie" (te wiele fragmentÛw, ktÛre potrzebujπ
+wypisania komunikatu)
+pisaÊ ca≥kiem abstrakcyjnie, unikajπc w ten sposÛb zmian i potrzeby
+rekompilacji
+wielu klas:<br>
+<pre>    MsgDisplay msg = MsgDisplayFactory.getInstance(); // tu nie ma zmian
+    msg.show("Good");
+
+</pre>Zauwaømy,
+øe dzia≥anie metod fabrycznych moøe zaleøeÊ od parametrÛw (albo
+inaczej ustalanych kontekstÛw), podawanych w fazie wykonania programu.
+Klasy
+klienckie nie troszczπ siÍ o konkretny typ wyniku (wiedzπ, øe zawsze
+dostanπ
+w≥aúciwy), a metody fabryczne zwracajπ obiekty rÛønych klas - zaleønie
+od
+kontekstu.<br>
+<br>
+Przyk≥ad - klasa Calendar:<br>
+<br>
+<pre>    public static Calendar getInstance()
+    {
+        Calendar cal = createCalendar(TimeZone.getDefaultRef(), Locale.getDefault());
+	cal.sharedZone = true;
+	return cal;
+    }
+
+    private static Calendar createCalendar(TimeZone zone,
+					   Locale aLocale)
+    {
+	// If the specified locale is a Thai locale, returns a BuddhistCalendar
+	// instance.
+	if ("th".equals(aLocale.getLanguage())
+	    &amp;&amp; ("TH".equals(aLocale.getCountry()))) {
+	    return new sun.util.BuddhistCalendar(zone, aLocale);
+	}
+
+	// else create the default calendar
+        return new GregorianCalendar(zone, aLocale);	
+    }
+</pre>
+èrÛd≥o: Sun<br>
+<br>
+<br>
+RozwiniÍciem wzorca Factory jest AbstractFactory, ktÛry to wzorzec: <br>
+<ul> <li>pozwala uzyskiwaÊ rÛøne fabryki,</li> <li>
+od nich z kolei rÛøne obiekty (rÛønych klas), czÍsto w zaleønoúci od
+parametrÛw
+specyfikowanych w fazie wykonania programu (m.in. pobieranych z
+kontekstÛw
+aplikacji WEB).</li>
+</ul><br>
+<img style="width: 710px; height: 584px;" alt=""
+ src="images/AbstractFacrory.gif">&nbsp;<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<a name="Wzorce2.2"></a><h2>2. Singleton</h2>
+<div class="def"><!----><a name="ind.5.7"></a>Wzorzec <b>Singleton</b>
+zapewnia, øe klasa bÍdzie mia≥a tylko jednπ instancjÍ
+(moøna utworzyÊ jeden obiekt tej klasy), a jednoczeúnie udostÍpnia
+globalny,
+jednolity sposÛb uzyskiwania i odwo≥ywania siÍ do tego obiektu z
+rÛønych
+fragmentÛw kodu (innych klas)<!----></div><br>
+<br>
+<img style="width: 394px; height: 80px;" alt=""
+ src="images/singleton.gif">&nbsp;<br>
+<br>
+&nbsp;<br>
+Klasyczna implementacja wzorca Singleton wyglπda tak:<br>
+<br>
+<pre>public class ClassicSingleton {
+   private static ClassicSingleton instance = null;
+
+   private ClassicSingleton() {  // prywatny konstruktor
+   }
+
+   public static ClassicSingleton getInstance() {
+      if(instance == null) {
+         instance = new ClassicSingleton();
+      }
+      return instance;
+   }
+}
+</pre>
+<br>
+Co zapewnia:<br>
+<ul> <li>w prostych przypadkach - rzeczywiúcie tworzenie jednego
+obiektu klasy,</li> <li>"lazy instantiation" - obiekt jest tworzony
+dopiero wtedy kiedy jest potrzebny.</li>
+</ul>Ale:<br>
+<ul> <li>nie jest to rozwiπzanie wielowπtkowo bezpieczne,</li> <li>nie
+jest przygotowane na &nbsp;dzia≥anie w sytuacjach, kiedy klasa moøe byÊ
+≥adowane przez rÛøne class-loadery.</li> <li>jeúli chcielibyúmy
+uczyniÊ nasz singleton serializowalnym - (implements
+Serializable) - to umoølwiilibyúmy tworzenie wielu kopii singletona (co
+≥amie
+kontrakt).</li>
+</ul><br style="text-decoration: underline;">
+<span style="font-weight: bold; text-decoration: underline;">Problemy
+ze wspÛ≥bieønoúciπ</span><br>
+<br>
+Generalnie, powinniúmy metodÍ statycznπ getInstance() w klasie
+singletonu
+(zwracajπcπ jedyny obiekt klasy) uczyniÊ synchronizowanπ, bowiem jeúli
+dwa
+wπtki bÍdπ rÛwnolegle wykonywaÊ tÍ metodÍ, to moøe siÍ zdarzyÊ, øe
+otrzymamy
+dwa obiekty klasy (co przeczy definicji singletonu). Faktycznie, w
+poniøszym kodzie:
+<pre>class KlasaSingletonu {
+  private static KlasaSingletonu obj;
+  private KlasaSingletonu() {
+     // ...
+  }  &nbsp;
+
+  public static KlasaSingletonu getInstance() {
+    if (obj == null) obj = new KlasaSingletonu();
+    return obj;
+  }
+}&nbsp;&nbsp;
+</pre>jeden
+z wπtkÛw moøe zostaÊ wyw≥aszczony zaraz po sprawdzania warunku (obj
+== null), przychodzπcy na jego miejsce drugi wπtek moøe stworzyÊ
+obiekt,
+a przywrÛcony pierwszy - "pamiÍtajπc", øe obiektu nie by≥o - teø go
+stworzy.
+<br>
+<br>
+Powinniúmy wiÍc napisaÊ tak:<br>
+<pre>  public static synchronized KlasaSingletonu getInstance() {
+    if (obj == null) obj = new KlasaSingletonu();
+    return obj;
+  }</pre>Warto
+zauwaøyÊ jednak, øe taka synchronizacja jest potrzebna tylko przy
+pierwszym
+wywo≥aniu metody getInstance(). Wszystkie inne wywo≥ania bÍdπ mia≥y
+charakter
+odczytu, nie muszπ zatem byÊ synchronizowane, a poniewaø synchronizacja
+jest
+kosztowna - to chcielibyúmy jej uniknπÊ.<br>
+Niestety - z tych samych powodÛw co poprzednio - poniøsze rozwiπzanie,
+wydawa≥oby
+siÍ logicznie synchronizowane tylko na pierwszym odwolaniu i unikajπce
+synchronizacji
+przy nastÍpnych - bÍdzie wadliwe:<br>
+<br>
+<pre>  public static KlasaSingletonu getInstance() {
+    if (obj == null) { <b>// w tym if (...) mamy ten sam problem co poprzednio</b>
+       synchronized(KlasaSingletonu.class) {
+         obj = new KlasaSingletonu();
+       }
+    }&nbsp;
+    return obj;
+  }</pre>
+Aby uniknπÊ synchronizowanych odwo≥aÒ powinniúmy zatem stworzyÊ obiekt
+przy
+pierwszym odwo≥aniu do klasy, co moøna uzyskaÊ np. tak:<br>
+<br>
+<pre>class KlasaSingletonu {
+
+  private static final KlasaSingletonu obj = new KlasaSingletonu();
+
+  private KlasaSingletonu() { // prywatny konstruktor
+     // ...
+  }  &nbsp;
+
+  public static KlasaSingletonu getInstance() {
+    return obj;
+  }
+}</pre>
+<br>
+<u style="font-weight: bold;">RÛøne class-loadery</u><br>
+<br>
+W niektÛrych sytuacjach (np. w kontenerach serwletÛw) mogπ byÊ
+uøywane rÛøne
+class-loadery do ≥adowania klasy singletonu przy odwo≥aniu do niej z
+rÛønych
+czÍúci aplikacji (np. aplikacji WEB). W tej sytuacji powstanie wiele
+rÛønych
+instancji singletonu.<br>
+<br>
+<span style="text-decoration: underline;">
+Rozwiπzania</span>:<br>
+<ul> <li>Uøycie JNDI do dostÍpu do singletona (zob. wyk≥ad o JNDI),</li>
+<li>
+Bezpoúrednie specyfikowanie ClassLoadera (David Geary. Simply
+Singleton, JavaWorld)</li> <li>
+Zaawansowany framework J2EE&nbsp; (<a
+ href="http://www.javaspecialists.co.za/archive/Issue052.html">http://www.javaspecialists.co.za/archive/Issue052.html</a>)</li>
+</ul><br>
+<br>
+<u style="font-weight: bold;">Serializowalny singleton:</u><br>
+<br>
+<pre>public class Singleton implements java.io.Serializable {
+   public static Singleton INSTANCE = new Singleton();
+
+   private Singleton() {
+      // Exists only to thwart instantiation.
+   }
+
+   private Object readResolve() {
+     return INSTANCE;
+   }
+}</pre>
+èrÛd≥o: David Geary. op.cit.<br>
+<br>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<a name="Wzorce2.3"></a><h2>3. Flyweight</h2>
+<br>
+<div class="def"><b><!----><a name="ind.5.8"></a>Flyweight</b>
+(dos≥ownie
+- waga musza, chodzi tu o lekkoúÊ konstrukcji)-&nbsp; jest stosowany
+wtedy, gdy klasy - logicznie - odwo≥ujπ siÍ do bardzo duøej liczby
+obiektÛw,
+z ktÛrych wiele jest do siebie podobnych (nawet takich samych). Duøa
+liczba
+obiektÛw powoduje straty pamiÍci. ZajÍtoúÊ pamiÍci moøna zdecydowanie
+zmniejszyÊ
+poprzez wspÛ≥dzielenie takich samych obiektÛw (klasy, choÊ logicznie
+odwo≥ujπ
+siÍ do duøej liczby rÛønych obiektÛw,&nbsp; tak naprawdÍ pos≥ugujπ siÍ
+niewieloma
+dzielonymi miÍdzy sobπ obiektami)<!---->.</div><br>
+<br>
+Zauwaømy, øe obiekty wspÛ≥dzielone powinny byÊ&nbsp;
+(zazwyczaj) niezmienne, bowiem zwykle zosta≥y juø wykorzystane przez
+rÛøne
+klasy do jakichú celÛw konstrukcyjnych (np. ramki wokÛ≥ komponentÛw
+wizualnych
+sπ w Swingu obiektami konstruowanymi wg wzorca Flyweight, jeúli zatem
+ustaliliúmy
+ramkÍ dla jakiegoú komponentu, to spodziewamy siÍ, øe ta sama
+ramka&nbsp; ustalana
+dla innego komponentu przez innπ metodÍ lub w innej klasie bÍdzie
+wyglπdaÊ
+tak samo).<br>
+<br>
+Diagram GOF wyglπda nastÍpujπco:<br>
+<br>
+&nbsp;<img style="width: 656px; height: 336px;" alt="r"
+ src="images/flyweight.gif"><br>
+<br>
+<br>
+Rozwaømy uproszczony przyk≥ad. Program ma tworzyÊ pude≥ka o
+rÛønych rozmiarach (ale o wysokoúci rÛwnej
+podwÛjnej szerokoúci). <br>
+Wiele rozmiarÛw bÍdzie siÍ powtarzaÊ. Wiemy mniej wiÍcej jakie sπ
+najczÍúciej
+wystÍpujπce rozmiary i postanowiliúmy je wspÛ≥dzieliÊ pomiÍdzy rÛønymi
+pude≥kami
+(przy powtÛrzeniu tych rozmiarÛw). Moøe to daÊ duøe oszczÍdnoúci
+pamiÍci,
+np. jeúli mamy 7 najczÍúciej wystÍpujπcych rozmiarÛw i powtÛrzπ siÍ one
+milion
+razy, oszczÍdzimy ok. 28 MB pamiÍci.<br>
+Aby wspÛ≥dzieliÊ rozmiary musimy uczyniÊ klasÍ Dimension niezmiennπ.<br>
+Zgodnie z przedstawionπ wczeúniej&nbsp; receptπ:<br>
+<br>
+<pre>final class Dimension {
+
+  private int width;
+  private int height;
+
+  public Dimension(int w, int h) {
+    width = w;
+    height = h;
+  }
+
+  public int getWidth()  { return width; }
+  public int getHeight() { return height; }
+
+  public String toString() { return width + "x" + height; }
+
+}
+</pre>
+Rozmiary pude≥ek bÍdzie nam dostarczaÊ fabryka rozmiarÛw pude≥ek (klasa
+BoxDimensionFactory).
+BÍdzie ona zawiera≥a tablicÍ najczÍúciej uøywanych rozmiarÛw.<br>
+Rozmiary bÍdzie zwracaÊ metoda fabryczna makeDimension(...), ktÛra na
+podstawie
+przekazanej szerokoúci pude≥ka sprawdzi, czy taki rozmiar juø by≥ uøyty
+i
+jeúli tak zwrÛci ten rozmiar z tablicy, a jeúli nie stworzy nowy
+rozmiar
+i - gdy jest to jeden z czÍsto uøywanych &nbsp;przed zwrÛceniem wstawi
+go do tablicy.
+W ten sposÛb:<br>
+<ul> <li>tworzymy nowe obiekty-rozmiary tylko wtedy kiedy sπ potrzebne,</li>
+<li>zapisujemy najczÍstsze i juø uøyte rozmiary w tablicy </li> <li>te
+rozmiary moøemy ponownie wykorzystaÊ </li> <li>potrafimy teø zwrÛciÊ
+dowolny rozmiar (nie naleøπcy do czÍsto uøywanych).</li> <li>klasy,
+ktÛre uøywajπ tej fabryki rozmiarÛw (metody makeDimension) nie
+muszπ ani wiedzieÊ, ani troszczyÊ siÍ o to czy uzyskany rozmiar jest
+nowym
+obiektem czy teø wspÛ≥dzielonym.</li>
+</ul><br>
+Naszπ fabrykÍ uczynimy <b>singletonem</b>.
+To teø jest sposÛb na wspÛ≥dzielenia obiektÛw i oszczÍdnoúci pamiÍci.
+Gdybyúmy
+bowiem chcieli wielokrotnie pobieraÊ takie obiekty-fabryki (np. w
+rÛønych
+metodach czy klasach za pomocπ odwo≥ania
+BoxDimensionFactory.getInstance())
+- to i tak zawsze dostaniemy ten jedyny "singleton". <br>
+<br>
+Oznacza to, po pierwsze,
+zapewnienie spÛjnoúci danych, a po drugie - w≥aúnie oszczÍdnoúÊ pamiÍci,<br>
+<br>
+Oto kod fabryki rozmiarÛw.<br>
+<pre>class BoxDimensionFactory {
+
+  // czÍsto wystÍpujπce szerokoúci pude≥ek
+  private int[] widths = { 10, 20, 30, 40, 50, 60, 70 };
+
+  // Tablica rzomiarÛw pude≥ek - do ponownego uøycia (wspÛ≥dzielenia)
+  private Dimension[] d = new Dimension[widths.length];
+
+  private int reused;  // ile razy ponownie uøyto gotowego rozmiaru
+
+  // Singleton
+  // --- odniesienie do jedynego obiektu fabryki
+  private static BoxDimensionFactory bdf;
+
+  // --- prywatny konstruktor
+  private BoxDimensionFactory() {}
+
+  // --- metoda zwracajπca fabrykÍ
+  public static BoxDimensionFactory getInstance() {
+    if (bdf == null) bdf = new BoxDimensionFactory(); // jeøeli obiekt nie istnieje -stwÛrz
+    return bdf;                                       // zwrÛÊ jedyny obiekt klasy
+  }
+
+  // Metoda fabryczna
+  // zwraca referencjÍ do obiekty klasy Dimension
+  public Dimension makeDimension(int w) {
+    for (int i=0; i &lt; widths.length; i++)
+      if (w == widths[i]) { // jeøeli czÍsto wystÍpujπcy rozmiar
+         // jeøeli uøywany pierwszy raz - utwÛrz go i zapisz do tablicy
+         if (d[i] == null) d[i] = new Dimension(w, 2*w);
+         else reused++;  // jeøeli juø by≥ utworzony - zwiÍksz licznik ponownego uøycia
+         return d[i];    // zwrÛÊ rozmiar - z tablicy "ponownego uøycia"
+      }
+    return new Dimension(w, 2*w);  // jeøeli jakiú inny rozmiar - utwÛrz go i zwrÛÊ
+  }
+
+  // Zwraca liczbÍ ponownego uøycia rozmiarÛw
+  public int reusedCount() {
+    return reused;
+  }
+
+}
+</pre><br>
+Klasy testujπce przedstawia wydruk.<br>
+<br>
+<pre>class Box {
+  private Dimension dim;
+  private String cont;
+
+  public Box(Dimension d, String c) {
+    dim = d;
+    cont = c;
+  }
+
+  public String toString() {
+     return "Pude≥ko: " + dim + " ZawartoúÊ: " + cont;
+  }
+}
+
+class BoxTest {
+
+  public static void main(String[] args) {
+
+    // Pobranie fabryki rozmiarÛw
+    BoxDimensionFactory boxDimFac =  BoxDimensionFactory.getInstance();
+
+    // na jakie pude≥ka jest teraz zapotrzebowanie
+    int[] potrzebne = { 10, 10, 10, 20, 30, 45, 20, 20, 20, 20, 10,
+                        20, 50, 65, 50, 50, 60, 100, 50, 50, 50,
+                      };
+
+    // Kolejne pude≥ka tworzymy na podstawie rozmiarÛw
+    // uzyskanych z fabryki rozmiarÛw
+    // nie wiemy i nie interesuje nas czy rozmiary to nowe obiekty
+    // czy teø juø uøywane przez inne pude≥ka
+    Box box = null;
+    for (int i = 0; i &lt; potrzebne.length; i++)
+      box = new Box(boxDimFac.makeDimension(potrzebne[i]), "Kwiaty");
+
+    System.out.println("Ostatnie pude≥ko");
+    System.out.println(box);
+    System.out.println("Na " + potrzebne.length + " rozmiarÛw pude≥ek\n" +
+          "Utworzono nowych " + (potrzebne.length - boxDimFac.reusedCount()) +
+          "\nPonownie uøyto (przy wspÛldzieleniu) " + boxDimFac.reusedCount()
+          );
+  }
+
+}
+</pre>
+<br>
+Program wyprowadzi na konsoli:<br>
+<div class="listing100">Ostatnie pude≥ko<br>
+Pude≥ko: 50x100 ZawartoúÊ: Kwiaty<br>
+Na 21 rozmiarÛw pude≥ek<br>
+Utworzono nowych 8<br>
+Ponownie uøyto (przy wspÛldzieleniu) 13</div>
+<br>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<a name="Wzorce2.4"></a><h2>4. Observer</h2>
+<div class="def"><b><!----><a name="ind.6.1"></a>Observer</b> definiuje
+zaleønoúci pomiÍdzy obiektami w taki sposÛb,
+øe gdy obiekty "obserwowane" zmieniajπ stan, to obiekty "obserwatorzy"
+sπ
+o tym powiadamiani<!----></div><br>
+<br>
+Diagram GoF dla tego wzorca wyglπda nastÍpujπco.<br>
+<br>
+<img title="r" style="width: 425px; height: 272px;" alt=""
+ src="images/observer.gif">&nbsp;<br>
+<br>
+<br>
+DziÍki temu moøemy tworzyÊ uniwersalne, elastyczne i rozszerzalne
+aplikacje, w ktÛrych <b>≥atwo realizowana jest komunikacja pomiÍdzy
+niepowiπzanymi obiektami</b>. <br>
+<br>
+W Javie istniejπ interfejs Observer oraz klasa Observable.<br>
+Sπ one raczej ma≥o uøyteczne, bo obserwowani muszπ dziedziczyÊ
+Observable, co nie jest wygodne.<br>
+Lepszym rozwiazaniem jest oparcie wzorca na obs≥udze zdarzeÒ.<br>
+Moøemy tu wykorzystaÊ rÛøne interfejsy nas≥ucgu zdarzeÒ, ale
+szczegÛlnie uøyteczne (bo uniwersalne) sπ ChangeListener i
+PropertyChangeListener.<br>
+<br>
+Rozwaømy przyk≥ad narzÍdziowej aplikacji, s≥uøπcej do nadawania
+rÛønych atrybutÛw wybranym rodzajom tekstu w komponentach
+tekstowych.<br>
+<br>
+Dzia≥anie narzÍdzie ilustruje nastÍpujπca <a
+ href="mm/w6p1/w6p1.html" target="_blank">prezentacja</a><a
+ href="mm/w6p1/w6p1.html"><img
+ style="border: 0px solid ; width: 100px; height: 80px;" alt=""
+ src="../STYLE/video2.gif"></a>.<br>
+<br>
+W programie wykorzystano m.in. prosty model selekcji kolorÛw.<br>
+<br>
+<pre>package colorgoodies;
+import java.awt.*;
+import javax.swing.colorchooser.*;
+import javax.swing.event.*;
+import java.io.*;
+
+public class SwatchColorSelectionModel implements ColorSelectionModel,
+                                                  Serializable
+{
+  protected transient ChangeEvent changeEvent = null;
+  protected EventListenerList listenerList = new EventListenerList();
+  private Color[] colors;
+  private Color selectedColor;
+  private int selectedIndex = -1;
+
+  public SwatchColorSelectionModel(Color[] c) {
+    colors = c;
+    selectedColor = null;
+  }
+
+  public SwatchColorSelectionModel(Color[] col, Color c) {
+    this(col);
+    for (int i=0; i&lt;colors.length; i++)
+      if (c.equals(colors[i])) {
+        selectedIndex = i;
+        selectedColor = c;
+        break;
+      }
+  }
+
+  public SwatchColorSelectionModel(Color[] col, int i) {
+    this(col);
+    try {
+      selectedColor = colors[i];
+      selectedIndex = i;
+    } catch (ArrayIndexOutOfBoundsException exc) { }
+  }
+
+  public int getSelectedIndex() {
+    return selectedIndex;
+  }
+
+  public void setSelectedIndex(int value) {
+    int old = selectedIndex;
+    if (value != old) {
+      if (value == -1) {
+        selectedIndex = -1;
+        setSelectedColor(null);
+      }
+      else
+        try {
+          selectedIndex = value;
+          setSelectedColor(colors[value]);
+        } catch (ArrayIndexOutOfBoundsException exc) {
+            selectedIndex = old;
+        }
+    }
+  }
+
+  public void setSelectedColor(Color color) {
+    if (color == null) {
+      selectedColor = null;
+      selectedIndex = -1;
+    }
+    else if (selectedColor == null || !selectedColor.equals(color)) {
+      selectedColor = color;
+    }
+<b>    fireStateChanged();</b>
+  }
+
+  public Color getSelectedColor() {
+    return selectedColor;
+  }
+
+  public void addChangeListener(ChangeListener l) {
+     listenerList.add(ChangeListener.class, l);
+  }
+
+  public void removeChangeListener(ChangeListener l) {
+    listenerList.remove(ChangeListener.class, l);
+  }
+
+  public ChangeListener[] getChangeListeners() {
+    return (ChangeListener[])listenerList.getListeners(
+            ChangeListener.class);
+  }
+
+<b>  protected void fireStateChanged()  {
+    ChangeListener[] listeners = getChangeListeners();
+    for (int i=0; i&lt;listeners.length; i++) {
+      if (changeEvent == null) {
+          changeEvent = new ChangeEvent(this);
+      }
+      listeners[i].stateChanged(changeEvent);
+    }
+  }
+</b>
+}
+</pre>
+O zmianie wybranego koloru model powiadamia zainteresowanych s≥uchaczy
+za pomocπ generacji zdarzenia changeEvent i rozes≥ania go po
+przy≥πczonych s≥uchaczach (metoda fireStateChanged()).<br>
+<br>
+Czyli zmiany w modelu sπ obserwowane. Kto je obserwuje?<br>
+<br>
+Po pierwsze, swatch-panel (po to by zaznaczaÊ wizualnie wybrany
+kolor).<br>
+<br>
+<img style="width: 420px; height: 263px;"
+ src="images/colorChooser.jpg" alt="r">
+<br>
+<br>
+KlikniÍcie w swatch ustawia kolor w modelu - model powiadamia o zmianie
+stanu
+obserwatorÛw. Tu jednym z obserwatorÛw jest modelListener &nbsp;w
+klasie SwatchPanel
+(ten ChangeListener reaguje na zmianÍ poprzez odúwieøenie rysunku -
+zaznaczenie
+kÛ≥kiem wybranego koloru). <br>
+<br>
+<pre>package colorgoodies;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.colorchooser.*;
+
+public class SwatchPanel extends JPanel {
+
+    private Color[] colors;
+    private int rows;
+    private int columns;
+    private Dimension swatchSize;
+    private Dimension gap;
+    private boolean tipsEnabled;
+    private SwatchColorSelectionModel model;
+    private int mouseX;
+    private int mouseY;
+
+
+    <b>private ChangeListener modelListener = new ChangeListener() {
+        public void stateChanged(ChangeEvent e) {
+          repaint();
+        }
+    };</b>
+
+    public ChangeListener getRepaintListener() {
+      return modelListener;
+    }
+
+    public SwatchPanel(Color[] c, int r, Dimension s, Dimension g) {
+      this(c,r,s,g,true);
+    }
+
+    public SwatchPanel(Color[] c, int r, Dimension s, Dimension g,
+                       boolean t) {
+      init(c, r, s, g, t);
+      setBackground(Color.white);
+      addMouseListener(colorListener);
+
+    }
+
+    public void init(Color[] c, int r, Dimension s, Dimension g,
+                       boolean t) {
+      colors = c;
+      rows = r;
+      swatchSize = s;
+      gap = g;
+      tipsEnabled = t;
+      columns = colors.length / rows +
+                (colors.length%rows &gt; 0 ? 1 : 0);
+      setTipsEnabled(tipsEnabled);
+   }
+
+<b>    public void setModel(SwatchColorSelectionModel m) {
+      int oldSelInd = -1;
+      if (model != null) {
+        oldSelInd = model.getSelectedIndex();
+        model.removeChangeListener(modelListener);
+      }
+      model = m;
+      int newSelInd = m.getSelectedIndex();
+<font
+ color="#6633ff">      model.addChangeListener(modelListener);</font>
+      if (oldSelInd != newSelInd) modelListener.stateChanged(new ChangeEvent(model));
+    }
+</b>
+
+    public SwatchColorSelectionModel getModel() {
+      return model;
+    }
+
+    public void paintComponent(Graphics g) {
+      g.setColor(getBackground());
+      g.fillRect(0,0,getWidth(), getHeight());
+      for (int row = 0; row &lt; rows; row++) {
+        for (int column = 0; column &lt; columns; column++) {
+          Color c = getColorForCell(column, row);
+          if (c == null) return;
+          g.setColor(c);
+          int x = column * (swatchSize.width + gap.width);
+          int y = row * (swatchSize.height + gap.height);
+          int selectedInd = model.getSelectedIndex();
+          if (selectedInd != -1 &amp;&amp; selectedInd == getIndexForLocation(x,y)) {
+            g.fillOval( x, y, swatchSize.width, swatchSize.height);
+            g.setColor(Color.black);
+            g.drawOval( x, y, swatchSize.width-1, swatchSize.height-1);
+          }
+          else {
+            g.fillRect( x, y, swatchSize.width, swatchSize.height);
+            g.setColor(Color.black);
+            g.drawRect( x, y, swatchSize.width-1, swatchSize.height-1);
+          }
+       }
+     }
+    }
+
+    public Dimension getPreferredSize() {
+      int x = columns * (swatchSize.width + gap.width) -1;
+      int y = rows * (swatchSize.height + gap.height) -1;
+      return new Dimension( x, y );
+    }
+
+    public Dimension getMinimumSize() { return getPreferredSize(); }
+    public Dimension getMaximumSize() { return getPreferredSize(); }
+
+
+    public String getToolTipText(MouseEvent e) {
+      if (!tipsEnabled) return null;
+      Color color = getColorForLocation(e.getX(), e.getY());
+      if (color == null) return null;
+      return color.getRed()+" "+ color.getGreen() + " " + color.getBlue();
+    }
+
+    public Color getColorForLocation( int x, int y ) {
+      int column = x / (swatchSize.width + gap.width);
+      int row = y / (swatchSize.height + gap.height);
+      return getColorForCell(column, row);
+    }
+
+    private Color getColorForCell( int column, int row) {
+      int ind = (row * columns) + column;
+      if (ind &lt; colors.length) return colors[ind];
+      else return null;
+    }
+
+    public int getIndexForLocation( int x, int y) {
+      int column = x / (swatchSize.width + gap.width);
+      int row = y / (swatchSize.height + gap.height);
+      int ind = (row * columns) + column;
+      if (ind &lt; colors.length) return ind;
+      else return -1;
+    }
+
+
+    public void setSwatchSize(Dimension d) {
+      swatchSize = d;
+    }
+
+    public Dimension getSwatchSize() {
+      return swatchSize;
+    }
+
+    public void setRows(int n) {
+      rows = n;
+      columns = colors.length / rows +
+          (colors.length%rows &gt; 0 ? 1 : 0);
+    }
+
+    public int getRows() { return rows; }
+
+    public void setGapSize(Dimension d) {
+      gap = d;
+    }
+
+    public Dimension getGapSize() {
+      return gap;
+    }
+
+    public void setTipsEnabled(boolean te) {
+      tipsEnabled = te;
+      String tip = (te ? "" : null);
+      setToolTipText(tip);
+    }
+
+    public boolean isTipsEnabled() { return tipsEnabled; }
+
+
+    static int jccind = -1;
+    private ActionListener HSBlistener = new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (jccind == -1) return;
+        if (e.getActionCommand().equals("OK") ) {
+            colors[jccind] = jcc.getColor();
+            repaint();
+         }
+        jccind = -1;
+       }
+     };
+
+
+   <b> private MouseListener colorListener =  new MouseAdapter() {</b>
+      public void mousePressed(MouseEvent e) {
+        if (e.isMetaDown()) return;  // opcja z menu kontekstowego - obs≥uga nie tu
+        int ind = getIndexForLocation(e.getX(), e.getY());
+        if (ind == -1) return;
+        if (e.isControlDown()) {  // Zmiana swatcha
+          jccind = ind;
+          JDialog d = JColorChooser.createDialog(SwatchPanel.this,
+                                    "Choose color", true,jcc,
+                                     HSBlistener, HSBlistener);
+          d.show();
+        }
+        else {
+          mouseX = e.getX();
+          mouseY = e.getY();
+          <b>model.setSelectedIndex( ind );</b> // Zmiana w modelu
+        }
+      }
+    };
+
+    public int getMouseX() { return mouseX; }
+    public int getMouseY() { return mouseY; }
+
+
+    private static JColorChooser jcc;
+    static {
+      jcc = new JColorChooser();
+      AbstractColorChooserPanel[] p = jcc.getChooserPanels();
+      jcc.removeChooserPanel(p[0]);
+      jcc.removeChooserPanel(p[2]);
+    }
+
+
+
+}</pre>
+Wydaje siÍ, øe pojawi≥ siÍ&nbsp; tu nadmiar kounikacyjny:<br>
+<br>
+mousePressed (na SwatchPanelu) zamiast zrobiÊ od razu coú
+wizualnego powiadamia
+model kolorÛw, a ten dopiero powiadamia z powrotem SwatchPanel (przez
+modelListener),
+øe coú ma zmieniÊ w swoim wyglπdzie.<br>
+<br>
+Ale tylko model selekcji kolorÛw moøe zdecydowaÊ, czy rzeczywiúcie
+kolor
+zosta≥ wybrany (wybÛr juø ustalonego koloru nie jest selekcjπ i nie
+generuje
+sekwencji zdarzeÒ).<br>
+Selekcja koloru musi byÊ teø w jednym miejscu (czyli w modelu selekcji)
+bo
+sπ teø inni obserwatorzy - reagujπcy na wybÛr koloru poprzez zmianÍ
+atrybutÛw
+komponentu tekstowego&nbsp; Robimy to w innej klasie odpoweidzialnej za
+zmiany atrybutu kompoenntu tekstowego.<br>
+<br>
+<pre> private ChangeListener colorListener =  new ChangeListener() {
+    public void stateChanged(ChangeEvent e) {
+      if (e.getSource() != cbp.getModel()) return;
+      Color c = cbp.getModel().getSelectedColor();
+      if (c == null) return;
+      String[] types = view.getTypes();
+      if (!(view.getTextComponent() instanceof JTextPane) ||
+         attrsToTypes.get(attrs[view.getCurrentMode()]) == null)
+        view.set(attrs[view.getCurrentMode()], c);
+      else
+        view.set(types[view.getCurrentType()], attrs[view.getCurrentMode()], c);
+    }
+  };
+</pre>
+Tutaj:<br>
+<ul> <li>cbp - jest swatch-panelem,</li> <li>
+view - komponentem tekstowym, opakowanym &nbsp;specjalnπ (w≥asnπ) klasÍ
+AtttributedTextCompoennt, ktÛra umie postÍpowaÊ z atrybutami
+tekstu,</li> <li>
+getCurrentMode() - zwraca wybrany tryb (kolor czego - tekstu,
+zaznaczenia, t≥a &nbsp;- ma byÊ ustawiany)</li> <li>
+getCurrentType() - jaki jest bieøπcy rodzaj tekstu (np. "Error",
+"Warning", "Input")</li>
+</ul>A w jaki sposÛb colorListener (jako observer) jest przy≥πczany do
+modelu selekcji kolorow?<br>
+<br>
+OtÛø dla kaødego widoku komponentu tekstowego mamy dwuwymiarowπ
+tablicÍ modeli
+kolorÛw. Jeden model opisuje wybrany kolor dla danego typu tekstu i
+danego
+trybu dzia≥ania (zmiana dotyczπca atrybutÛw foreground, background
+etc).
+Te modele tworzymy raz, w trakcie opakowywania komponentu tekstowego "w
+widok" i nastÍpnie bÍdziemy ich ponownie uøywaÊ (wzorzez Flyweight).
+Jest
+to potrzebne, aby pamiÍtaÊ ustawione kolory dla kaødej z sytuacji i
+wrÛciÊ do nich przy zmianach stanÛw.<br>
+<br>
+Zmiana trybu dzia≥ania&nbsp; i/lub typu tekstu jest zmianπ
+w≥aúciwoúci opakowanego
+komponentu i jest zg≥aszana poprzez generacjÍ PropertyChangeEvent. <br>
+W klasie odpowiedzialnej za zmiany atrybytÛ tekstu mamy s≥uchacza zmian
+w≥aúciwoúci (kolejne zastosowanie
+wzorca Observer) ktÛry ustala odpowiedni model oraz przy≥πcza do niego
+ChangeListenera.<br>
+<pre>  private PropertyChangeListener viewPropsChanged =
+    new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent e) {
+        String propName = e.getPropertyName();
+        // ...
+        int newVal = ((Integer)e.getNewValue()).intValue();
+        int cmode = view.getCurrentMode();
+        int ctype = view.getCurrentType();
+        boolean ta = attrsToTypes.get(attrs[cmode]) != null;
+        <b>SwatchColorSelectionModel newModel = null;
+        if (propName.equals("Type"))
+          newModel = csm[cmode][ ta ? newVal : 0];
+        else if (propName.equals("Mode"))
+          newModel = csm[newVal][ta ? ctype : 0];
+        else return;
+        cbp.getModel().removeChangeListener(colorListener);
+        cbp.setModel(newModel);
+        newModel.addChangeListener(colorListener);</b>
+      }
+  };
+
+</pre><br>
+W≥aúnie szczegÛlnie uøycie nas≥uchu zmian w≥aúciwoúci pozwala na
+unikanie
+wiπzania obiektÛw, klas w duøych projektach (<b>unikamy niepotrzebnych
+zaleønoúci</b>)
+&nbsp;oraz umoøliwia asynchroniczne, dzia≥ajπce na zasadzie callback,
+≥atwe programowanie.
+Jest to szczegÛlnie cenne w aplikacjach wspÛ≥bieønych - komunikacja
+pomiÍdzy
+wπtkami poprzez kolejkÍ zdarzeÒ jest ≥atwa i pozwala w wielu
+przypadkach
+unikaÊ kosztownej synchronizacji.<br>
+<br>
+Przyk≥ad:<br>
+<br>
+Klasa LCompiler dzia≥a jako wπtek kompilacji kodu.<br>
+RozpoczÍcie i zakoÒczenie kompilacji jest sygnalizowane jako zmiana
+stanu kompilatora.<br>
+Tej zmiany nas≥uchuje úrodowisko uruchomieniowe, ktÛre odpowiednio
+aktywuje/deaktywuje
+jakieú opcje, a takøe pokazuje informacje o wynikach kompilacji. IDE
+jest
+ca≥y czas reaktywne, kompilacja toczy siÍ w tle, jak tylko jest gotowa
+-
+IDE odzwierciedla ten fakt.<br>
+<br>
+<pre>public class LCompiler {
+
+
+  private ArrayList errorList;
+  private PropertyChangeSupport change = new PropertyChangeSupport(this);
+<span
+ style="font-weight: bold;">  // obiekt-kompilator</span>
+  private com.sun.tools.javac.Main compiler = new com.sun.tools.javac.Main();
+  // ....
+  private static final LCompiler comp = new LCompiler();
+
+  public static LCompiler getCompiler() { return comp; }
+
+
+  public static final int STOPPED = 0, RUNNING = 1;
+  private int compilerState = STOPPED;
+
+  private int returnCode = -1;
+
+  public int getReturnCode() {
+    return returnCode;
+  }
+
+  public String getErrorInfo() {
+    return errorInfo;
+  }
+
+
+  private LCompiler() {&nbsp; }
+
+  public void compile(String[] args) {
+
+    StringWriter sout = new StringWriter();
+    PrintWriter pout = new PrintWriter(sout);
+<b>    change.firePropertyChange("compilerState", STOPPED, RUNNING);</b>
+    returnCode = compiler.compile(args, pout);
+    errorInfo = "";
+    if (returnCode != 0) {
+      errorList = new ArrayList();
+      SrcError err = null;
+      try {
+        BufferedReader br = new BufferedReader(
+                                new StringReader(sout.toString())
+                            );
+        String line;
+        while ((line = br.readLine()) != null) {
+          String tmp =  line.trim();
+          if (tmp.equals("")) continue;
+          matcher.reset(line);
+          if (matcher.matches()) {
+            err =  new SrcError (Integer.parseInt(matcher.group(2)), matcher.group(3));
+            errorList.add(err);
+          }
+          else if (line.startsWith("Note")) errorList.add(new SrcError(-1, line));
+          else if (Character.isDigit(line.charAt(0))) errorInfo += line + " ";
+          else {
+            if (err == null) errorList.add( new SrcError(-1, line));
+            else err.addDesc(line);
+          }
+        }
+        br.close();
+      } catch (Exception exc) { exc.printStackTrace(); }
+    }
+
+<b>    change.firePropertyChange("compilerState", RUNNING, STOPPED);</b>
+}
+
+// .... metody dodawania/usuwania s≥uchaczy zmian w≥aúciwoúci
+
+</pre>
+Obserwatorem bÍdzie tu g≥Ûwnie klasa ErrList, ktÛra prezentuje w IDE
+wyniki kompilacji:<br>
+<br>
+<pre>class JLErrs extends JList {
+  // ....
+}
+
+public class ErrList extends JPanel {
+  //...........
+  JLErrs errs;
+  JLabel info = new JLabel("     ");
+
+
+  public ErrList(View v) {
+    super(new BorderLayout());
+    view = v;
+    errs = new JLErrors(v);
+    info.setOpaque(true);
+    info.setBackground(Color.white);
+    LCompiler compiler = LCompiler.getCompiler();
+<b>    compiler.addPropertyChangeListener(this);</b>
+    add(info, "North");
+    add (new JScrollPane(errs));
+    Dimension d = new Dimension(300, 100);
+    setPreferredSize(d);
+    setMaximumSize(d);
+    setMinimumSize(d);
+    errs.addListSelectionListener( new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        selectError(e);
+      }
+    });
+  }
+
+  // .....
+
+<b>  public void propertyChange(PropertyChangeEvent e) {
+</b>
+    final LCompiler compiler = LCompiler.getCompiler();
+
+    if (!e.getPropertyName().equals("compilerState")) return;
+    DockableWindowManager wm = view.getDockableWindowManager();
+    wm.showDockableWindow("ErrList");
+    int old = ( (Integer) e.getOldValue()).intValue();
+    int newv = ( (Integer) e.getNewValue()).intValue();
+
+    if (newv == LCompiler.RUNNING) {
+      SwingUtilities.invokeLater( new Runnable() {
+        public void run() {
+          ListModel lm = errs.getModel();
+          if (lm instanceof ElistModel) ((ElistModel) lm).clear();
+          info.setText("Compiling...");
+        }
+      });
+    }
+
+    else if (newv == LCompiler.STOPPED) {
+      final int rc = compiler.getReturnCode();
+      SwingUtilities.invokeLater( new Runnable() {
+        public void run() {
+         if (rc == 0) {
+           info.setText("Compilation finished. Success");
+         }
+         else info.setText("Compilation finished. " +compiler.getErrorInfo());
+        }
+      });
+
+      if (rc == 0) {
+        if (JLECompiler.isRealJava) new JavaRunner();
+        else new Runner().start();
+      }
+
+      final java.util.List elist = compiler.getErrorList();
+      if (elist == null) return;
+
+      SwingUtilities.invokeLater( new Runnable() {
+        public void run() {
+          errs.setModel(new ElistModel(elist));
+        }
+      });
+    }
+  }
+
+
+</pre>
+<hr><a name="Wzorce2.5"></a><h2>5. Visitor</h2>
+<div class="def"><b><!----><a name="ind.6.2"></a>Visitor</b> definiuje
+operacje, ktÛre sπ wykonywane na (strukturach lub zestawach)
+obiektÛw innych klas. Odseparowanie tych operacji od klas
+"odwiedzanych" obiektÛw
+pozwala wprowadzaÊ nowe operacje bez koniecznoúci dokonywania zmian w
+klasach
+obiektÛw<!---->.</div><br>
+<br>
+Rozwaømy przyk≥ad.<br>
+<br>
+Mamy pacjentÛw, chorych na rÛøne choroby. Moøemy zapisaÊ operacjÍ
+"leczenia" w klasach pacjentÛw:<br>
+<br>
+<pre>abstract class Pacjent {
+  protected String name;
+  Pacjent(String s) {
+    name = s;
+  }
+
+  // *** funkcjonalnoúÊ zapisana w klasie
+  public abstract String lecz();
+}
+
+class ChoryNaG≥owÍ extends Pacjent {
+  private static final String opis = "Chory na g≥owÍ";
+  ChoryNaG≥owÍ(String s) { super(s); }
+  public String toString() { return name + " " + opis; }
+
+  // ---- funkcjonalnoúÊ zapisana w klasie
+
+  public String lecz() {
+    return "StosujÍ aspirynÍ";
+  }
+
+}
+
+class ChoryNaØo≥πdek extends Pacjent {
+  private static final String opis = "Chory na øo≥πdek";
+  ChoryNaØo≥πdek(String s) { super(s); }
+  public String toString() { return name + " " + opis; }
+
+  public String lecz() {
+    return "StosujÍ wÍgiel";
+  }
+
+}
+
+class ChoryNaNogÍ extends Pacjent {
+  private static final String opis = "Chory na nogÍ";
+  ChoryNaNogÍ(String s) { super(s); }
+  public String toString() { return name + " " + opis; }
+
+  public String lecz() {
+    return "Zak≥adam gips";
+  }
+
+}
+</pre>
+Ale:<br>
+<ul> <li>leczenie jest raczej zewnÍtrzne wobec pacjenta, dobrze by≥oby
+go od pacjenta odseparowaÊ,</li> <li>moøe byÊ potrzeba wykonywania
+innych operacji "na pacjentach" (np.
+rejestrowania, wypisywania ze szpitala, przemieszczania pomiÍdzy
+salami)
+i takie operacje powinniúmy mÛc wprowadzaÊ zewnÍtrznie, bez potrzeby
+zmian
+w klasach pacjentÛw. </li>
+</ul>Gdybyúmy stworzyli klasÍ Leczenie i zdefiniowali w niej metodÍ
+lecz(Pacjent
+p), to musielibyúmy w tej metodzie zapisaÊ rozga≥Ízione if-else,
+rosnπce
+przy pojawianiu siÍ coraz to nowych "rodzajÛw" pacjentÛw.<br>
+<br>
+Lepiej jest (i naleøy) zdefiniowaÊ metody:<br>
+<br>
+lecz(ChoryNaG≥owÍ)<br>
+lecz(ChoryNaØo≥πdek)<br>
+lecz(ChoryNaNogÍ) <br>
+<br>
+ale wtedy mielibyúmy k≥opot z ich wywo≥aniem:<br>
+<br>
+List&lt;Pacjent&gt; listaPacjentÛw = // tu chorzy na g≥owe i nogÍ i
+brzuch.... <br>
+Leczenie leczenie = new Leczenie();<br>
+for (Pacjent p :&nbsp; listaPacjentÛw)&nbsp; leczenie.lecz(p); &nbsp;//
+b≥πd w kompilacji<br>
+<br>
+Na czym polega problem?<br>
+<br>
+Wywo≥anie leczenie.lecz(p) jest polimorficzne wzglÍdem zmiennej <i><b>leczenie</b></i>
+(klasa Leczenie moøe - i powinna -&nbsp;implementowaÊ jakiú ogÛlniejszy
+interfejs
+operacji), ale nie jest polimorficzne wzglÍdem zmiennej p (tak to juø
+jest
+w javie i C++ i C# - tylko pojedyÒczy polimorfizm).<br>
+<b>A my potrzebujemy tu "podwÛjnego polimorfizmu" - wzglÍdem operacji i
+wzglÍdem pacjenta.</b><br>
+<br>
+<br>
+Na pomoc przychodzi wzorzec Visitor:<br>
+<ul> <li>Visitor definiuje operacje na obiektach w postaci metod&nbsp;
+(takich jak metoda lecz).</li> <li>Typy parametrÛw tych metod powinny
+odpowiadaÊ konkretnym klasom obiektÛw.</li> <li>Po to øeby wywo≥aÊ
+takπ metodÍ z w≥aúciwym argumentem - konieczne bÍdzie jej wywo≥anie z
+konkretnej klasy obiektu.</li> <li>Zatem w klasach obiektÛw pojawi siÍ
+metoda, ktÛra wywo≥uje metodÍ (np. o nazwie visit)
+- z w≥aúciwym argumentem (obiektem klasy). Takπ metodÍ tradycyjnie
+nazywa
+siÍ accept.</li> <li>Efekt polimorficznych odwo≥aÒ po dwÛch
+argumentach uzyskujemy poprzez
+wywo≥anie metody <b>accept</b> (na rzecz obiektu klasy), ktÛra z kolei
+wywo≥uje
+metodÍ <b>visit</b> na rzecz Visitora (z w≥aúciwym argumentem - danym
+obiektem).<br>
+ <br>
+ </li>
+</ul><div class="important"><!----><a name="ind.6.3"></a>Taki sposÛb
+wywo≥ania, umoøliwiajπcy wykorzystanie polimorfizmu "po dwÛch
+argumentach", nazywa siÍ <b>double-dispatching</b>. Moøna go rozwinπÊ
+ogÛlniej w tzw multiple-dispatching<!---->.</div><br>
+<br>
+Diagram Gof dla wzorca Visitor podano poniøej.<br>
+<br>
+<br>
+&nbsp;<img style="width: 737px; height: 422px;" alt=""
+ src="images/visitor.gif"><br>
+<br>
+<br>
+Zobaczmy to na przyk≥adzie z pacjentami. Funkcje "leczenia" pacjentÛw
+definiujemy
+zewnÍtrznie jako Visitor (klasÍ implementujπcπ interfejs Visitor).<br>
+<br>
+<pre>interface Visitor {
+  public void visit(ChoryNaG≥owÍ p);
+  public void visit(ChoryNaØo≥πdek p);
+  public void visit(ChoryNaNogÍ p);
+}
+
+
+class Leczenie2 implements Visitor {
+
+  public void visit(ChoryNaG≥owÍ p) {
+    System.out.println(p);
+    System.out.println("StosujÍ aspirynÍ");
+  }
+
+  public void visit(ChoryNaØo≥πdek p) {
+    System.out.println(p);
+    System.out.println("StosujÍ wÍgiel");
+  }
+
+  public void visit(ChoryNaNogÍ p) {
+    System.out.println(p);
+    System.out.println("Zak≥adam gips");
+  }
+}
+
+</pre>
+W klasach pacjentÛw musimy dodaÊ metody akceptacji - wywo≥ujπce metodÍ
+visit przekazanego wizytora.<br>
+<pre>abstract class Pacjent {
+  protected String name;
+  Pacjent(String s) {
+    name = s;
+  }
+
+  <b>public abstract void accept(Visitor v);</b>
+}
+
+
+class ChoryNaG≥owÍ extends Pacjent {
+  private static final String opis = "Chory na g≥owÍ";
+  ChoryNaG≥owÍ(String s) { super(s); }
+  public String toString() { return name + " " + opis; }
+
+  <b>public void accept(Visitor v) {
+    v.visit(this);
+  }
+</b>
+}
+
+class ChoryNaØo≥πdek extends Pacjent {
+  private static final String opis = "Chory na øo≥πdek";
+  ChoryNaØo≥πdek(String s) { super(s); }
+  public String toString() { return name + " " + opis; }
+
+<b>  public void accept(Visitor v) {
+    v.visit(this);
+  }
+</b>
+
+}
+
+class ChoryNaNogÍ extends Pacjent {
+  private static final String opis = "Chory na nogÍ";
+  ChoryNaNogÍ(String s) { super(s); }
+  public String toString() { return name + " " + opis; }
+
+
+<b>  public void accept(Visitor v) {
+    v.visit(this);
+  }
+</b>
+}
+</pre>No i teraz zastosujemy double-dispatching w dzia≥aniu:<br>
+<br>
+<pre> public static void main(String[] args) {
+    List&lt;Pacjent&gt; lista = new ArrayList&lt;Pacjent&gt;();
+    lista.add(new ChoryNaG≥owÍ("Jan Kowalski"));
+    lista.add(new ChoryNaG≥owÍ("Stefan Kowalewski"));
+    lista.add(new ChoryNaNogÍ("Janusz Malinowski"));
+    lista.add(new ChoryNaØo≥πdek("Adam Mickiewicz"));
+
+    // Leczenie
+    Visitor v = new Leczenie2();
+    <b>for(Pacjent p : lista) p.accept(v);</b>
+}
+
+</pre>
+<br>
+DziÍki temu wzorcowi w ≥atwy sposÛb moøemy dodaÊ nowe rodzaje
+operacji na
+obiektach (nie muszπc przy tym nic zmieniaÊ w klasach odwiedzanych
+obiektÛw).<br>
+<br>
+Np. operacjÍ wypisywania ze szpitala<br>
+<pre>// dodajemy nowπ funkcjonalnoúÊ (zewnÍtrznie!)
+// w klasach pacjentÛw nic nie musimy zmieniaÊ
+
+class Wypis implements Visitor {
+  public void visit(ChoryNaG≥owÍ p) {
+    System.out.println(p);
+    System.out.println("Do domu!");
+  }
+  public void visit(ChoryNaØo≥πdek p) {
+    System.out.println(p);
+    System.out.println("Do domu, ale stosowaÊ dietÍ");
+  }
+  public void visit(ChoryNaNogÍ p) {
+    System.out.println(p);
+    System.out.println("Naleøy przewieüÊ do domu");
+  }
+}
+</pre>&nbsp;No
+i teraz moøemy pacjentÛw nie tylko leczyÊ ale i wypisywaÊ do domu.<br>
+<br>
+<pre>    List&lt;Pacjent&gt; lista = new ArrayList&lt;Pacjent&gt;();
+    // ...
+    // Leczenie
+    Visitor leczenie = new Leczenie2();
+    for(Pacjent p : lista) p.accept(leczenie);
+
+    // Wypisy
+    Visitor wypis = new Wypis();
+    for(Pacjent p : lista) p.accept(wypis);
+
+</pre>
+<br>
+Bardzo wyraünie "double-dispatching" i podwÛjnie polimorficznπ
+naturÍ wizytora
+moøna&nbsp; dostrzec, jeúli zdefiniowaÊ metodÍ wykonywania rÛznych
+operacji (tutaj
+za≥oøymy dodatkowo, øe w klasach wizytorÛw sπ zdefiniowaen metody
+toString()
+opisujπc rodzaj wykonywanej operacji).<br>
+<br>
+<pre>static void wykonajOperacjÍ(Visitor v, List&lt;Pacjent&gt; lista) {
+    System.out.println("WykonujÍ operacjÍ - " +  v);
+    for(Pacjent p : lista) p.accept(v);
+<b>    // Ho, ho! efekt wwwo≥ania p.accept(v) jest polimorficzny
+    //&nbsp;zarÛwno wzglÍdem p jak i wzglÍdm v.
+</b>  }
+
+</pre>
+<br>
+i uøycie:<br>
+<pre>   List&lt;Pacjent&gt; lista = new ArrayList&lt;Pacjent&gt;();
+   // ....
+   Visitor leczenie = new Leczenie2();
+           &nbsp;wypis = new Wypis();
+
+    wykonajOperacjÍ(leczenie, lista);
+    wykonajOperacjÍ(wypis, lista);
+
+</pre>co
+w koÒcu da nam wynik:<br>
+<br>
+<div class="listing100"><br>
+WykonujÍ operacjÍ - Leczenie<br>
+Jan Kowalski Chory na g≥owÍ<br>
+StosujÍ aspirynÍ<br>
+Stefan Kowalewski Chory na g≥owÍ<br>
+StosujÍ aspirynÍ<br>
+Janusz Malinowski Chory na nogÍ<br>
+Zak≥adam gips<br>
+Adam Mickiewicz Chory na øo≥πdek<br>
+StosujÍ wÍgiel<br>
+WykonujÍ operacjÍ - Wypisywanie ze szpitala<br>
+Jan Kowalski Chory na g≥owÍ<br>
+Do domu!<br>
+Stefan Kowalewski Chory na g≥owÍ<br>
+Do domu!<br>
+Janusz Malinowski Chory na nogÍ<br>
+Naleøy przewieüÊ do domu<br>
+Adam Mickiewicz Chory na øo≥πdek<br>
+Do domu, ale stosowaÊ dietÍ<br>
+</div><br>
+<br>
+<br>
+<b><u>Wady tradycyjnego visitora</u>:</b><br>
+<ul> <li>klasy muszπ byÊ przygotowane ("implementowaÊ Visitable" czyli
+definiowaÊ metodÍ accept)</li> <li>dodanie nowej klasy wizytowanych
+obiektÛw wymaga zmian we wszystkich dotychczasowych wizytorach!!!</li>
+</ul> W Javie moøna tych wad uniknπÊ poprzez zastosowanie refleksji
+(ale
+skoro refleksja - to kosztem efektywnoúci dzia≥ania). Pomys≥: Jeremy
+Blosser.
+Java Tip 98: Reflect on the visitor design pattern. <em>JavaWorld</em>,
+July 2000.<br>
+<br>
+<pre>import java.lang.reflect.*;
+import javax.swing.*;
+import java.awt.*;
+
+interface DynamicVisitor {
+  public void visit(Object o);
+}
+
+abstract class AbstractDynamicVisitor implements DynamicVisitor {
+  public void visit(Object o) {
+    // Klasa konkretnego wizytora
+    Class visitorClass = getClass();
+    // Klasa wizytowanego obiektu
+    Class objectClass = o.getClass();
+    // W konkretnym wizytorze szukamy metody visit dla danego obiektu
+    try {
+      Method visitMethod = visitorClass.getMethod("visit", objectClass);
+      visitMethod.invoke(this,o);
+    } catch (Exception exc) { defaultDispatch(o); }
+  }
+
+  // Jeúli dla danej klasy obiektu nie ma metody visit z takim argumentem
+  public void defaultDispatch(Object o) {}
+}
+
+
+class Przydzia≥DoOddzia≥Ûw extends AbstractDynamicVisitor {
+  public void visit(ChoryNaG≥owÍ p) {
+    System.out.println(p + " - na oddzia≥ psychiatrii");
+  }
+  public void visit(ChoryNaNogÍ p) {
+    System.out.println(p + " - ortopedia");
+  }
+  public void visit(ChoryNaØo≥πdek p) {
+    System.out.println(p + " - na oddzia≥ zakaüny");
+  }
+  public void defaultDispatch(Object o) {
+    System.out.println(o + " - przypadek nierozpoznany");
+  }
+}
+
+
+
+public class Visitor2 extends JFrame {
+
+  public Visitor2() {
+    java.util.List&lt;Pacjent&gt; lista = new java.util.ArrayList&lt;Pacjent&gt;();
+    lista.add(new ChoryNaG≥owÍ("Jan Kowalski"));
+    lista.add(new ChoryNaG≥owÍ("Stefan Kowalewski"));
+    lista.add(new ChoryNaNogÍ("Janusz Malinowski"));
+    lista.add(new ChoryNaØo≥πdek("Adam Mickiewicz"));
+
+    // Uwaga! Teraz nie musimy stosowaÊ metody accept!!!
+    DynamicVisitor dv = new Przydzia≥DoOddzia≥Ûw();
+    for(Pacjent p : lista) dv.visit(p);
+
+    // klasy nie muszπ nic wiedzieÊ o tym, øe sπ wizytowane
+    // czyli moøemy coú robiÊ "z zewnπtrz" zamkniÍtym, gotowym klasom
+
+    setTitle("Kliknij Gui change - zmieni siÍ wyglπd");
+
+    final DynamicVisitor guiChanger = new AbstractDynamicVisitor() {
+
+      public void visit(JButton b) {
+        b.setBackground(Color.yellow);
+      }
+
+      public void visit(JTextField tf) {
+        tf.setBorder(BorderFactory.createLineBorder(Color.red, 3));
+      }
+
+    };
+
+    setLayout(new FlowLayout());
+    add(new JButton("Jakiú przycisk"));
+    add(new JTextField(10));
+    add(new JButton("Inny przycisk"));
+
+    JButton chgGui = new JButton("Gui change");
+    chgGui.addActionListener( new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        Component[] clist = getContentPane().getComponents();
+        for (Component c : clist) if (c != e.getSource()) guiChanger.visit(c);
+
+      }
+
+    });
+    add(chgGui);
+
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    pack();
+    setVisible(true);
+  }
+
+  public static void main(String[] args) {
+    Visitor2 visitor2 = new Visitor2();
+  }
+
+
+}&nbsp;</pre>
+<hr><a name="Wzorce2.6"></a><h2>6. Composite</h2> <div class="def"><b><!----><a
+ name="ind.6.4"></a>Composite</b>&nbsp; komponuje
+czÍúci w ca≥oúÊ w taki sposÛb, øe zarÛwno elementy,&nbsp; jak obiekty
+zawierajπee
+inne elementy mogπ byÊ traktowane (pod wzglÍdem wykonywanych na nich
+operacji)
+w taki sam sposÛb<!----></div><br>
+<br>
+Tak naprawsÍ chodzi tu o to, by mÛc - przynajmniej w niektÛrych
+sytuacjach
+&nbsp;- tak samo traktowaÊ elementy terminalne, jak i te (nazwijmy je
+kontenerami)
+ktÛre zawierajπ inne elementy.<br>
+A do tego potrzebne jest aby w ramach wzorca Composite klasa
+obiektÛw-kontenerÛw
+implementowa≥a ten sam interfejs co klasa komponentÛw terminalnych.<br>
+Zwykle uzyskuje siÍ tu struktury drzewiaste i bardzo czÍsto
+implementuje siÍ
+operacje w klasach kontenerÛw w taki sposÛb aby wykonywane by≥y
+rekurencyjnie
+na sk≥adowych (czÍúciach).<br>
+<br>
+GoF prezentuje&nbsp; nastÍpujπcy diagram dla wzorca Composite.<br>
+<br>
+<img title="r" style="width: 516px; height: 331px;" alt=""
+ src="images/composite.gif">&nbsp;<br>
+<br>
+<br>
+W Javie przyk≥adem realizacji tego wzorca sπ kontenery (klasa Container
+dziedziczy
+klasÍ Component), a metody w klasie Container sπ prawie takie same jak
+na
+powyøszym diagramie. <br>
+ RÛwnieø&nbsp; w AWT dziedziczenie przez Menu
+klasy
+MenuItem (w Swingu: JMenu - JMenuItem) jest zastosowaniem tego wzorca,
+dziÍki
+czemu moøemy ≥atwo tworzyÊ wielopoziomowe menu.<br>
+<br>
+Ale oczywiúcie moøna taki wzorzec implementowaÊ we w≥asnych
+klasach, dodajπc
+przy tym funkcjonalnoúÊ o charakterze rekursywnego wykonywania
+operacji.<br>
+<br>
+<span style="text-decoration: underline;">
+Przyk≥ad</span><br>
+Operacja: show() prezentuje obiekt.<br>
+Obiekty: wÍz≥y drzewa (klasa Node) do ktÛrych mogπ byÊ dodawane
+elementy terminalne (klasa Leaf) oraz inne wÍz≥y.<br>
+<br>
+Kluczowe dla rozwiπzania:<br>
+<ul> <li>obie klasy: grupujπca elementy (Node) i opisujπca elementy
+terminalne (Leaf) implementujπ taki sam interfejs (Component)</li> <li>do
+wÍz≥Ûw moøna dodawaÊ zarÛwno liúcie jak i inne wÍz≥y</li> <li>w klasie
+Node implementacja operacji show() jest rekursywna<br>
+ </li>
+</ul><pre>import java.util.*;
+
+interface Component {
+  void show();
+}
+
+
+
+class Leaf implements Component {
+
+  private String id;
+  private int value;
+
+  public Leaf(String s, int v) {
+    id = s;
+    value = v;
+  }
+
+  public String toString() { return id + " " + value; }
+
+  public void show() {
+    System.out.println(this);
+  }
+}
+
+class Node extends LinkedList&lt;Component&gt; implements Component {
+  private String id;
+
+  public Node(String s) { id = s; }
+
+  public void show() {   <b>// rekursywnie!</b>
+    System.out.println(id);
+    for(Component c : this ) c.show();
+  }
+
+}
+
+
+class Composite {
+
+  public static void main(String args[]) {
+
+    Node root = new Node("ZwierzÍta");
+    Node node;
+    root.add(node = new Node("Psy"));
+    node.add(new Leaf("Azor", 5));
+    node.add(new Leaf("Aza", 7));
+    root.add(node = new Node("Koty"));
+    node.add(new Leaf("Pusia", 5));
+    node.add(new Leaf("Mruczek", 10));
+
+<b>    root.show();  // jakøe wygodne!</b>
+  }
+
+}
+</pre>
+<br>
+<div class="listing100"><br>
+ZwierzÍta<br>
+Psy<br>
+Azor 6<br>
+Aza 8<br>
+Koty<br>
+Pusia 6<br>
+Mruczek 11<br>
+</div><br>
+<br>
+<br>
+Inny wariant implementacji wzorca Composite prezentuje poniøszy
+diagram.<br>
+<br>
+<img title="r" style="width: 516px; height: 329px;" alt=""
+ src="images/composite2.gif">&nbsp;<br>
+<br>
+<br>
+Tutaj klasÍ Component (terminalne obiekty) traktuje siÍ tak jak by
+jej obiekty mog≥y zawieraÊ inne obiekty. To nie musi byÊ prawdπ (ale
+moøe),
+co oczywiúcie stanowi problem, natomiast zaletπ takiego rozwiπzania
+jest
+to, øe niekiedy oszczÍdza nam trochÍ kodowania.<br>
+<br>
+Przyk≥ad:<br>
+klasa JComponent dziedziczy Container - zatem wszystkie lekkie
+komponenty
+Swingu mogπ byÊ traktowane jak kontenery, co czasem moøe u≥atwiÊ
+pisanie
+kodu. Poniøej w ≥atwy sposÛb zmieniamy kolory wszystkich komponentÛw w
+hierarchii
+zawierania siÍ kompoenentÛw (nie sprawdzajπc nawet - przy wchodzeniu w
+kolejne
+poziomy hirerachii - czy mamy do czynienia z kontenerami, ktÛre trzeba
+dalej
+eksplorowaÊ czy z komponentami terminalnymi.<br>
+<br>
+<pre>import java.awt.*;
+import java.awt.event.*;
+
+import javax.swing.*;
+
+public class KontKomp extends JFrame {
+
+  public KontKomp() {
+    setLayout(new FlowLayout());
+    JPanel p1 = new JPanel();
+    p1.add(new JButton("B1"));
+    p1.add(new JButton("B1"));
+    JPanel p2 = new JPanel();
+    p2.add(new JButton("BUTT3"));
+    p2.add(new JButton("BUTT4"));
+    add(p1);
+    add(p2);
+
+    JButton show = new JButton("Zmiana koloru");
+    show.addActionListener( new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        setBackground((JComponent) getContentPane(), Color.yellow);
+      }
+    });
+    add(show);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  }
+
+  public void setBackground(JComponent jc, Color color) {
+    jc.setBackground(color);
+    java.awt.Component[] components = jc.getComponents();
+    for (java.awt.Component c : components) setBackground( (JComponent) c, color);
+  }
+
+
+
+  public static void main(String[] args) {
+    KontKomp kont = new KontKomp();
+    kont.pack();
+    kont.setLocationRelativeTo(null);
+    kont.show();
+  }
+
+</pre>
+<br>
+W implementacji wzorca Composite wg pierwszego diagramu (tak jak
+jest w AWT)
+musielibyúmy explicite sprawdzaÊ czy komponent w hierarchii jest
+kontenerem
+czy tylko kompoenntem terminalnym i nasza metoda zmiany kolorÛw
+wyglπda≥aby
+tak:<br>
+<pre>public void setBackground(Component jc, Color color) {
+    jc.setBackground(color);
+    if (jc instanceof Container) {
+      Component[] components = jc.getComponents();
+      for (Component c : components) setBackground( (JComponent) c, color);
+    }
+  }</pre><br>
+<div class="important">Duøπ si≥π wyrazu charakteryzuje siÍ po≥πczenie
+wzorcÛw Composite i Visitor</div><br>
+<br>
+Przyk≥ad:<br>
+<pre>import java.util.*;
+
+<b>interface Component {
+  void accept(Visitor v);
+}
+</b>
+interface Visitor {
+  void visit(Leaf l);
+  void visit(Node n);
+}
+
+
+class Leaf implements Component {
+
+  private String id;
+  private int value;
+
+  public Leaf(String s, int v) {
+    id = s;
+    value = v;
+  }
+
+  public int getValue() { return value; }
+
+  public void setValue(int i) { value = i; }
+
+  public String toString() { return id + " " + value; }
+
+<b>  public void accept(Visitor v) {
+    v.visit(this);
+  }</b>
+}
+
+class Node extends LinkedList&lt;Component&gt; implements Component {
+  private String id;
+
+  public Node(String s) { id = s; }
+
+  public String getId() { return id; }
+
+<b>  public void accept(Visitor v) {
+    v.visit(this);
+  }
+</b>
+}
+
+
+class PrintVisitor implements Visitor {
+
+  public void visit(Leaf l) { System.out.println(l); }
+
+  public void visit(Node n) {
+    System.out.println(n.getId());
+    for(Component c : n) c.accept(this); // Kluczowe!
+                                         // nie wolno: System.out.println(c);
+  }
+}
+
+class IncreaseValueVisitor implements Visitor {
+
+  public void visit(Leaf l) { l.setValue(l.getValue()+1); }
+
+  public void visit(Node n) {
+    for(Component c : n) c.accept(this);
+  }
+
+}
+
+
+class Composite {
+
+  public static void main(String args[]) {
+
+    Node root = new Node("ZwierzÍta");
+    Node node;
+    root.add(node = new Node("Psy"));
+    node.add(new Leaf("Azor", 5));
+    node.add(new Leaf("Aza", 7));
+    root.add(node = new Node("Koty"));
+    node.add(new Leaf("Pusia", 5));
+    node.add(new Leaf("Mruczek", 10));
+
+    root.accept(new IncreaseValueVisitor());
+    root.accept(new PrintVisitor());
+  }
+
+}
+</pre><br>
+<hr style="width: 100%; height: 2px;"><br>
+<a name="Wzorce2.7"></a><h2>7. Command</h2>
+<div class="def"><!----><a name="ind.7.1"></a>Wzorzec <b>Comamnd</b>
+pozwala na enkapsulacjÍ zlecenia do wykonania jako
+obiektu klasy implementujπcej okreúlony interfejs. DziÍki temu moøna
+uniezaleøniaÊ
+logikÍ dzia≥ania aplikacji od konkretnych zleceÒ do wykonania, czyniπc
+w
+ten sposÛb kody ≥atwe w modyfikacji i prowadzeniu<!----></div><br>
+<br>
+Diagram GoF (klasy): <br>
+<br>
+<img title="r" style="width: 514px; height: 272px;" alt=""
+ src="images/comand1.gif">&nbsp;<br>
+<br>
+Diagram GOF (sekwencja dzia≥aÒ)<br>
+<br>
+<img style="width: 550px; height: 241px;" alt=""
+ src="images/command2.gif">&nbsp;<br>
+<br>
+<br>
+Rozwaømy przyk≥ad.<br>
+Stworzymy (doúÊ uniwersalny) interfejs, opisujπcy rÛønorakie dzia≥ania:
+<br>
+<pre>import java.util.*;
+
+public interface Command {
+   void init();
+   void setParameter(String name, Object value);
+   Object getParameter(String name);
+   void execute();
+   List getResults();
+   void setStatusCode(int code);
+   int getStatusCode();
+}
+</pre>Zatem
+kaøda klasa dzia≥ania powinna implementowaÊ metody inicjacji, ustalania
+i pobierania ew. parametrÛw, wykonania dzia≥ania, ustalenia i pobrania
+kodu
+wyniku, pobrania wynikÛw dzia≥ania. UmÛwimy siÍ, øe wyniki bÍdπ
+dostÍpne jako
+lista.<br>
+<br>
+Dla u≥atwienia implementacji tych metod w konkretnych klasach
+dostarczymy
+ich standardowej implementacji, ktÛra m.in. zawiera&nbsp; mapÍ
+parametrÛw i listÍ
+wynikÛw i dostarcza gotowych i wystarczajπcych definicji metod
+ustalania,
+pobierania parametrÛw i wynikÛw, a takøe dodatkowych metod
+pozwalajπcych
+tworzyÊ elementy listy&nbsp; wynikÛw. Przyjmiemy, øe w tej standardowej
+implementacji
+kaødy element wynikÛw stanowi tablicÍ dowolnych obiektÛw, uwzglÍdniajπc
+przy
+tym, øe czÍstym przypadkiem elementu wynikÛw bÍdzie zwyk≥y napis (stπd
+przeciπøana
+metoda addResult). KlasÍ moglibyúmy uczyniÊ abstrakcyjnπ, bowiem
+nieznane
+sπ jeszcze metody inicjacji (init()) oraz&nbsp; wykonania dzia≥aÒ
+(execute()),
+ale wygodnie bÍdzie potraktowaÊ jπ raczej jako adapter, dostarczajπc
+pustych
+definicji tych metod.<br>
+<br>
+<pre>import java.util.*;
+import java.io.*;
+
+public class CommandImpl implements Serializable, Command {
+
+  private Map parameterMap = new HashMap();
+  private List resultList = new ArrayList();
+
+  private int statusCode;
+
+  public CommandImpl() {}
+
+  public void init() {}
+
+  public void setParameter(String name, Object value) {
+    parameterMap.put(name, value);
+  }
+
+  public Object getParameter(String name) {
+    return parameterMap.get(name);
+  }
+
+  public void execute() {}
+
+  public List getResults() {
+    return resultList;
+  }
+
+  public void addResult(Object o) {
+    resultList.add(o);
+  }
+
+  public void addResult(String s) {
+    addResult(new Object[] { s } );
+  }
+
+
+  public void clearResult() {
+    resultList.clear();
+  }
+
+  public void setStatusCode(int code) {
+    statusCode = code;
+  }
+
+  public int getStatusCode() {
+    return statusCode;
+  }
+
+}
+</pre>
+<br>
+Takπ standardowπ implementacjÍ interfejsu Command mogπ teraz
+odziedziczyÊ dowolne klasy, ktÛre wykonujπ dowolne dzia≥ania.<br>
+<br>
+Np.&nbsp; konkretna klasa wyszukiwania wyraøeÒ regularnych. <br>
+<br>
+ Dzia≥anie ktÛre wykonuje obiekt tej klasy ma (niewπtpliwie) dwa
+parametry:
+regularne wyraøenie i przeszukiwany tekst. Wyniki wyszukiwania bÍdπ
+przedstawiane
+na liúcie w postaci: znaleziony pod≥aÒcuch, pozycjÍ na ktÛrej siÍ on
+zaczyna i pozycjÍ
+na ktÛrej siÍ koÒczy. Ustalimy rÛwnieø kody wyniku: 0 - znaleziono
+jedno
+lub wiÍcej dopasowaÒ, 1 - &nbsp;brak parametrÛw, 2 - b≥πd w wyraøeniu,
+3 - brak
+dopasowania.<br>
+<pre>import java.util.*;
+import java.io.*;
+import java.util.regex.*;
+
+public class FindCommand extends CommandImpl implements Serializable {
+
+  public FindCommand() {}
+
+  public void execute() {
+    clearResult();
+    String regex = (String) getParameter("regex");
+    String input = (String) getParameter("input");
+    if (regex == null || input == null) {
+      setStatusCode(1);
+      return;
+    }
+    Pattern pattern;
+    try {
+      pattern = Pattern.compile(regex);
+    } catch (PatternSyntaxException exc) {
+       setStatusCode(2);
+       return;
+    }
+    Matcher matcher = pattern.matcher(input);
+    boolean found = matcher.find();
+    if (!found) setStatusCode(3);
+    else {
+      setStatusCode(0);
+      do {
+        &nbsp;addResult("\"" + matcher.group() + "\"" + " " +
+                                  matcher.start() +  " " +
+                                  matcher.end());
+
+      } while(matcher.find());
+    }
+  }
+
+}
+</pre><br>
+Moøemy teø stworzyÊ ca≥kiem inne, wykonujπce zupe≥nie inne dzia≥ania
+klasy.<br>
+<br>
+DziÍki zastosowaniu wzorca Command interfejs do:<br>
+<ul> <li>odbierania zleceÒ od uøytkownika,</li> <li>
+inicjowania wykonania dzia≥aÒ,</li> <li>
+prezentacji wynikÛw</li>
+</ul><br>
+moøe byÊ ca≥kowicie niezaleøny od konkretnego zadania do wykonania.<br>
+<br>
+Oto przyk≥ad:<br>
+<pre>import java.util.*;
+import javax.swing.*;
+
+public class CommandTest {
+
+  public CommandTest() {
+    String req = JOptionPane.showInputDialog("Podaj zlecenie do wykonania");
+    List resList = serviceRequest(req);
+    for (Object o : resList) {
+      if (o.getClass().isArray()) {
+        Object[] arr = (Object[]) o;
+        for (int i=0; i&lt;arr.length; i++) System.out.println(arr[i]);
+      } else System.out.println(o);
+    }
+
+  }
+
+  // Metoda obs≥ugi zleceÒ
+  // niezaleøna od konkretnych zleceÒ
+
+  public List serviceRequest(String req) {
+    Command cmd = null;
+    try {
+      Class klasa = Class.forName(req);
+      cmd = (Command) klasa.newInstance();
+      String data = JOptionPane.showInputDialog(
+                    "-------------------  Podaj parametry -----------------");
+      StringTokenizer st = new StringTokenizer(data, "()");
+      while (st.hasMoreTokens()) {
+        String para = st.nextToken();
+        String[] parm = para.split("#");
+        cmd.setParameter(parm[0], parm[1]);
+      }
+      cmd.execute();
+    } catch (Exception exc) { exc.printStackTrace(); }
+    return cmd.getResults();
+  }
+
+</pre>Tutaj
+stosujemy nastÍpujπcπ konwencjÍ:<br>
+<ul> <li>zlecenie do wykonaia ma byÊ nazwπ klasy dzia≥ania,</li> <li>prametry
+podajemy w postaci: <span
+ style="font-style: italic; font-weight: bold;">(nazwaPar1#wartoúc)(nazwaPar2#wartoúÊ)....
+</span></li></ul>
+Zobacz <a href="mm/w7p1/w7p1.html" target="_blank">prezentacjÍ
+dzia≥ania tego programu</a><a href="mm/w7p1/w7p1.html"><img
+ style="border: 0px solid ; width: 100px; height: 80px;" alt=""
+ src="../STYLE/video2.gif"></a><a href="mm/w7p1/w7p1.html"
+ target="_blank"> </a>dla przypadku uzycia jako zlecenia omÛwionej
+wczeúniej klasy FindCommand.
+<br>
+<hr>
+<a name="Wzorce2.8"></a><h2>8. Model-View-Controller</h2>
+<div class="def"><!----><a name="ind.7.2"></a>Wzorze <b>MVC</b> polega
+na separacji fragmentÛw kodu pomiÍdzy czÍúci:<br>
+<ul> <li>model - okreúla dane zwiπzane z komponentem lub stany
+komponentu,</li> <li>widok (view) - okreúla wizualnπ reprezentacjÍ
+danych lub stanÛw,</li> <li>sterownik (controller) - zapewnia
+interakcjÍ uøytkownika z widokiem i
+wynikajπce stπd modyfikacje modelu.<!----></li>
+</ul></div><br>
+<br>
+<p>Taka <b>separacja</b> umoøliwia bardziej elastyczne i logiczne
+tworzenie
+kodu, m.in. dziÍki skupieniu uwagi na modelu danych, ktÛry moøe
+nastÍpnie byÊ
+prezentowany przez rÛøne widoki.</p>
+<p>W duøym stopniu pozwala takøe na uniezalÍznienie fragmentÛw
+kodu odpowiedzoalnych za model, widok i kontroler. DziÍki temu
+modyfikacje kodu stajπ siÍ znacznie ≥atwiejsze, zwiÍkszajπ siÍ
+moøliwoúci ponownego uøycia gotowych klas (modeli, kontrolerÛw i
+widokÛw).</p>
+<p>Podstawowe idee MVC przezentuje poniøszy rysunek.</p>
+<p><img style="border: 1px solid ; width: 550px; height: 385px;"
+ src="images/MVC.gif" alt="1"><br>
+</p>èrÛ≥o: J2EE Blueprint
+<br>
+<hr>
+</body></html>

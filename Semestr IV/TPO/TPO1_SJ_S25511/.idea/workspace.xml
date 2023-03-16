@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="2d033843-2300-472a-bf05-ae9e5cb0568b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/Readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/out/production/DistributedDatabase/DatabaseNodeCenter$OperateThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/out/production/DistributedDatabase/DatabaseNodeCenter$OperateThread.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/out/production/DistributedDatabase/DatabaseNodeCenter$RequestListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/out/production/DistributedDatabase/DatabaseNodeCenter$RequestListener.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/out/production/DistributedDatabase/DatabaseNodeCenter.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/out/production/DistributedDatabase/DatabaseNodeCenter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/out/production/DistributedDatabase/SocketListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../../Semestr III/SKJ/Materials/Projekt programistyczny/DatabaseNode/out/production/DistributedDatabase/SocketListener.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2Gx7X3c5Iy7AaOE1fHQVgITTWzA" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/kubas/Desktop/Studia/Semestr III/UTP/Projects/Project_7/UTP9_SJ_S25511&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="zad1" />
+      <recent name="UTP41" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\kubas\Desktop\Studia\Semestr III\UTP\Projects\Project_5\UTP7_SJ_S25511\src" />
+      <recent name="C:\Users\kubas\Desktop\Studia\Semestr III\UTP\Projects\Project_5\UTP7_SJ_S25511\src\UTP41" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\kubas\Desktop\Studia\Semestr IV\TPO\TPO1_SJ_S25511\src" />
+      <recent name="C:\Users\kubas\Desktop\Studia\Semestr IV\TPO\TPO1_SJ_S25511" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="UTP45" />
+      <recent name="UTP44" />
+      <recent name="UTP43" />
+      <recent name="UTP42" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.zad1.Main">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="UTP41.Main" />
+      <module name="UTP41" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="UTP41.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UTP42.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="UTP42.Main" />
+      <module name="UTP41" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="UTP42.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UTP45.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="UTP45.Main" />
+      <module name="UTP41" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="UTP45.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="zad1.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="zad1.Main" />
+      <module name="UTP41" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="zad1.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.zad1.Main" />
+        <item itemvalue="Application.UTP42.Main" />
+        <item itemvalue="Application.UTP45.Main" />
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2d033843-2300-472a-bf05-ae9e5cb0568b" name="Changes" comment="" />
+      <created>1667318419727</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1667318419727</updated>
+      <workItem from="1667318421001" duration="4831000" />
+      <workItem from="1667323482865" duration="14000" />
+      <workItem from="1667323598255" duration="1032000" />
+      <workItem from="1667464296813" duration="735000" />
+      <workItem from="1667467366060" duration="1616000" />
+      <workItem from="1667673946233" duration="2785000" />
+      <workItem from="1667679318848" duration="62000" />
+      <workItem from="1667729468313" duration="908000" />
+      <workItem from="1667830282883" duration="673000" />
+      <workItem from="1667840880800" duration="142000" />
+      <workItem from="1667847379518" duration="152000" />
+      <workItem from="1667848145953" duration="323000" />
+      <workItem from="1667852824308" duration="6000" />
+      <workItem from="1667908091824" duration="1178000" />
+      <workItem from="1667917496788" duration="376000" />
+      <workItem from="1667996006075" duration="5000" />
+      <workItem from="1668211869768" duration="7000" />
+      <workItem from="1668211892183" duration="2340000" />
+      <workItem from="1668851149885" duration="25000" />
+      <workItem from="1678190134173" duration="1613000" />
+      <workItem from="1678196941178" duration="2008000" />
+      <workItem from="1678210688244" duration="23000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

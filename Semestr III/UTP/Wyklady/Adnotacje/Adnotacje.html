@@ -1,0 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250"> <meta name="author" content="Krzysztof Barteczko"> <meta name="description" content="Uniwersalne techniki programowania"> <meta name="copyright" content="(c) Krzysztof Barteczko PJWSTK 2010"> <link rel="stylesheet" type="text/css" href="../STYLE/common.css"> <title>Metadane i adnotacje</title></head>
+<body><br>
+<br>
+<div align="center"><h1>Metadane i adnotacje</h1>
+</div><br>
+<hr><i></i><span style="font-style: italic;">Kolejny
+dynamiczny aspekt Javy - to adnotacje. Pozwalają one na swoistym
+metapoziomie kształtować semantykę aplikacji i&nbsp;znacząco
+upraszczają wykorzystanie różnych technologii programistycznych.<br>
+ </span>
+<hr>
+<a name="Adnotacje.1"></a><h2>1. Wprowadzenie</h2>
+<br>
+<div class="def"><b><!---->Metadane</b> to dane opisujące dane. W
+przypadku programowania chodzi
+o takie metadane, które opisują i uzupełniają kod źródłowy w znaczeniu
+semantycznym<!----></div><br>
+<br>
+Coraz częściej metadane są obecne w językach programowania.<br>
+W Javie częściowo występowały już wcześniej - w samym środowisku
+(dokumentacyjne np. @author),
+a częściowo jako zewnętrzne uzupełnienia (np. XDoclet, JBoss AOP).<br>
+W C# nazywają się (nieco nieszczęśliwie) atrybutami.<br>
+<br>
+Java 5 rozszerza i standaryzuje zastosowanie metadanych na
+platformie Javy poprzez <b>mechanizm<!----> <a name="ind.3.2"></a>adnotacji</b><!---->.<br>
+<br>
+<b>Zastosowania</b> (bardzo różnorodne), m.in.
+<ul><li>do celów poprawy niezawodności programowania (np. @override),</li><li>do
+generacji dodatkowych kodów programu (uzupełniających klas),</li><li>do
+określania sposobu funkcjonowaniu programu w fazie wykonania (można
+krótko zapisać różne rzeczy). </li><li>do celów konfiguracyjnych,</li><li>do
+generowania pomocniczych plików (np. różnych deskryptorów itp.)</li></ul>
+<div class="important">Mechanizm adnotacji jest najważniejszym
+praktycznie uzupełnieniem Javy
+w wersji 5, choćby dlatego, że już teraz kolejne wersje dużych
+platform,
+takich jak J2EE, a także pakiety narzędziowe , takie jak JDBC 4.0,
+intensywnie używają
+adnotacji.<br>
+</div><br>
+<br>
+<b>Zalety adnotacji</b>:
+<ul><li>zastosowanie adnotacji może znacznie ułatwić pisanie i
+wdrażanie aplikacji,
+szczególnie dużych; kody mogą być wielokrotnie mniejsze, pracochłonność
+znacząco
+ograniczona itp.</li></ul>
+<br>
+<b>Wady</b>:
+<ul><li>pojawiają się jakby nowe elementy składniowo-semantyczne;
+ponieważ
+każdy może definiować własne adnotacje, to istnieje niebezpieczeństwo,
+że
+pojawi się mnóstwo "dialektów" Javy - czyli standard Javy + wymyślne,
+niestandardowe
+adnotacje,</li><li>adnotacje pozwalają upraszczać wiele rzeczy,
+zapisywać niejako symbolicznie
+jednym słowem, to co bez nich wymagało być może dziesiątek linii kodu;
+ale
+tych zapisów (notacji i ich znaczeń) trzeba się też uczyć (dla różnych
+środowisk
+za każdym razem od nowa) i mieć świadomość, do czego tego tak naprawdę
+te
+skróty prowadzą (co robią),</li><li>na razie nie ma dobrej koncepcji
+sprawdzania błędowi na poziomie metadanych.</li></ul><br><br>
+<br>
+<a name="Adnotacje.2"></a><h2>2. Rodzaje adnotacji</h2>
+<span style="font-weight: normal;">Można wyróżnić następujące rodzaje
+adnotacji:</span><br>
+<ul><li><b>adnotacje wbudowane w Javę</b></li><ul><li>regularne</li><li>metaadnotacje</li></ul></ul>
+<ul><li><b>adnotacje użytkownika</b> (tworzone przez użytkownika)</li><ul><li>stosowane
+na etapie kompilacji (przetwarzane przez narzędzia)</li><li>stosowane w
+fazie wykonania (za pomocą mechanizmów refleksji)</li></ul></ul>
+<br>
+<u>Adnotacje mogą byś stosowane wobec</u>:<br>
+<ul><li>pakietów</li><li>
+klas</li><li>
+interfejsów</li><li>
+pól</li><li>
+konstruktorowi</li><li>
+metod</li><li>
+zmiennych lokalnych</li><li>
+innych adnotacji</li></ul>
+<br>
+Można wyraźnie zaznaczyć do czego odnosi się nowodefiniowana
+adnotacja za pomocą metaadnotacji <b>@Target </b>(wtedy inne jej
+zastosowanie będzie wykryte jako błąd w fazie kompilacji).<b><br>
+<br>
+</b><div class="notec"><b>Możliwe znaczenia (wartości)
+metaadnotacji @Target</b><br>
+<br>
+ANNOTATION_TYPE - dana adnotacja adnotuje inną,<br>
+PACKAGE - dotyczy pakietu,<br>
+TYPE - klas i interfejsów<br>
+METHOD - metod<br>
+CONSTRUCTOR - konstruktorów<br>
+FIELD - pól<br>
+PARAMETER - parametrów<br>
+LOCAL_VARIABLE - zmiennych lokalnych<br>
+</div><br>
+<br>
+Przykład (fragment) definicji adnotacji o nazwie Test, która może
+dotyczyć tylko metod:<br>
+<br>
+@Target(ElementType.METHOD)<br>
+public @interface Test <br>
+<br>
+Uwagi: <br>
+<ol><li>adnotacja nie oznaczona znacznikiem @Target ma zastosowanie
+wszędzie.</li><li>aby określić kilka możliwych zastosowań piszemy
+@Target({ a, b, c }
+), gdzie a, b, c to elementy w postaci <span style="font-weight: bold; font-style: italic;">ElementType.rodzaj,</span>
+a rodzaj to jeden
+z PACKAGE, METHOD, FIELD itp.</li></ol>
+<br>
+Siła adnotacji polega na tym, że mogą one być przetwarzane: <br>
+<ul><li>przez narzędzia do generacji (i ew. równoczesnej kompilacji)
+kodu (wtedy potrzebne są tylko w fazie kompilacji), </li><li>
+albo przez mechanizmy refleksji &nbsp;- wtedy powinny być zapisane w
+klasie wykonywalnej
+i dostępne dla tych mechanizmów w fazie wykonania programu,</li><li>
+albo przez narzędzia przetwarzania "binarnej" postaci klas
+(umożliwiające
+m.in. różne iniekcje, zmiany, usuwanie kodu binarnego) - wtedy powinny
+być
+zapisane w klasie, ale nie muszą być dostępne dla mechanizmów refleksji.</li></ul>
+<br>
+<!----><!---->Odpowiadają temu trzy polityki utrzymywania
+adnotacji, specyfikowane przez metaadnotację @<b>Retention</b>.<br>
+<br>
+<div class="notec"><br>
+<div style="text-align: center;">Polityki utrzymywania adnotacji<br>
+</div><br>
+RetentionPolicy.SOURCE - tylko w żródle,<br>
+RetentionPolicy.CLASS - w klasie skompilowanej, ale niedostępne w fazie
+wykonania,<br>
+RetentionPolicy.RUNTIME - dostępne w fazie wykonania.<br>
+</div><br>
+<br>
+Przykład:<br>
+@Retention(RetentionPolicy.SOURCE) &nbsp; // utrzymanie tylko w kodzie
+adnotacji AdapterFor<br>
+public interface @AdapterFor &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; // zostanie przetworzona przez narzędzia w fazie<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // kompilacji<br>
+<br>
+Wśrod metaadnotacji dostępne są jeszcze:<br>
+<br>
+<b>@Documented</b> &nbsp;- mowi o tym, że dokumentacja działania
+adnotacji ma być włączona do dokumentacji wszystkich oznaczanych przez
+nią elementów<br>
+<br>
+<b>@Inherited</b> - mówi o tym, że oznaczana przez nią adnotacja
+(zaznaczająca klasy) ma być dziedziczona przez podklasy zaznaczonych
+klas.<br>
+<br>
+<br>
+Zestaw regularnych, wbudowanych w Javę adnotacji jest na razie bardzo
+niewielki i obejmuje:<br>
+<br>
+@Deprecated - zaznacza dowolny element jako spadkowy
+("przestarzały"),<br>
+<br>
+@SupressWarnings - blokuje ostrzeżenia (podanego typu) ze strony
+kompilatora,<br>
+<br>
+@Override - stosowana &nbsp;wobec metod, oznacza intencję
+programisty przedefiniowania
+metody z nadklasy, dzięki czemu jest możliwość sprawdzenia w fazie
+kompilacji
+czy programista nie popełnił błędu,<br>
+<br>
+Ta ostatnia adnotacja jest b. użyteczna i należy ją stosować.<br>
+Dzięki temu unikniemy błędów niewykrywalnych nie tylko w fazie
+kompilacji, ale również czasem w fazie wykonania.<br>
+<br>
+Np.<br>
+<br>
+class Push extends JButton {<br>
+<br>
+&nbsp;&nbsp;&nbsp; public Dimension getPrefferedSize() { ... }<br>
+<br>
+}<br>
+<br>
+Tutaj nastąpiła pomyłka w nazwie metody - wobec czego pojawia się
+nowa metoda
+(nigdy nie wołana), a właściwa (getPreferredSize()) nie jest
+przedefiniowana.
+Błędu nie ma &nbsp;ani w kompilacji ani w fazie wykonania (oprócz - być
+może
+nie zawsze, nie od razu, nie w każdych okolicznościach - widocznych
+niewłaściwych
+rozmiarów przycisku).<br>
+<br>
+Gdy napiszemy:<br>
+<br>
+class Push extends JButton {<br>
+<br>
+&nbsp; @Override&nbsp; public Dimension getPrefferedSize() { ... }<br>
+<br>
+}&nbsp;<br>
+<br>
+to kompilator wykryje błąd i powiadomi nas o tym.<br>
+<br>
+<br>
+<div class="syntax">Jak widać, składnia zastosowania adnotacji jest
+bardzo prosta.<br>
+Adnotacje zaczynają sie znakiem @.<br>
+Adnotacje poprzedzają inne kwalifikatory elementów (klas, metod, pól).<br>
+</div><br>
+<a name="Adnotacje.3"></a><h2>3. Definiowanie adnotacji</h2>
+Adnotacje są definiowane jako swego rodzaju interfejsy, za pomocą słowa
+@<b>interface</b><br>
+Wewnątrz takiego interfejsu dostarcza się deklaracji danych, które
+adnotacja może zawierać.<br>
+<br>
+<div class="syntax"><br>
+[ew. kwalifikacja dostępu]&nbsp; @<b>interface</b> NazwaAdnotacji {<br>
+&nbsp; &nbsp; deklaracja1<br>
+&nbsp; &nbsp; deklaracja2<br>
+&nbsp; &nbsp; &nbsp;. . .<br>
+&nbsp;&nbsp; &nbsp;deklaracjaN<br>
+}<br>
+</div><br>
+<br>
+Każda deklaracja ma postać:<br>
+<br>
+<div class="syntax"> &nbsp;typ nazwaDanej();</div><br>
+<br>
+albo <br>
+<br>
+<div class="syntax">typ nazwaDanej() <b>default</b>
+wartość_domyślna;</div><br>
+<br>
+<br>
+Przy zastosowaniu adnotacji możemy podać konkretne dane:<br>
+<br>
+@NazwaAdnotacji(nazwaDanej1=wartość1, nazwaDanej2=wartość2, . . .)<br>
+<br>
+Typy danych w adnotacji mogą być następujące:<br>
+<br>
+<ul><li>typy proste (int, short, long, byte, char, double, float,
+boolean),</li><li>
+String,</li><li>
+typ referencyjny, reprezentowany przez Class, w tym także w wersji
+sparametryzowanej,</li><li>
+enum.</li><li>
+adnotacja,</li><li>
+tablica (w/w elementów).</li></ul>
+<br>
+Przykład:<br>
+<pre>public @interface Opis {<br>&nbsp; &nbsp; String text() default "Brak opisu";<br>&nbsp; &nbsp; int version() default 1;<br>}<br><br><br>// i zastosowanie np. do opisu klasy:<br><br>@Opis(text="Klasa warzyw", version=2)<br>public class Warzywa { ... }<br><br><br><br></pre><br>
+Można też tak:<br>
+<br>
+@Opis(version=5, text="Klasa warzyw")<br>
+<br>
+albo:<br>
+<br>
+@Opis(text="Klasa warzyw")<br>
+<br>
+tu pominięte dane przyjmą wartości domyślne,<br>
+w szczególności:<br>
+<br>
+<div class="notec"><br>
+@Opis <br>
+oznacza to samo co<br>
+<br>
+@Opis()<br>
+i co<br>
+<br>
+@Opis(text="Brak opisu", version=1)<br>
+</div><br>
+<br>
+Mamy też szczególny przypadek, kiedy można pominąć nazwę danych i znak
+=. Mianowicie:<br>
+<br>
+public @interface JakaśAdnotacja {<br>
+&nbsp; &nbsp;jakiśTyp value()<br>
+}<br>
+<br>
+<br>
+Wtedy można pisać np. tak (jeśli jakiśTyp to int):<br>
+<br>
+@JakaśAdnotacja(111)<br>
+<br>
+nadając danej oznaczanej przez value wartość 111.<br>
+<br>
+<br>
+Dane konkretnych adnotacji mogą być uzyskiwane od nich (w fazie
+wykonania
+lub kompilacji) poprzez odwołania do "metod" interfejsu definiującego
+adnotację
+<br>
+(np. jeśli annot - jest uzyskaną metodami refleksji lub przez
+narzędzia przetwarzania
+w fazie kompilacji adnotacją @Opis, to możemy wołać:<br>
+<br>
+String op = annot.txt();<br>
+int v = annot.version();<br>
+<br>
+<a name="Adnotacje.4"></a><h2>4. Przetwarzanie adnotacji w fazie wykonania</h2>
+Aby przetwarzać - i odpowiednio stosować - adnotacje w fazie wykonania,
+należy:<br>
+<br>
+<ul><li>ustalić rodzaj adnotacji przez
+@Retention(RetentionPolicy.RUNTIME),</li><li>użyć metod refleksji do
+uzyskania informacji które elementy i za pomocą jakich adnotacji są
+zaznaczane,</li><li>od uzyskanych adnotacji dowiedzieć się ew.
+dodatkowych informacji,
+zapisanych w nich jako dane; po czym na podstawie adnotacji i tych
+danych
+dynamicznie wytworzyć i wykonać odpowiedni kod.</li></ul>
+Dla każdego elementu programu (uzyskanego dynamicznie): Class, Method,
+Field
+itp. możemy użyć metod, które zwracają informację o adnotacjach
+zastosowanych
+wobec tego elementu.<br>
+<br>
+<table summary="" border="1" cellpadding="3" cellspacing="0" width="100%"> <tbody> <tr class="TableRowColor" bgcolor="white"> <td align="right" valign="top" width="1%"> <table summary="" border="0" cellpadding="0" cellspacing="0"> <tbody> <tr align="right" valign="">
+<td nowrap="nowrap">&lt;T extends Annotation&gt; <br>
+T</td> </tr> </tbody> </table> </td> <td>getAnnotation(Class&lt;T&gt;&nbsp;annotationType)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zwraca adnotację
+podanego typu, albu null, jeśli element nie jest oznaczony adnotacją.</td>
+</tr> <tr class="TableRowColor" bgcolor="white"> <td align="right" valign="top" width="1%">&nbsp;Annotation[]</td> <td>getAnnotations()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zwraca wszystkie
+adnotacje dla tego elementu</td> </tr> <tr class="TableRowColor" bgcolor="white"> <td align="right" valign="top" width="1%">&nbsp;Annotation[]</td>
+<td>getDeclaredAnnotations()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zwraca wszystkie
+adnotacje bezpośrednio zastosowane (z pominieciem dziedziczonych)</td> </tr>
+<tr class="TableRowColor" bgcolor="white"> <td align="right" valign="top" width="1%">&nbsp;boolean</td> <td>isAnnotationPresent(Class&lt;?
+extends Annotation&gt;&nbsp;annotationType)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Zwraca true,
+jeśli wobec elementu zastosowano adnotację podanego typu.</td> </tr> </tbody>
+</table><br>
+Co to jest typ adnotacji?<br>
+Nic innego jak nazwa interfejsu który ją definiuje. Np. dla adnotacji,
+zdefiniowanej jako:<br>
+<br>
+public @interface Opis { ... }<br>
+<br>
+typem jest:<br>
+<br>
+Opis.class<br>
+albo<br>
+Class.forName("Opis");<br>
+<br>
+Uwagi: <br>
+<ul><li>przy zastosowaniu nazwanych pakietów nazwy interfejsów
+adnotacji muszą być kwalifikowane nazwą pakietu,</li><li>wszystkie
+adnotacje (jako interfejsy) rozszerzają interfejs Annotation,
+wobec czego mogą być traktowane jako Annotation i dlatego takie są
+wyniki
+w/w metod; zwróćmy uwagę, że dzięki parametryzacji nie musimy stosować
+konwersji
+zawężających.</li></ul>
+<br>
+<b>Przykład.</b><br>
+<br>
+Stworzymy i zastosujemy adnotację, dzięki której w prosty sposób w
+kodzie
+źródłowym będziemy ustalać do jakich kontenerów mają być wkładane
+wybrane
+komponenty GUI.<br>
+Adnotację nazwiemy Loc (od locate).<br>
+<br>
+<pre>import java.lang.annotation.*;<br>import java.awt.*;<br><br>@Target(ElementType.FIELD)             // do oznaczania pól<br>@Retention(RetentionPolicy.RUNTIME)    // faza wykonania<br><br>public @interface Loc {<br>   String to();<br>}<br></pre>
+<br>
+Adnotacja ma jedną "daną", swoisty atrybut, o nazwie<span style="font-weight: bold; font-style: italic;"> to</span>, który
+będzie reprezentował
+za każdym razem nazwę zmiennej oznaczającej kontener do którego dany
+komponent
+(oznaczony tą adnotacją)&nbsp; ma być dodany.<br>
+<br>
+A oto jej zastosowanie:<br>
+<br>
+<pre>import java.awt.*;<br>import java.awt.event.*;<br>import javax.swing.*;<br>import java.lang.reflect.*;<br><br>public class Annot0 extends JFrame {<br><br>  JComponent cp = (JComponent) getContentPane();<br><br>  @Loc(to="cp") JPanel p1 = new JPanel();<br>  @Loc(to="cp") JPanel p2 = new JPanel();<br><br>  @Loc(to="p1") JButton b1 = new JButton("Przycisk 1");<br>  @Loc(to="p1") JButton b2 = new JButton("Przycisk 2");<br>  @Loc(to="p2") JButton b3 = new JButton("Przycisk 3");<br>  @Loc(to="p2") JButton b4 = new JButton("Przycisk 4");<br>  @Loc(to="p2") JButton b5 = new JButton("Przycisk 5");<br><br>  public Annot0() {<br>    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);<br>    cp.setLayout(new BoxLayout(cp, BoxLayout.Y_AXIS));<br>    try {<br>      locateComponents();   // metoda ta zajmie się wkładaniem do kontenerow<br>    } catch(Exception exc) {<br>        exc.printStackTrace();<br>    }<br>    pack();<br>    show();<br>  }<br>//....<br>}<br></pre>
+<br>
+<br>
+Metoda locateComponents() nie jest trudna do napisania, jeśli tylko
+choć trochę władamy metodami refleksji:<br>
+<br>
+<pre>  private void locateComponents() throws Exception {<br>    Class klasa =  getClass();<br>    for (Field f : klasa.getDeclaredFields()) {   // po polach klasy<br>      Loc annot = f.getAnnotation(Loc.class);     // dla f uzyskać anotację Loc<br>      if (annot == null) continue;                // nie ma - następne pole<br>      System.out.println(annot);                  // zobaczmy jak wygląda<br>      String contName = annot.to();               // od adnotacji: nazwa kontenera<br>      Field contField = klasa.getDeclaredField(contName);  // pole, ktore go deklaruje<br>      Object container = contField.get(this);  // sam obiekt-kontener<br>      Method m = container.getClass().getMethod("add", Component.class); // metoda add<br>      m.invoke(container, f.get(this)); // i jej wywołanie - dodajemy komponent<br>    }<br>}<br></pre>Można
+powiedzieć, że ten sposób programowania, szczególnie w dużych
+projektach
+może być bardzo użyteczny, bowiem łatwo pozwala zmieniać ułożenie
+komponentów.<br>
+Sama metoda locateComponents() może być nieco zmodyfikowana, tak by
+mogła
+znaleźć się w jakiejś klasie narzędziowej i być zastosowana wobec
+dowolnych
+klas o podobnej j.w. konstrukcji.<br>
+<br>
+<a name="Adnotacje.5"></a><h2>5. Przetwarzanie adnotacji w fazie kompilacji</h2>
+Niewątpliwie możliwość przetwarzania adnotacji &nbsp;w fazie kompilacji
+&nbsp;jest najbardziej ekscytująca. <br>
+Umożliwia np. generowanie dodatkowych klas czy niezbędnych plików
+zewnętrznych.<br>
+<br>
+Do takiego przetwarzania powołane są odpowiednie dodatkowe
+narzędzia. <br>
+<br>
+Należy do nich procesory&nbsp;adnotacji.<br>Sposób
+ich definiowania i użycia był dość prosty w Javie w wersji 5, ale
+wymagał uzycia dodatkowego narzędzia (apt). W wersji 6 Javy
+infrastrukturę przetwarzania adnotacji zintegrowano z kompilatorem,
+jednoczesnie dostarczając rozbudowanego API do działania na elementach
+kodu źródłowego. Tutaj&nbsp;sposób definiowania i użycia procesorów adnotacj w Javie w wersji 5. <br>Sposób postępowania obowiązujący od
+wersji Java 6 przedstawiony jest w książace K. Barteczko. Java. Uniwersalne techniki programowania, PWN 2015.<br>
+<span style="font-weight: bold;"></span><br>W Javie 5 do przetwarzania danotacji wykorzystywane jese narzędzie zwane "Annotation Processing Tool" (apt).<br>
+<br>
+Skąd apt ma wiedzieć, jak należy przetwarzać nasze adnotacje?<br>
+<!----><!---->
+Otoż musimy mu to sami powiedzieć, dostarczając tzw. procesora
+adnotacji.<br>
+<br>
+<div class="syntax"><br>
+Procesor adnotacji definiujemy implementując we własnej klasie
+interfejs <b>AnnotationProcessor</b> i dostarczając definicji jedynej
+jego metody public void process()<br>
+<br>
+Apt uzyskuje dostęp do naszego procesora za pomocą metody
+getProcessorFor(...)
+z klasy, którą też musimy zdefiniować i która stanowi fabrykę
+procesorów
+- implementację interfejsu <b>AnnotationProcessorFactory</b>.<br>
+<br>
+Podczas wywołania tej metodzie przekazywane jest środowisko
+działania dla procesora - <b>AnnotationProcessorEnvironment</b>. Z
+tego środowiska nasz procesor może odczytać wszystkie niezbędne
+informacje
+o strukturze kodu źródłowego oraz sposobach tworzenia i generowania
+nowych
+plików, a także raportowania błędów i ostrzeżeń.<br>
+<br>
+Apt używa naszego procesora, który np. produkuje dodatkowe pliki,
+po czym wykonuje wszystkie niezbędna kompilacje.<br>
+<br>
+Uwaga: konieczne są importy pakietów z tools.jar - zob. przykładowy
+kod źródłowy.<br>
+</div><br>
+<br>
+Jako przykład rozpatrzmy prosty sposób zapisu klas typu JavaBeans.<br>
+Na podstawie tych bardzo uproszczonych zapisów będą mogły być
+generowane
+"prawdziwe" duże klasy JavaBeans. Przykład jest raczej ilustracyjny i
+do
+dalszego znaczącego rozszerzania i modyfikowania.<br>
+<br>
+Umówimy się, że na podstawie zapisu:<br>
+<br>
+<b>@BeanTemplate class <i>NazwaBeana</i>Template {</b><br>
+&nbsp; &nbsp; &nbsp; &nbsp;typ1 nazwa1;<br>
+&nbsp; &nbsp; &nbsp; &nbsp;typ2 nazwa2;<br>
+&nbsp; &nbsp; &nbsp; &nbsp;....<br>
+&nbsp; &nbsp; &nbsp; &nbsp;tyoN nazwaN;<br>
+}<br>
+<br>
+ma być wygenerowana klasa JavaBean o nazwie NazwaBeana, zawierające
+właściwe
+deklaracje pól (podanych) oraz odpowiednie dla nich settery i gettery.<br>
+<br>
+Musimy więc mieć adnotację @BeanTemplate:<br>
+<pre>import java.lang.annotation.*;<br><br>@Target(ElementType.TYPE)<br>@Retention(RetentionPolicy.SOURCE)<br>public @interface BeanTemplate {<br>}<br></pre>&nbsp;
+<br>
+&nbsp;i odpowiedni procesor, dostarczany przez naszą implementację
+fabryki procesorow adnotacji:<br>
+<br>
+<pre>import com.sun.mirror.apt.*;<br>import com.sun.mirror.declaration.*;<br>import com.sun.mirror.type.*;<br>import com.sun.mirror.util.*;<br><br>import java.beans.*;<br>import java.io.*;<br>import java.util.*;<br><br><br>public class BeanTemplateAnnotationFactory<br>       implements AnnotationProcessorFactory<br>{<br><br>   // Typ adnotacji<br>   private final String annoType = "BeanTemplate";<br><br>   public Collection&lt;String&gt; supportedAnnotationTypes() {<br>      return Arrays.asList(annoType);<br>   }<br><br>   public Collection&lt;String&gt; supportedOptions() {<br>      return Arrays.asList(new String[0]);<br>   }<br><br>   public AnnotationProcessor   <b>// ważna metoda getProcessorFor</b>
+          getProcessorFor(Set&lt;AnnotationTypeDeclaration&gt; atds,
+                          final <b>AnnotationProcessorEnvironment env</b>)<br>   {<br>      return new AnnotationProcessor() { <b>// procesor - w klasie wewnętrznej</b>
+
+        <b>public void process() {</b>
+          // deklaracje markowane adnotacją annoType (teraz "BeanTemplate")
+          Collection&lt;Declaration&gt; dcls =
+             env.getDeclarationsAnnotatedWith(
+                (AnnotationTypeDeclaration) env.getTypeDeclaration(annoType));
+
+          for (Declaration d : dcls) {&nbsp;
+             if (d instanceof ClassDeclaration) {  <b>// jeżeli klasa</b>
+               ClassDeclaration cdcl = (ClassDeclaration) d;
+               String name = cdcl.getSimpleName();
+               if (!name.endsWith("Template")) {
+                  <b>// od env uzyskujemy środki raportowania błędów, ostrzeżeń, info.</b>
+                  env.getMessager().printWarning("Wadliwa nazwa klasy bean template");
+                  continue;
+               }
+               String qname = cdcl.getQualifiedName();
+               env.getMessager().printNotice(qname);
+               qname = qname.substring(0, qname.lastIndexOf("Template"));
+               name = name.substring(0, name.lastIndexOf("Template"));
+               try {
+                 <b>// od env uzyskamy plik i skojarzony z nim PrintWriter</b>
+                 PrintWriter out = env.getFiler().createSourceFile(qname);
+                 // generujemy świeży kod na podstawie info o zaznaczonej klasie
+                 out.println("public class " + name + " {" );
+                 Collection&lt;FieldDeclaration&gt; fdcl = cdcl.getFields();
+                 for (FieldDeclaration f : fdcl) {
+                   String fname = f.getSimpleName();
+                   String mname = Character.toUpperCase(fname.charAt(0)) +
+                                  fname.substring(1);
+                   String ftype = f.getType().toString();
+                   out.println("  private " + ftype + " " + fname + ";");
+                   out.println("  public " + ftype + " get" +  mname +
+                               "() { return " + fname + "; }");
+                   out.println("  public void set" +  mname +
+                               "(" + ftype + " v) { " + fname + " = v; }");
+                 }
+                 out.println("}");
+                 out.close();
+               } catch(IOException exc) { exc.printStackTrace(); }
+             }
+             else  // jeśli nie byla klasa, to ktoś się pomylił i zazn. interfejs
+               env.getMessager().printWarning("Adnotacja dotyczy interfejsu");
+          }
+        }
+      };
+   }
+
+
+
+}</pre>
+<br>
+Po skompilowaniu tej fabryki umieszczamy wynik kompilacji w
+katalogu, w
+którym znajdują się&nbsp; inne pliki źródłowe. Np. takie przykładowe
+zastosowanie:<br>
+<br>
+Uproszczona definicja beana:<br>
+<pre>import java.awt.*;<br>@BeanTemplate public class Bean1Template {<br>  String txt;<br>  Color color;<br>}<br></pre>Ponieważ,
+zgodnie z umową ma z tego powstać prawdziwa klasa JavaBean, to
+plik ją wykorzystujący będzie się odwoływał do Bean1, a nie
+Bean1Template:<br>
+<br>
+<pre>import java.awt.*;<br>public class Annot1 {<br><br><br>  public Annot1() {<br>    Bean1 b = new Bean1();<br>    b.setTxt("Pies");<br>    b.setColor(Color.BLUE);<br><br>    System.out.println(b.getTxt() + "\n" + b.getColor());<br><br>  }<br><br>  public static void main(String[] args) {<br>     new Annot1();<br>  }<br><br>}<br></pre>
+<br>
+Aby to wszystko ze sobą polaączyć, musimy wywołać apt, podając mu
+lokalizację fabryki procesorow:<br>
+<br>
+<pre>apt -factory BeanTemplateAnnotationFactory *.java<br></pre>
+<br>
+APT nie tylko przeprowadzi analizę adnotacji i odpowiednie ich
+substytucje,
+nie tylko skorzysta z naszego procesora i pozwoli mu zapisać nowy plik
+źródłowy,
+ale również wywoła normalny kompilator javy, aby wszystko złożył do
+kupy.<br>
+<br>
+W efekcie uzyskamy nowowygenerowany plik źródłowy (który
+"zastępuje" uproszczony "template"):<br>
+<pre>public class Bean1 {<br>  private java.awt.Color color;<br>  public java.awt.Color getColor() { return color; }<br>  public void setColor(java.awt.Color v) { color = v; }<br>  private java.lang.String txt;<br>  public java.lang.String getTxt() { return txt; }<br>  public void setTxt(java.lang.String v) { txt = v; }<br>}<br></pre>a
+w wyniku kompilacji wszystkiego razem działający plik Annot1.class,
+który wyprodukuje napis:<br>
+<br>
+Pies<br>
+java.awt.Color[r=0,g=0,b=255]<br><br><br>
+<a style="font-weight: bold;" href="mm/w3p1/w3p1.html" target="_blank">Zobacz multimedialną
+prezentację użycia APT</a><a href="mm/w3p1/w3p1.html"><img style="border: 0px solid ; width: 100px; height: 80px;" alt="r" src="../STYLE/video2.gif"></a><br><br>
+Podany przykład jest prosty, a
+także trochę dyskusyjny. Ale dobrze pokazuje
+potencjalnie olbrzymie możliwości tkwiące w przetwarzaniu adnotacji w
+fazie kompilacji.<br><br>
+<br>
+<a name="Adnotacje.6"></a><h2>6. Adnotacje a transformowanie kodu binarnego</h2>
+<br>
+Polityka utrzymywania adnotacji oznaczana przez metaadnotację
+@Retention jako RetentionPolicy.CLASS utrzymuje adnotację w klasie
+(kodzie binarnym), ale nie udostępnia jej mechanizmom refleksji.<br>
+<br>
+Taki typ adnotacji może być wykorzystywany przez różne narzędzia
+modyfikacji kodu binarnego klas. Należą do nich takie narzędzia jak:<br>
+<ul><li>Javassist,</li><li>BCEL.</li></ul>
+<br>
+<span style="font-weight: bold;">Javassist</span> pozwala na bardzo
+łatwe transformowanie kodu binarnego klas, polegające m.in na:<br>
+<ul><li>zastępowaniu metod i konstruktorów.</li><li>dodawanie kodu na
+początku lub w końcu ciała metod lub konstruktorów.</li></ul>
+Modyfikacje są łatwe, ponieważ możemy zapisać je w naturalnym języku
+Javy.<br>
+Javassist ma pewne ograniczenia. <br>
+Znacznie potężniejszym narzędziem jest BCEL (Byte Code Engineering
+Library), który pozwala robić praktycznie wszystko, ale wymaga
+zapisów w postaci podobnej do bajtkodu.<br>
+<br>
+Zobacz więcej o:<br>
+<span style="font-weight: bold;">Javassist</span> - <a href="http://jboss.com/products/javassist">http://jboss.com/products/javassist</a><br>
+<span style="font-weight: bold;">BCEL</span> - <a href="http://jakarta.apache.org/bcel/">http://jakarta.apache.org/bcel/</a>
+<hr></body></html>

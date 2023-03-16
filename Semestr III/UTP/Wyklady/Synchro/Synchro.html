@@ -1,0 +1,1513 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+<meta http-equiv="Content-Type"
+ content="text/html; charset=windows-1250"> <meta name="author"
+ content="Krzysztof Barteczko"> <meta name="description"
+ content="Uniwersalne techniki programowania"> <meta name="copyright"
+ content="(c) Krzysztof Barteczko PJWSTK 2010"> <link rel="stylesheet"
+ type="text/css" href="../STYLE/common.css"> <title>Narzêdzia
+programowania wspó³bie¿nego: synchronizatory</title></head>
+<body><br>
+<br>
+<div align="center"><h1>Narzêdzia programowania
+wspó³bie¿nego: synchronizatory</h1>
+</div><br>
+<hr><i>Pora terazm aby zaj¹æ siê&nbsp; nowymi œrodkami synchronizacji i
+koordynacji watków.</i><br>
+<hr><a name="Synchro.1"></a><h2>1. Przypomnienie: synchronizacja i koordynacja dzia³ania w¹tków</h2>
+<span style="font-weight: bold;">Synchronizacja</span>
+jest
+mechanizmem, który zapewnia, ¿e kilka wykonuj¹cych siê
+w¹tków nie bêdzie równoczeœnie wykonywaæ tego
+samego
+kodu, w szczególnoœci - dzia³aæ na tym samym obiekcie.<!----><br>
+<br>
+Synchronizacje jest potrzebna po to, by wspó³dzielenie
+zasobu
+przez kilka w¹tków nie prowadzi³o do niespójnych
+stanów zasobu. <br>
+<br>
+Przyk³ad.<br>
+<br>
+Oto prosta klasa Balance, z jednym polem - liczb¹ ca³kowit¹ i
+metod¹
+balance(),
+która najpierw zwiêksza wartoœæ tej liczby, a nastêpnie j¹
+zmniejsza, po
+czym zwraca wynik - wartoœæ tej liczby.<br>
+<br>
+<pre>class Balance {
+
+ private int number = 0;
+
+ public int balance() {
+   number++;
+   number--;
+   return number;
+ }
+
+}
+</pre>
+<br>
+Wydaje siê nie podlegaæ ¿adnej w¹tpliwoœci, ¿e jakiekolwiek
+wielokrotne
+wywo³ywanie
+metody balance() na rzecz dowolnego obiektu klasy Balance zawsze
+zwróci wartoœæ
+0.<br>
+<br>
+Otó¿, w œwiecie programowania wspó³bie¿nego nie
+jest to wcale takie oczywiste!<br>
+Wiêcej: wynik ró¿ny od 0 mo¿e pojawiaæ siê nader czêsto!<br>
+<br>
+Przekonajmy siê o tym poprzez wielokrotne wywo³ywanie metody
+balance()
+na rzecz tego samego obiektu w kilku ró¿nych w¹tkach.<br>
+<br>
+Ka¿dy z w¹tków bêdziemy tworzyæ i uruchamiaæ poprzez
+stworzenie obiektu poni¿szej
+klasy BalanceThread, dziedzicz¹cej Thread, i wywo³anie na jego rzecz
+metody
+start(). Przy tworzeniu nazwiemy ka¿dy z w¹tków (parametr
+name konstruktora).
+Wielokrotne wywo³ania metody balance() zapiszemy w pêtli w metodzie
+run().
+Obiekt na rzecz którego jest wywo³ywana metoda oraz liczbê
+powtórzeñ pêtli
+przeka¿emy jako dwa pozosta³e argumenty konstruktora.&nbsp; <br>
+Tu¿ przed zakoñczeniem metody run() poka¿emy jaki by³ wynik ostatniego
+odwo³ania do metody balance().<br>
+<br>
+<pre>class BalanceThread extends Thread {
+
+ private Balance b; // referencja do obiektu klasy&nbsp;Balance
+ private int count; // liczba powtórzeñ pêtli w metodzie run
+
+ public BalanceThread(String name, Balance b, int count) {
+   super(name);
+   this.b = b;
+   this.count = count;
+   start();
+ }
+
+ public void run() {
+   int wynik = 0;
+   // W pêtli wielokrotnie wywo³ujemy metodê balance()
+   // na rzecz obiektu b klasy Balance.
+   // Je¿eli wynik metody jest ró¿ny od zera - przerywamy dzia³anie pêtli
+   for (int i = 0; i &lt; count; i++) {
+     wynik = b.balance();
+     if (wynik != 0) break;
+   }
+   // Pokazujemy wartoœæ zmiennej wynik na wyjœciu z metody run()
+   System.out.println(Thread.currentThread().getName() + " konczy z wynikiem " + wynik);
+ }
+}
+</pre>
+W klasie testuj¹cej stworzymy obiekt klasy Balance, po czym stworzymy i
+uruchomimy
+podan¹ przez u¿ytkownika liczbê w¹tków, które za
+pomoc¹ metody run() z klasy
+BalanceThread bêd¹ równolegle operowaæ na tym obiekcie
+wielokrotnie&nbsp; wywo³uj¹c
+na jego rzecz &nbsp;metodê balance() z klasy Balance.<br>
+<br>
+<pre>class BalanceTest {
+
+ public static void main(String[] args) {
+
+   int tnum = Integer.parseInt(args[0]); // liczba w¹tków
+   int count = Integer.parseInt(args[1]); // liczba powtórzeñ pêtli w run()
+
+   // Tworzymy obiekt klasy balance
+   Balance b = new Balance();
+
+   // Tworzymy i uruchamiamy w¹tki
+   Thread[] thread = new Thread[tnum]; // tablica w¹tków
+   for (int i = 0; i &lt; tnum; i++)
+      thread[i] = new BalanceThread("W"+(i+1), b, count);
+
+   // czekaj na zakoñczenie wszystkich w¹tków
+   try {
+     for (int i = 0; i &lt; tnum; i++) thread[i].join();
+   } catch (InterruptedException exc) {
+       System.exit(1);
+   }
+   System.out.println("Koniec programu");
+ }
+
+}
+</pre>
+Uwaga: metoda <b>join</b> z klasy Thread powoduje
+oczekiwanie na zakoñczenie
+w¹tku, na rzecz któego zosta³a wywo³ana. Oczekiwanie mo¿e
+byæ przerwane,
+gdy w¹tek zosta³ przerwany przez inny w¹tek - wtedy wyst¹pi wyj¹tek
+InterruptedException.<br>
+<br>
+Uruchamiaj¹c aplikacjê z podanymi jako argumenty liczb¹ w¹tkow = 2
+oraz
+liczb¹
+powtorzeñ pêtli w metodzie run() = 100000, nader czêsto zyskamy
+intuicyjnie
+oczekiwany wynik (W1 konczy z wynikiem 0, W2 konczy z wynikem 0). Mo¿e
+siê
+jednak zdarzyæ wynik inny! Zwiêkszenie liczby w¹tków i
+liczby powtórzeñ pêtli
+prawie na pewno szybko poka¿e nam, ¿e niektóre w¹tki
+zakoñcz¹ dzia³anie z wynikem
+ró¿nym od 0. <br>
+Na przyklad, przy liczbie w¹tkow = 5 i liczbie powtórzeñ
+pêtli = 1000000, mo¿emy raz uzyskac nastêpuj¹cy wynik:<br>
+<br>
+W2 konczy z wynikiem&nbsp; 0<br>
+W3 konczy z wynikiem&nbsp; 0<br>
+W4 konczy z wynikiem&nbsp; 0<br>
+W1 konczy z wynikiem&nbsp; 0<br>
+W5 konczy z wynikiem&nbsp; 0<br>
+<br>
+a za chwilê, przy ponowym uruchomieniu z tymi samymi argumentami:<br>
+<br>
+W1 konczy z wynikiem&nbsp; 1<br>
+W3 konczy z wynikiem&nbsp; 1<br>
+W2 konczy z wynikiem&nbsp; 1<br>
+W5 konczy z wynikiem&nbsp; 0<br>
+W4 konczy z wynikiem&nbsp; 0<br>
+<br>
+Powstaje oczywiste pytanie: jak to siê dzieje, ¿e w powy¿szym
+przyk³adowym
+programie uzyskujemy wyniki, których - wydaje siê na
+podstawie analizy kodu
+metody balance() - nie sposób uzyskaæ? <br>
+<br>
+Otó¿, wszystkie wykonuj¹ce (tê sam¹) metodê run() w¹tki
+odwo³uj¹ siê do tego
+samego obiektu klasy Balance (w programie oznaczanego przez b).
+Mówimy: wspó³dziel¹
+obiekt.<br>
+Obiekt ten ma jeden element - odpowiadaj¹cy zmiennej number
+zdefiniowanej jako pole klasy Balance.<br>
+Wywolywana przez w¹tki na rzecz tego obiektu&nbsp; metoda balance()
+zwiêksza a nastêpnie zmniejsza wartoœæ tej zmiennej.<br>
+WyobraŸmy sobie, ¿e dzia³aj¹ dwa w¹tki. Jeden z nich uzyskuje czas
+procesora
+i rozpoczyna wykonanie metody balance(). Po zwiêkszeniu o 1 zmiennej
+number
+zostaje wywlaszczony (zmienna number ma teraz wartoœæ 1). Czas
+procesora
+przydzielany jest drugiemu w¹tkowi. Drugi w¹tek rozpoczyna wykonanie
+metody
+balance() i zwiêksza o 1 wartoœæ zmiennej number (zmienna number ma
+teraz
+wartoœæ 2), po czym zostaje wywlaszczony, a czas procesora przydzielony
+zostaje
+w¹tkowi pierwszemu, który kontynuuje wykonanie metody run()
+od miejsca, w
+którym odebrano mu czas procesora. Zmniejsza on teraz
+zmienn¹ number i zwraca
+wynik, który równy jest 1. Po zakoñczeniu w¹tku
+pierwszego, pracê kontynuuje
+w¹tek drugi. Po zmniejszeniu zmiennej number zwraca wynik 0.<br>
+<br>
+Obrazuje to poni¿sza animacja.<br>
+<br>
+<br>
+<br>
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+ codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0"
+ id="wywlaszcz_bi" align="middle" height="400" width="550">
+<param name="allowScriptAccess" value="sameDomain"><param name="movie"
+ value="wywlaszcz_bi.swf"><param name="quality" value="high"><param
+ name="bgcolor" value="#ffffff">
+<embed src="mm/wywlaszcz_bi.swf" quality="high" bgcolor="#ffffff"
+ name="wywlaszcz_bi" allowscriptaccess="sameDomain"
+ type="application/x-shockwave-flash"
+ pluginspage="http://www.macromedia.com/go/getflashplayer"
+ align="center" height="400" width="550"></object><br>
+<br>
+Komentarze:<br>
+<ul><li>Punkt a - w¹tek W1, po zwiêkszeniu zmiennej number zostaje
+wyw³aszczony. Zaczyna dzia³anie w¹tek W2</li><li>Punkt b - w¹tek W2 po
+zwiêkszeniu zmiennej number zostaje wyw³aszony.
+Pracê kontunuuje w¹tek W1 (maj¹c za wartoœæ zmiennej number 2)</li><li>Punkt
+c - po zakoñczeniu w¹tku W1 (który zmniejszy³ number i zwróci³
+1), w¹tek W2 kontunnuje pracê: zmniejsza number i zwraca wynik 0. </li></ul>
+Jest to sytuacja, która mo¿e siê zdarzyæ, ale nie musi. Wszystko zale¿y
+od
+tego czy i kiedy (w jakim momecie wykonania metody run()) systemowy
+zarz¹dca
+w¹tków wywlaszczy wykonuj¹cy siê aktualnie w¹tek. A z tym jest bardzo
+ró¿nie
+w zale¿noœci od platformy systemowej czy aktualnego obci¹¿enia
+procesora.<br>
+<br>
+Aby unikn¹æ równoczesnego dzia³ania w¹tków na tym samym obiekcie
+(co w sposób
+nieprzewidywalny ukszta³towaæ mo¿e jego stany) stosuje siê <b>synchronizacjê</b>.
+<br>
+<br>
+Synchronizacjê w¹tków uzyskuje siê za pomoc¹
+obiektów, które wykluczaj¹
+równoczesny&nbsp;
+dostêp w¹tków do zasobów i/lub
+równoczesne wykonanie przez w¹tki tego samego
+kodu. Takie obiekty nazywaj¹ siê ogólnie synchronizatorami
+lub muteksami (od ang. <i><b>mutual-exclusion semaphore</b></i>).
+W Javie rolê synchronizatorów pe³ni¹ rygle (<i><b>ang
+lock</b></i>).<br>
+<br>
+Do wersji 1.5 synchronizacjê w¹tków mo¿na by³o uzyskaæ
+wy³¹cznie za pomoc¹ s³owa kluczowego synchronized.<br>
+<br>
+<span style="text-decoration: underline;">Sposoby u¿ycia</span>.<br>
+<br>
+Synchronizowane mog¹ byæ metody i bloki. <br>
+<br>
+<br>
+<div class="syntax"><!---->Metoda synchronizowana<!----> oznaczana jest
+w deklaracji s³owem synchronized: <br>
+<br>
+<b>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; synchronized void metoda()
+{ <br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ... <br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; } <br>
+</b><br>
+</div>
+<br>
+<br>
+<div class="syntax"><b><!---->Bloki synchronizowane<!----></b>
+wprowadzane s¹ instrukcj¹ <b>synchronized</b> z podan¹ w nawiasie
+referencj¹ do obiektu, który ma byæ zaryglowany. <br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp; synchronized (lock) {<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; // ... kod<br>
+&nbsp;&nbsp;&nbsp; }<br>
+<br>
+&nbsp;&nbsp;&nbsp; gdzie: lock - referencja do ryglowanego obiektu<br>
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; kod - kod
+bloku synchronizowanego<br>
+</div><br>
+<br>
+Kiedy dany w¹tek wywo³uje na rzecz jakiegoœ obiektu metodê
+synchronizowan¹, automatycznie zamykany jest rygiel. Mówimy te¿:
+<b>obiekt jest zajmowany przez w¹tek</b>.<br>
+Inne w¹tki usi³uj¹ce wywo³aæ na rzecz tego obiektu <b>metodê
+synchronizowan¹</b> (niekoniecznie tê sam¹, ale koniecznie
+synchronizowan¹) lub te¿ wykonaæ <b>instrukcjê synchronized</b> z
+podanym odniesieniem do zaryglowanego obiektu (o tej instrukcji za
+chwilê)&nbsp; s¹ blokowane i czekaj¹
+na zakoñczenie wykonania metody przez w¹tek, który <b>zaj¹³ obiekt</b>
+(zamkn¹³ rygiel). <br>
+Dowolne zakoñczenie metody synchronizowanej (równie¿ na skutek
+powstania wyj¹tku) zwalnia rygiel, daj¹c <b>czekaj¹cym </b>
+w¹tkom mo¿noœæ dostêpu do obiektu. Mog¹ tez byæ inne przyczyny
+zwolnienia
+rygla,&nbsp; o których bêdzie mowa w podrozdziale o stanach w¹tków). <br>
+<br>
+Z kolei wykonanie <b>instrukcji</b> <b>synchronized</b> przez
+w¹tek rygluje obiekt, do którego referencja podana jest w nawiasach tej
+instrukcji.<br>
+ Inne w¹tki, które usi³uj¹ operowac na tym obiekcie za
+pomoc¹ metod synchronizowanych
+lub wykonaæ instrukcjê synchronized z referencj¹ do tego obiektu s¹
+blokowane
+do chwili gdy wykonanie kodu bloku synchronizowanego nie zostanie
+zakoñczone
+przez w¹tek zajmuj¹cy obiekt (lub w¹tek ten nie zwolni rygla na skutek
+innych
+przyczyn).<br>
+<br>
+<div class="important">O ryglowaniu (wprowadzanym za pomoc¹ s³owa
+kluczowego
+synchronized)&nbsp; mo¿emy
+myœleæ jako o zapewnieniu wy³¹cznego dostêpu do pól obiektu
+lub (statycznych)
+pól klasy, ale równie dobrze "zaryglowany" obiekt
+mo¿e spelniaæ rolê muteksu,
+zabezpieczaj¹cego fragment kodu przed równoczesnym
+wykonaniem przez dwa w¹tki.</div><br>
+<br>
+<div class="def"><!---->Kod, który mo¿e byæ wykonywany w danym
+momencie tylko przez
+jeden w¹tek nazywa siê<b> sekcj¹ krytyczn¹</b>.<!----></div><br>
+<br>
+W Javie sekcje krytyczne wprowadza siê jako bloki lub metody
+synchronizowane.<br>
+U¿ycie sekcji krytycznych pozwala na prawid³owe
+wspó³dzielenie zasobów przez w¹tki.<br>
+<br>
+W polskiej literaturze przedmiotu u¿ywa siê tak¿e terminów: <br>
+<ul><li>zajmowanie zasobu (obiektu) przez w¹tek,</li><li>wzajemne
+wykluczanie w¹tków w dostêpie do zasobu
+(obiektu).</li></ul>
+Pojêcia te mo¿na traktowac jako szczególne przypadki
+synchronizacji, a poniewa¿
+prawid³owe wspó³dzielenie zasobów jest w
+programowaniu wspó³bie¿nym kluczowe,
+to czêsto uto¿samiamy je z synchronizacj¹. <b>&nbsp;</b>Przez<b>
+synchronizacjê w¹tków</b>
+Dlatego mowa o synchronizacji. w Javie rozumiemy wiêc
+najczêœciej&nbsp;
+wzajemne
+wykluczanie w¹tkow w dostêpie do obiektów. W przeciwieñstwie
+do
+asynchronicznego,
+dowolnego w czasie, równoleg³ego dostêpu, synchronizacja
+oznacza
+sekwencyjny,
+kolejny w czasie dostêp w¹tków do zasobów. Slowo
+to jest
+równie¿ wygodne ze wzglêdu na ³atwe kojarzenie ze s³owem
+kluczowym <i><b>synchronized</b></i>.<br>
+<br>
+Nie nale¿y jednak s¹dziæ, ¿e synchronizacja w¹tków oznacza
+zagwarantowanie
+okreœlonej, <b>konkretnej</b> kolejnoœci dostêpu
+w¹tków do wspóldzielonych zasobów.
+Ustalanie i kontrolowanie konkretnej kolejnoœci dostêpu w¹tkow (czêsto
+zale¿nej
+od wyników wytwarzanych przez wykonywane przez nie kody) do
+wspóldzielonych
+zasobów bêdziemy nazywaæ <b>koordynacj¹
+w¹tków</b>.<br><br>
+Ryglowanie (u¿ycie synchronized) s³u¿y do
+zapobiegania niepo¿¹danej interakcji w¹tków. <br>
+Nie jest ono jednak wystarczaj¹cym œrodkiem dla zapewnienia
+wspó³dzia³ania w¹tków. <br>
+<br>
+Przyk³ad: <br>
+Dwa w¹tki Author i Writer mog¹ odwo³ywaæ siê do tego samego obiekty
+typu Teksty. <br>
+Author podrzuca teksty, zapisywane w polu txt, Writer wypisuje je na
+konsoli. <br>
+Do ustalania tekstów s³u¿y metoda setTextToWrite (wywo³uje j¹ Author),
+teksty
+do zapisu odczytywane s¹ przez Writera za pomoc¹ metody getTextToWrite
+i
+wypisywane na konsoli. <br>
+Poniewa¿ metody te mog¹ byæ wywo³ane równoczeœnie (z ró¿nych w¹tków) i
+operuj¹
+na polu tego samego obiektu, winny byæ synchronizowane. <br>
+Ale tu wa¿na jest równie¿ kolejnoœæ i koordynacja dzia³añ obu w¹tków. <br>
+Chodzi o to, by Writer zapisywa³ tylko raz to co poda Autor, a Autor
+nie
+podawa³ nic nowego, dopóki Writer nie zapisze poprzednio podanego
+tekstu.
+<br>
+<br>
+Skoordynowanie interakcji pomiêdzy w¹tkami w Javie do wersji 1.5&nbsp;
+uzyskiwa³o siê za pomoc¹ metod klasy Object: <br>
+<ul><li>wait </li><li>notify </li><li>notifyAll </li></ul>
+<br>
+W tej konwencji koordynacja dzia³añ w¹tków sprowadza siê do
+nastêpuj¹cych kroków:<br>
+&nbsp; <br>
+<ul><li>W¹tek wywo³uje metodê <b>wait</b> na rzecz danego obiektu, gdy
+oczekuje,
+¿e ma siê coœ (zwykle w kontekœcie tego obiektu) zdarzyæ (zwykle jest
+to
+pewna oczekiwana zmiana stanu obiektu, której ma dokonaæ inny w¹tek i
+która
+jest realizowana np. przez zmianê wartoœci jakiejœ zmiennej - pola
+obiektu). </li><li>Wywo³anie&nbsp; <b>wait</b> blokuje w¹tek (jest on
+odsuwany od procesora), a <b>jednoczeœnie powoduje otwarcie rygla</b>
+zajêtego przez niego obiektu, umo¿liwiaj¹ce dostêp do obiektu z innych
+w¹tków
+(wait mo¿e byæ wywo³ane tylko z sekcji krytycznej, bowiem&nbsp; chodzi
+tu
+o wspó³dzia³anie w¹tków na tym samym ryglowanym obiekcie, a zatem
+konieczna
+jest synchronizacja). Inny w¹tek mo¿e teraz zmieniæ stan obiektu i
+powiadomiæ
+o tym w¹tek czekaj¹cy (za pomoc¹ metody <b>notify</b> lub <b>notifyAll</b>).
+</li><li>Odblokowanie (przywrócenie gotowoœci dzia³ania i ew.
+wznowienie dzia³ania w¹tku) nastêpuje, gdy inny w¹tek wywo³a metodê <b>notify</b>
+lub <b>notifyAll</b> na rzecz tego samego obiektu, "na którym" dany
+w¹tek czeka (na rzecz którego wywo³a³ metodê <b>wait</b>).&nbsp;</li><li>Wywo³anie
+notify() odblokowuje jeden z czekaj¹cych w¹tków, przy czym mo¿e to byæ
+dowolny z nich, </li><li>Metoda <b>notifyAll</b> odblokowuje
+wszystkie czekaj¹ce na danym obiekcie w¹tki,</li><li>Wywo³anie <b>notify</b>
+lub <b>notifyAll</b> musi byæ tak¿e zawarte w sekcji krytycznej. <br>
+</li></ul> Metoda wait() mo¿e mieæ argument, który specyfikuje
+maksymalny czas
+oczekiwania. Po up³ywie tego czasu w¹tek zostanie odblokowany,
+niezale¿nie
+od tego czy u¿yto jakiegoœ notify() wobec obiektu na którym by³o
+synchronizowane
+wait.<br>
+<br>
+<br>
+Spójrzmy na przyk³ad&nbsp; (schemat) prawid³owej koordynacji: <br>
+<br>
+<pre>class X {
+
+   int n;
+   boolean ready = false;
+   ....
+   synchronized  int  get() {
+       try {
+         while(!ready)
+           wait();
+       } catch (InterruptedException exc) { .. }
+       ready = false;
+       return n;
+   }
+
+   synchronized void put(int i) {
+        n = i;
+        ready = true;
+        notify();
+   }
+
+}
+</pre>
+<i>Uwaga: metoda wait() mo¿e sygnalizowaæ wyj¹tek InterruptedException
+(w
+przypadku, gdy nast¹pi³o zewnêtrzne przerwanie oczekiwania na skutek
+u¿ycia
+w innym w¹tku metody interrupt()). Wyj¹tek ten musimy obs³ugiwaæ. <br>
+</i>&nbsp;<br>
+WyobraŸmy sobie, ¿e dzia³aj¹ tu dwa w¹tki - ustalaj¹cy wartoœæ n za
+pomoc¹ put i pobieraj¹cy wartoœæ n za pomoc¹ get. <br>
+W¹tek pobieraj¹cy musi czekaæ, a¿ w¹tek ustalaj¹cy ustali wartoœæ n
+(wait). <br>
+Ustalenie wartoœci powoduje dwie zmiany: warunek "wartoœæ gotowa" staje
+siê true, a oczekiwanie jest przerywane przez notify. <br>
+Zwróæmy uwagê, ¿e metody wait i notify s¹ wywo³ywane na rzecz tego
+obiektu,
+na rzecz którego wywo³ano metody get i put (moglibyœmy napisaæ - dla
+wiêkszej
+jasnoœci: this.wait() i this.notify()) i na tym obiekcie w³aœnie w¹tki
+bêd¹ synchronizowane.<br>
+<br>
+Czy naprawdê oprócz sygna³u notify potrzebny jest warunek "wartoœæ
+gotowa"?
+W prostym przypadku wystarczy³oby byæ mo¿e samo notify.<br>
+Schemat pokazuje jednak ogólniejsz¹ konstrukcjê, kiedy samo
+notify (które mo¿e przyjœæ od ró¿nych w¹tków) nie
+wystarcza. <br>
+<br>
+<div class="important"><br>
+Oczekiwanie koñczy siê naprawdê dopiero wtedy, gdy spe³niony jest jakiœ
+warunek.<br>
+<br>
+UWAGA: warunek zakoñczenia oczekiwania nale¿y sprawdzaæ w pêtli.
+Nie ma bowiem
+gwarancji, ¿e po odblokowaniu w¹tku czekaj¹cego warunek nadal bêdzie
+spe³niony.
+<br>
+</div>
+<br>
+&nbsp; <br>
+ Zgodn¹ z przedstawionym schematem realizacjê
+omówionego wczeœniej
+przyk³adu Author-Writer&nbsp; pokazano na wydruku poni¿ej. W programie
+w¹tek-Autor
+co jakiœ czas (generowany losowo) ustala tekst do napisania (s¹ to
+kolejne
+elementy tablicy napisów). W¹tek-Writer pobiera ustalony tekst i
+wypisuje
+na konsoli. Zakoñczenie pracy Autor sygnalizuje poprzez podanie tekstu
+=
+null.<br>
+<br>
+<pre>// Klasa dla ustalania i pobierania tekstów
+class Teksty {
+
+  String txt = null;
+  boolean newTxt = false;
+
+  // Metoda ustalaj¹ca tekst - wywo³uje Autor
+  synchronized void setTextToWrite(String s) {
+    while (newTxt == true) {
+      try {
+        wait();
+      } catch(InterruptedException exc) {}
+    }
+    txt = s;
+    newTxt = true;
+    notifyAll();
+  }
+
+  // Metoda pobrania tekstu - wywo³uje Writer
+  synchronized String getTextToWrite() {
+    while (newTxt == false) {
+      try {
+        wait();
+      } catch(InterruptedException exc) {}
+    }
+    newTxt = false;
+    notifyAll();
+    return txt;
+  }
+
+}
+
+// Klasa "wypisywacza"
+class Writer extends Thread {
+
+  Teksty txtArea;
+
+  Writer(Teksty t) {
+    txtArea=t;
+  }
+
+  public void run() {
+    String txt = txtArea.getTextToWrite();
+    while(txt != null) {
+      System.out.println("-&gt; " + txt);
+      txt = txtArea.getTextToWrite();
+      }
+  }
+
+}
+
+// Klasa autora
+class Author extends Thread {
+
+  Teksty txtArea;
+
+  Author(Teksty t)  {
+    txtArea=t;
+  }
+
+  public void run() {
+
+    String[] s = { "Pies", "Kot", "Zebra", "Lew", "Owca", "S³oñ", null };
+    for (int i=0; i&lt;s.length; i++) {
+      try { // autor zastanawia siê chwilê co napisaæ
+        sleep((int)(Math.random() * 1000));
+      } catch(InterruptedException exc) { }
+      txtArea.setTextToWrite(s[i]);
+    }
+  }
+
+}
+
+// Klasa testuj¹ca
+public class Koord {
+
+   public static void main(String[] args) {
+     Teksty t = new Teksty();
+     Thread t1 = new Author(t);
+     Thread t2 = new Writer(t);
+     t1.start();
+     t2.start();
+   }
+
+}</pre>
+<br>
+<font color="#000000">Warto skompilowaæ program i przeœledziæ jego
+dzia³anie.<br>
+Nastêpnie, po usuniêciu konstrukcji while(newTxt == ... ) oraz wait() i
+notifyAll()
+w metodach setTxtToWrite i getTxtToWrite skompilowac oraz uruchomiæ
+program
+ponownie i przekonaæ siê, ¿e sama synchronizacja w¹tków (pozostawiamy
+obie
+metody jako synchronizowane) nie wystarcza dla zapewnienia w³aœciwej
+kolejnoœci
+dzia³añ.<br>
+</font><br>
+<div class="def"><br>
+<div style="text-align: center;"><b>Pojêcie
+monitora</b><br>
+</div><br>
+W Javie z ka¿dym obiektem oprócz rygla zwi¹zana jest&nbsp; "kolejkê
+oczekiwania" (wait set). Ogólnie
+kolejka ta zawiera odniesienia do wszystkich w¹tków zablokowanych na
+obiekcie
+(metod¹ wait) i czekaj¹cych na powiadomienie o mo¿liwoœci wznowienia
+dzia³ania.
+Kolejka oczekiwania jest "prowadzona" przez JVM, a jej zmiany mog¹ byæ
+uzyskane
+tylko metodami wait, notify, notifyAll (z klasy Object) oraz interrupt
+(z
+klasy Thread). <br>
+Twory, które maj¹ rygle i kolejki oczekiwania nazywane s¹ <b>monitorami</b>.
+<br>
+<br>
+Generalnie -<!----> monitor jest fragmentem kodu programu
+(niekoniecznie ci¹g³ym),
+do którego dostêp zabezpieczany jest przez rygiel (muteks). W
+odró¿nieniu
+od sekcji krytycznych - monitory s¹ powi¹zane z obiektami, ich stanami.
+Dlatego
+mówimy czasem krótko:<b> "obiekt ma monitor",&nbsp; "monitor obiektu"
+lub nawet "obiekt jest monitorem</b>".<!----><br>
+<span style="font-weight: bold;"></span></div><br><br>
+<hr>
+<a name="Synchro.2"></a><h2>2. Rygle jako obiekty typu Lock</h2>
+W Javie 1.5 oprócz wczeœniej dostêpnych œrodków synchronizacji w¹tków -
+pojawi³y siê nowe.<br>
+<br>
+Teraz <span style="font-weight: bold;">rygiel </span>mo¿e byæ
+obiektem klasy implementuj¹cej interfejs <span
+ style="font-weight: bold;">Lock</span>. W pakiecie
+java.util.concurrent mamy dwie takie klasy:<br>
+<ul><li><span style="font-weight: bold;">ReentrantLock</span> -
+odpowiada znanemu nam mechanizmowi synchronizacji za pomoc¹ s³owa
+kluczowego synchronized</li><li><span style="font-weight: bold;">ReentrantReadWriteLock</span>
+-
+realizuje koncepcjê tzw. read/write locks, pozwalaj¹c¹ na
+wspó³dzielenie zasobu bez blokowania przy operacjach
+czytania i jednoczeœnie zapewnienie, aby operacje modyfikacji by³y
+zsynchronizowane z odczytem (natychmiastowo widoczne dla w¹tków
+czytaj¹cych).</li></ul>
+Nowe rygle wydaj¹ siê na pierwszy rzut oka&nbsp;bardziej przejrzyste
+ni¿ u¿ycie synchronizowanych
+metod, operujemy bowiem w sposób jawny na obiektach-ryglach, a
+nie na domyœlnie (i niewidocznie) skojarzonych z obiektami ich
+ryglach.&nbsp; <br>
+Maj¹ one i inne zalety:<br>
+<ul><li>s¹ bardziej efektywne od synchronized w sytuacji du¿ej
+konkurencji w¹tków o zasoby,</li><li>
+jako "zwyk³e" obiekty Javy mog¹ byæ dostêpne przez referencje w wielu
+miejscach kodu (np. przekazywane jako argumenty konstruktorów
+czy metod),</li><li>
+mog¹ byæ zamykane i zwalniane w ró¿nych strukturalnie sekcjach
+kodu np. w ró¿nych metodach (ale wykonywanych przez ten sam
+w¹tek), synchronized mo¿e byæ u¿yte tylko w ramach tego samego bloku,</li><li>
+mo¿liwe jest sprawdzenie, czy rygiel jest zamkniêty (inny w¹tek
+wykonuje sekcjê krytyczn¹) i np. wtedy zajêcie siê innymi czynnoœciami,
+a nie blokowanie bie¿¹cego w¹tku na ryglu, mamy tu mo¿liwoœci
+zastosowania metody <span style="font-weight: bold;">tryLock()</span>
+lub bezpoœrednie odpytywanie obiektu-rygla czy jest zamkniêty,</li><li>
+mo¿liwe jest oczekiwanie na uzyskanie dostêpu do sekcji krytycznej
+(otwarcie rygla przez inny w¹tek) przez okreœlony czas (nie chcemy
+blokowaæ bie¿¹cego w¹tku zbyt d³ugo), s³u¿y do tego metoda <span
+ style="font-weight: bold; font-style: italic;">tryLock(...)</span> z
+podanym czasem oczekiwania,</li><li>
+mo¿liwe jest przerwanie w¹tku zablokowanego na jakimœ ryglu, tu u¿ywamy
+metody <span style="font-weight: bold; font-style: italic;">lockInterruptibly()</span>
+(synchronized nie daje tej mo¿liwoœci).</li></ul>
+<br>
+Podstawowy schemat dzia³ania.<br>
+<br>
+<pre>Lock lock = new ReentrantLock();  // utworzenie rygla
+// ....
+// KOD WYKONYWANY WSPÓ£BIE¯NIE
+lock.lock();                      // zamkniêcie rygla (1)
+// ... kod sekcji krytycznej
+lock.unlock();                    // zwolnienie rygla&nbsp;(2)
+</pre>
+Niech w jakimœ w¹tku wykonywana jest instrukcja (1) (lock.lock()).
+Rygiel jest zamykany i wykonywany jest kod sekcji krytycznej. Inne
+w¹tki, które chc¹ wejœæ w ten kod (wykonaæ instrukcjê
+lock.lock()) bêd¹ blokowane na tym wywo³aniu dopóki w³aœciciel
+rygla (ten kto go zamkn¹³) nie dobiegnie do koñca sekcji krytycznej i
+nie zwolni rygla (lock.unlock()).<br>
+W ten sposób sekcja krytyczna mo¿e byæ wykonywana od pocz¹tku do koñca
+tylko w jednym w¹tku.<br>
+<br>
+S¹ tu pewne podobieñstwa do dzia³ania bloków synchronizowanych, ale
+te¿ i <span style="font-weight: bold;">znacz¹ce ró¿nice</span>.<br>
+<br>
+Przede wszystkim, je¿eli w kodzie sekcji krytycznej
+wyst¹pi&nbsp;wyj¹tek, to
+blokada rygla mo¿e nie zostaæ zwolniona i inne w¹tki pozostan¹ na tym
+ryglu zablokowane na zawsze. Jest to b³¹d trudny do wykrycia.<br>
+Zobaczmy:<br>
+<pre>import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
+
+class StringTab {
+
+  private String[] txt;
+  private Lock lock = new ReentrantLock();
+
+
+  public StringTab(String[] txt) {
+    this.txt = txt;
+  }
+
+  public void set(int i, String s) {
+    lock.lock();
+    txt[i] = s;
+    lock.unlock();
+  }
+
+  public String get(int i) {
+    String t = null;
+    lock.lock();
+    t = txt[i];
+    lock.unlock();
+    return t;
+  }
+
+}
+
+
+public class Test1 {
+  public static void main(String[] args) {
+
+    final StringTab st = new StringTab(new String[] { "ala", "kot", "pies" });
+    new Thread( new Runnable() {
+      public void run() {
+        st.set(3, "tygrys");
+      }
+    }). start();
+
+    new Thread( new Runnable() {
+      public void run() {
+        try {
+          TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        System.out.println("Minê³y 2 sek. - W¹tek 2 dzia³a");
+        System.out.println(st.get(0));
+        System.out.println("W¹tek 2 siê koñczy");
+      }
+    }). start();
+  }
+}</pre>Wynik
+dzia³ania programu:<br>
+<br>
+<div class="listing100"><br>
+Exception in thread "Thread-0"
+java.lang.ArrayIndexOutOfBoundsException: 3<br>
+&nbsp;&nbsp;&nbsp; at locksIntro.StringTab.set(Test1.java:18)<br>
+&nbsp;&nbsp;&nbsp; at locksIntro.Test1$1.run(Test1.java:39)<br>
+&nbsp;&nbsp;&nbsp; at java.lang.Thread.run(Unknown Source)<br>
+Minê³y 2 sek. - W¹tek 2 dzia³a<br>
+</div><br>
+<br>
+W tym programie zastosowaliœmy synchronizacjê w dostêpie do
+wspólnego zasobu - tablicy Stringów. S³usznie, poniewa¿
+kody metod get i set z klasy StringTab mog¹ byæ wykonywane
+wspó³bie¿nie przez wiele w¹tków.<br>
+Jednak kod wykonywany w jednym z w¹tków (ustalaj¹cy wartoœæ
+elementu tablicy o indeksie 3) spowodowa³ wyj¹tek
+ArrayIndexOutOfBoundsException (nie ma indeksu 3!) i kod ten zostaje
+przerwany przed zwolnieniem rygla. Drugi w¹tek ju¿ wystartowa³, ale
+czeka sobie 2 sekundy (proszê zwróciæ uwagê na mo¿liwoœæ u¿ycia
+nowej formy wywo³ania metody sleep()). Po tych dwóch sekundach
+wyprowadza komunikat i próbuje wykonaæ metodê get. Metoda ta -
+jak widaæ - próbuje zamkn¹æ rygiel (dostêp do sekcji
+krytycznej), ale ten ju¿ jest zamkniêty przez pierwszy w¹tek. W¹tek
+drugi bêdzie wiecznie zablokowany na tym ryglu, bowiem jego w³aœciciel
+(ten kto go zamkn¹³) czyli pierwszy w¹tek ju¿ dawno zgin¹³ i nie mo¿e
+go otworzyæ.<br>
+<br>
+B³êdy mog¹ byæ subtelne. Wydaje siê oczywistoœci¹, ¿e w metodach
+set i
+get powinniœmy siê broniæ przed wyj¹tkiem
+ArrayIndexOutOfBoundsException. Oczywistym sposobem jest przekazanie
+obs³ugi do wywo³uj¹cego (czyli dodanie w sygnaturach klauzuli throws
+...). To oczywiœcie nie pomo¿e, bo rygiel pozostanie zamkniêty. A mo¿e
+obs³u¿yæ wyj¹tek wewn¹trz metody? Np.<br>
+<pre> public void set(int i, String s) {
+    lock.lock();
+    try {
+      txt[i] = s;
+    } catch (ArrayIndexOutOfBoundsException exc) {}
+    lock.unlock();
+  }</pre>To
+rozwi¹¿e nam problem tego konkretnego programu (bêdzie dzia³a³
+dobrze). Ale nie jest uniwersalnym rozwi¹zaniem, ani nawet dobrym. Po
+pierwsze nawet tu mog¹ siê pojawiaæ inne wyj¹tki (np.
+NullPointerException, gdy przeka¿emy w konstruktorze jako referencjê do
+tablicy null). Po drugie, metody mog¹ byæ bardziej skomplikowane, wo³aæ
+inne i tam mo¿e siê pojawiæ jakiœ wyj¹tek klasy RuntimeException. Po
+trzecie wreszcie, decydowanie o tym co zrobiæ gdy podano niew³aœciwiy
+argument (tu wadliwy indeks) nale¿y zawsze pozostawiæ wo³aj¹cemu (czyli
+jednak throws... lub sygnalizacja wyj¹tku typu RuntimeException ).
+<br>
+<hr>
+<a name="Synchro.3"></a><h2>3. Koniecznoœæ u¿ycia klauzuli finally. Klasa ReentrantLock.</h2>
+<br>
+Elegenckim rozwi¹zaniem opisanego wy¿ej problemu jest u¿ycie <span
+ style="font-weight: bold;">bloku try</span> i klauzuli <span
+ style="font-weight: bold;">finally</span>.<br>
+<br>
+<pre>  public void set(int i, String s) {
+    lock.lock();
+    try {
+      txt[i] = s;
+     } finally {
+       lock.unlock();
+     }
+  }</pre>
+<span style="font-weight: bold;"><br>
+<div class="important">Takiej&nbsp;konstrukcji
+powinniœmy u¿ywaæ zawsze, nawet jeœli nie liczymy siê z wyst¹pieniem
+jakichkolwiek wyj¹tków.</div></span><br>
+<br>
+Ma ona bowiem znaczenie nie tylko wtedy, gdy ew. wyj¹tki mog¹
+wyst¹piæ,
+ale równie¿ jest jedynym sposobem poprawnego oprogramowanie
+metod, które zwracaj¹ wynik.<br>
+<br>
+Oto mo¿e siê wydaæ, ¿e konstrukcja:<br>
+<pre>Lock lock = new ReentrantLock();
+
+public <span
+ style="font-style: italic;">typ</span> metoda() {
+  <span
+ style="font-style: italic;">typ</span> zmienna;
+  lock();
+  // ...
+  unlock();
+  return zmienna;
+}&nbsp;&nbsp;</pre>jest
+równowa¿na:<br>
+<pre>Object mutex = new Object();
+
+public <span
+ style="font-style: italic;">typ</span> metoda() {
+  <span
+ style="font-style: italic;">typ</span> zmienna;
+  synchronized(mutex) {
+    // ...
+    return zmienna;
+  }
+}&nbsp;&nbsp;</pre>Nic
+b³êdniejszego.<br>
+Zobaczmy na znanym nam ju¿ przyk³adzie, w którym wielokrotne
+wywo³anie w pêtli przez ró¿ne w¹tki metody balance() daje
+nieoczekiwany wynik (ró¿ny od 0), jesli nie ma
+synchronizacji.&nbsp;<br>
+<pre>class Balance {
+
+  private int number = 0;
+  private Lock lock = new ReentrantLock();
+
+  public int balance() {
+    lock.lock();
+    number++;
+    System.out.print("*");
+    number--;
+    lock.unlock();
+    return number;
+  }
+
+}
+
+class BalanceThread extends Thread {
+
+  private Balance b;  // referencja do obiektu klasy Balance
+  private int count;  // liczba powtórzeñ pêtli w metodzie run
+
+  public BalanceThread(String name, Balance b, int count) {
+    super(name);
+    this.b = b;
+    this.count = count;
+    start();
+  }
+
+  public void run() {
+    int wynik = 0;
+      for (int i = 0; i &lt; count; i++) {
+        wynik = b.balance();
+        if (wynik != 0) break;
+      }
+
+    System.out.println("\n"+ Thread.currentThread().getName() +
+                       " konczy z wynikiem  " + wynik);
+  }
+}
+
+class BalanceTest {
+
+  public static void main(String[] args) {
+
+    int tnum = Integer.parseInt(args[0]);     // liczba w¹tków
+    int count = Integer.parseInt(args[1]);    // liczba powtórzeñ pêtli w run()
+
+    // Tworzymy obiekt klasy balance
+    Balance b = new Balance();
+
+    // Tworzymy i uruchamiamy w¹tki
+    Thread[] thread = new Thread[tnum];
+
+    long start = System.nanoTime();
+
+    for (int i = 0; i &lt; tnum; i++)
+      thread[i] = new BalanceThread("W"+(i+1), b, count);
+
+    // czekaj na zako½czenie wszystkich w?tk¡w
+    try {
+      for (int i = 0; i &lt; tnum; i++) thread[i].join();
+    } catch (InterruptedException exc) {
+      System.exit(1);
+    }
+
+    System.out.println("Czas: " + (System.nanoTime() - start) );
+
+
+  }
+
+
+}       </pre>Niby
+jest synchronizacja, a jednak niektóre w¹tki koñcz¹ z wynikiem ró¿nym
+od 0, np.<br>
+<br>
+<div class="listing100"><br>
+W42 konczy z wynikiem&nbsp; 0<br>
+*<br>
+W39 konczy z wynikiem&nbsp; 1<br>
+</div><br>
+<br>
+Okazuje siê, ¿e <span style="font-weight: bold; font-style: italic;">return</span>
+znajduj¹ce siê poza sekcj¹ krytyczn¹ mo¿e zwróciæ wynik,
+który produkuje ju¿ inny w¹tek. Wygl¹da to tak: w¹tek A zamkn¹³
+rygiel wykona³ obliczenia, otworzy³ rygiel i w tym momencie zosta³
+wyw³aszczony. W¹tek B rozpoczyna obliczenia, w momecie wypisywania
+gwiazdki (blokowanie na we/wy) jest wyw³aszczany, a w¹tek A wraca do
+procesora i zwraca wartoœæ zmiennej number, któr¹ przed chwil¹
+ustali³ w¹tek B.<br>
+<br>
+<span style="font-weight: bold;">A zatem koniecznie nale¿y u¿yæ
+konstrukcji try - finally, chocia¿ w tym
+przyk³adzie nie ma ¿adnej mo¿liwoœci pojawienia siê wyj¹tków.</span><br
+ style="font-weight: bold;">
+<br>
+<pre>  public int balance() {
+    try {
+      lock.lock();
+      number++;
+      System.out.print("*");
+      number--;
+      return number;
+    } finally {
+        lock.unlock();
+    }
+  }
+</pre>
+W tym przypadku wykonanie <span style="font-weight: bold;">return</span>
+zostanie wstrzymane do chwili zakoñczenia bloku finally i uzyskamy
+w³aœciwe wyniki.<br>
+<br>
+Tak samo powinniœmy poprawiæ metodê get(...) z klasy&nbsp;StringTab.<br>
+Zamiast niebezpiecznego:<br>
+<pre>  public String get(int i) {
+    String t = null;
+    lock.lock();
+    t = txt[i];
+    lock.unlock();
+    return t;
+  }
+</pre>nale¿y
+napisaæ:<br>
+<pre>  public String get(int i) {
+    lock.lock();
+    try {
+      return txt[i];
+    } finally {
+        lock.unlock();
+    }
+  }</pre><br>
+Nale¿y podkreœliæ, ¿e zastosowanie try/finally&nbsp;musi byæ w pe³ni
+œwiadome, bo obarczone jest dodatkowymi
+niebezpieczeñstwami.<br>
+<br>
+<ul><li><span style="font-weight: bold;">Po pierwsze</span>, jeœli
+pojawi
+siê wyj¹tek, który przerwie wykonanie bloku try, to po
+zwolnieniu rygla w klauzuli finally stan obiektu mo¿e byæ
+niespójny. Dlatego w finally zawsze nalezy dostarczyæ
+odpowiednich operacji porz¹dkuj¹cych.</li></ul>
+<ul><li><span style="font-weight: bold;">Po drugie</span>, w przypadku,
+gdy stosujemy ryglowanie przerywalne (lockInterruptibly() lub
+tryLock(...) z podanym czasem), to po przerwaniu w¹tku (metod¹
+interrupt())&nbsp; rygiel jest otwierany i w¹tek ju¿ go "nie posiada";
+&nbsp;jednak finally jest wykonywane i próba zwolnienia rygla w
+tym miejscu powoduje wyj¹tek IllegalMonitorStateException (próba
+zwolnienia nieposiadanego rygla).</li></ul>
+Ilustacj¹ &nbsp;pierwszego przypadku mo¿e byæ zmodyfikowany kod
+przyk³adu z bilansowaniem liczby.<br>
+Niech np. oprócz dodawania i odejmowania wykonywane s¹ jeszcze jakieœ
+inne operacje:<br>
+<pre> int w;
+ int innaLiczba;
+ // ....
+
+ // Kod metody balance &nbsp;
+ lock.lock();
+ try {
+
+      number++;
+      if (print) System.out.print("*");
+      w = number/innaLiczba;
+      number--;
+
+      return number;
+  } finally {
+      lock.unlock();
+  } </pre>Jesli
+innaLiczba = 0, to powstanie wyj¹tek ArithmeticException, blok
+try zostanie przerwany, w finally zwolniony rygiel, ale stan obiektu
+Balance bêdzie niespójny (za³o¿enie - po wykonaniu metody
+balance ma to byæ 0). Inne w¹tki, które opieraj¹ siê na tym
+za³o¿eniu mog¹ prowadziæ do dalszych z³ych (coraz gorszych)
+wyników. <br>
+<br>
+Przyk³adowy wynik dzia³ania kilku w¹tków wykonuj¹cych kod:<br>
+<pre> public void run() {
+    int wynik = 0;
+      for (int i = 0; i &lt; count; i++) {
+        boolean print;
+        if (i%20 == 0) print = true;
+        else print = false;
+        try {
+          wynik = b.balance(print);
+        } catch(Exception exc) { }
+        if (wynik != 0) break;
+      }
+    System.out.println("\n"+ Thread.currentThread().getName() +
+                       " konczy z wynikiem  " + wynik);
+    System.out.println("Stan b: " + b);
+  }
+}  </pre><div
+ class="listing100"><br>
+*****<br>
+L1 konczy z wynikiem&nbsp; 0<br>
+Stan b: 100<br>
+*****<br>
+L2 konczy z wynikiem&nbsp; 0<br>
+Stan b: 200<br>
+*****<br>
+L3 konczy z wynikiem&nbsp; 0<br>
+Stan b: 300<br>
+*****<br>
+L4 konczy z wynikiem&nbsp; 0<br>
+Stan b: 400<br>
+*****<br>
+L5 konczy z wynikiem&nbsp; 0<br>
+Stan b: 500<br>
+*****<br>
+L6 konczy z wynikiem&nbsp; 0<br>
+Stan b: 600<br>
+*****<br>
+L7 konczy z wynikiem&nbsp; 0<br>
+Stan b: 700<br>
+*****<br>
+L8 konczy z wynikiem&nbsp; 0<br>
+Stan b: 800<br>
+*****<br>
+L9 konczy z wynikiem&nbsp; 0<br>
+Stan b: 900<br>
+*****<br>
+L10 konczy z wynikiem&nbsp; 0<br>
+Stan b: 1000<br>
+</div><br>
+<br>
+Warto przy okazji zwróciæ uwagê, ¿e dzia³anie metody balance()
+jest przerywane jeszcze przed zwrotem wyniku, a to co pokazuje "wynik"
+w¹tku jest inicjaln¹ wartoœci¹ nadan¹ w metodzie run(). Faktyczny stan
+obiektu b jest - jak widaæ zupe³nie inny. <br>
+<br>
+Mo¿e wiêc (nawet w tym prostym przypadku) trzeba napisaæ tak:<br>
+<br>
+<pre>public int balance1() {
+    lock.lock();
+    boolean balanced = true;
+    try {
+      number++;
+      balanced = false;
+      w = number/innaLiczba;
+      number--;
+      balanced = true;
+      return number;
+    } finally {
+        if (!balanced) number--;
+        lock.unlock();
+    }
+
+  }</pre>
+Drugi przyk³ad dotyczy przerywania blokowania na ryglu.<br>
+Mamy oto jakiœ w¹tek, który zamyka rygiel w sposób przerywalny. <br>
+<pre> Lock lock = new ReentrantLock();
+
+  Runnable task1 = new Runnable() {
+     public void run() {
+       System.out.println("Task 1 begins");
+       try {
+         <span
+ style="font-weight: bold;">lock.tryLock(10, TimeUnit.SECONDS); // albo lock.lockInterruptibly();</span>
+         System.out.println("Task 1 entered");
+       } catch(InterruptedException exc) {
+           System.out.println("Task 1 interrupted");
+       } finally {
+           lock.unlock();
+       }
+       System.out.println("Task 1 stopped");
+     }
+  };</pre>Jeœli
+po uruchomieniu tego zadania zostanie ono zablokowane na ryglu i
+przerwiemy go (posy³aj¹c do odpowiedniego w¹tku interrupt()
+(bezpoœrednio lub za poœrednictwem ExecutorService), to uzyskamy taki
+oto obrazek:<br>
+<br>
+Task 1 begins<br>
+Task 1 interrupted<br>
+Exception in thread "pool-1-thread-2"
+java.lang.IllegalMonitorStateException<br>
+....<br>
+<br>
+<br>
+Aby unikn¹æ takich niespodzianek zwalniaj¹c rygiel w finally winniœmy
+sprawdziæ, czy nadal przynale¿y on do bie¿¹cego w¹tku, stosuj¹c metodê <span
+ style="font-weight: bold;">isHeldByCurrentThread()</span>.<br>
+<br>
+<pre> Lock lock = new ReentrantLock();
+
+  Runnable task1 = new Runnable() {
+     public void run() {
+       System.out.println("Task 1 begins");
+       try {
+         <span
+ style="font-weight: bold;">lock.tryLock(10, TimeUnit.SECONDS); // albo lock.lockInterruptibly();</span>
+         System.out.println("Task 1 entered");
+       } catch(InterruptedException exc) {
+           System.out.println("Task 1 interrupted");
+       } finally {
+           ReentrantLock l = (ReentrantLock) lock;
+           if (l.isHeldByCurrentThread()) lock.unlock();
+       }
+       System.out.println("Task 1 stopped");
+     }
+  };</pre>
+Ta metoda nie jest metod¹ interfejsu Lock, ale klasy go implementuj¹cej
+- ReentrantLock.<br>
+<br>
+<div class="def"><span style="font-weight: bold;"><!---->Reentrant</span>
+(wielobie¿ny) oznacza mo¿liwoœæ ponownego wykonania tej
+samej operacji przez ten sam w¹tek w sytuacji, gdy jest ona w trakcie
+wykonywania w tym w¹tku. W przypadku rygli chodzi o mo¿liwoœæ ponownego
+wprowadzania tej samej sekcji krytycznych (ponownego zamykania rygla)
+przez w¹tek, który ju¿ ten rygiel zamkn¹³<!----></div><br>
+<br>
+A wiêc rygiel mo¿e byæ zamykany wielokrotnie przez ten sam w¹tek
+(w³aœciciel rygla nie czeka na zamkniêtym przez siebie ryglu, inne
+w¹tki czekaj¹). Zliczana jest liczba zamkniêæ (mo¿emy siê dowiedzieæ
+jaka ona jest za pomoc¹ metody <span style="font-weight: bold;">int
+getHoldCount()</span>).
+Ka¿de otwarcie rygla (unlock()) zmniejsza tê liczbê. Dopiero gdy jest
+równa 0 - inne w¹tki mog¹ uzyskaæ dostêp do sekcji krytycznej.
+<br>
+<hr>
+<a name="Synchro.4"></a><h2>4. Idiomy ryglowania</h2>
+<br>
+Ostateczenie mo¿na przedstawiæ kilka idiomatycznych, w³aœciwych
+sposóbów postêpowania z ryglami typu Lock.<br>
+<br>
+<span style="text-decoration: underline;">
+Sekcja krytyczna z nieprzerywaln¹ blokad¹</span><br>
+<br>
+<pre>Lock lock = new ReentrantLock();
+....
+
+lock.lock();
+try {
+   // ...
+| finally {
+   // ... zapewnienie spójnoœci stanów obiektu
+   lock.unlock();
+}&nbsp;&nbsp;</pre>
+&nbsp; <br>
+<span style="text-decoration: underline;">Sekcja krytyczna
+z&nbsp;przerywaln¹ blokad¹</span><br>
+<br>
+<pre>Lock lock = new ReentrantLock();
+....
+try {
+  lock.lockInterruptibly();
+
+   // ...
+| catch(InterruptedException exc) {
+   // ... przerwanie dzia³ania - zakoñczenie metody run
+finally {
+   // ... zapewnienie spójnoœci stanów obiektu
+   ReentrantLock l = (ReentrantLock) lock;
+   if (l.isHeldByCurrentThread()) lock.unlock();
+}&nbsp;&nbsp;</pre>
+<br>
+<hr style="width: 100%; height: 2px;"><br>
+<a name="Synchro.5"></a><h2>5. Lock czy synchronized?</h2>
+U¿ycie <span style="font-weight: bold; font-style: italic;">synchronized</span>
+jest w wielu przypadkach ³atwiejsze (mniej pisania kodu) i pozwala
+unikn¹æ subtelnych pu³apek.<br>
+Jeœli wiêæ nie potrzebujemy w naszym kodzie dodatkowcyh mo¿liwoœci
+zapewnainych przez bezposrednie rygle typu Lock - u¿ywajmy tradycyjnego
+synchronizowania przez <span style="font-style: italic;">synchronized</span>.<br>
+<br>
+<br>
+U¿ycie bezpoœrednich rygli (typu Lock) wymaga trochê wiêcej kodowania i
+uwagi.<br>
+Ale op³aca siê w przypadkach&nbsp;kiedy:<br>
+<ul><li>chcemy mieæ przerywalne blokady,</li><li>piszemy bardziej
+wysublimowane programy, w których np. nie chcemy blokowaæ w¹tku, jesli
+ktoœ inny zaj¹³ rygiel:<br>
+ </li></ul>
+<pre>Lock lock;
+
+boolean got = lock.tryLock();
+if (got) {
+   try {
+     // sekcja krytyczna
+   } finally {
+       lock.unlock();
+   }&nbsp;&nbsp;
+} else {
+    robimy coœ innego - mo¿e staramy siê np. przetwarzaæ inny zasób
+}</pre><ul><li>chcemy
+lub musimy inaczej strukturyzowaæ kod (zwalniaæ rygle w innych blokach
+ni¿ te, w których s¹ zamykane).</li></ul><br>
+<hr
+ style="width: 100%; height: 2px;">
+<a name="Synchro.6"></a><h2>6. Dodatkowe mo¿liwoœci rygli</h2>
+<span style="font-weight: bold;"><!---->Uczciwe rygle<!----></span><br>
+<br>
+Lock lock = new ReentrantLock(true); &nbsp;// fairness = true<br>
+<br>
+Najd³u¿ej czekaj¹cy bêd¹ mieli wczeœniej dostêp. Koszt
+efektywnoœciowy.<br>
+<br>
+<span style="font-weight: bold;"><!---->Read-Write Locks<!----></span><br>
+<br>
+Wiele w¹tków czyta, modyfikacje s¹ rzadsze. Efektywnoœæ.<br>
+<br>
+<div class="syntax">Sposób postêpowania:<br>
+<br>
+<span style="font-weight: bold;">A. Utworzenie obiektu - rygla</span><br>
+private ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();<br>
+<br>
+<span style="font-weight: bold;">B. Pobranie read/write locków</span><br>
+private Lock readLock = rwl.readLock();<br>
+private Lock writeLock = rwl.writeLock();<br>
+<br>
+<span style="font-weight: bold;">C. U¿ycie readLocków wszêdzie tam
+gdzie odczytujemy zasoby</span><br>
+<br>
+public double getData() {<br>
+&nbsp; readLock.lock();<br>
+&nbsp; try { . . . }<br>
+&nbsp; finally { readLock.unlock(); }<br>
+}<br>
+<br>
+<span style="font-weight: bold;">D. U¿ycie writeLocków wszêdzie
+tam, gdzie modyfikujemy zasoby.</span><br>
+<br>
+public void modifyData(. . .) &nbsp;{<br>
+&nbsp; writeLock.lock();<br>
+&nbsp; try { . . . }<br>
+&nbsp; finally { writeLock.unlock(); }<br>
+}</div><br>
+<hr style="width: 100%; height: 2px;"><br>
+<a name="Synchro.7"></a><h2>7. Warunki</h2>
+<!---->Pakiet java.util.concurrent dostarcza alternatywnego wobec
+wait-notify&nbsp; mechanizmu koordynacji dzialania w¹tków.<br>
+Wprowadzany jest on przez klasê Condition.<!----><br>
+<br>
+<div class="syntax"><br>
+Lock lock;<br>
+<br>
+Condition cond1 = lock.newCondition(); &nbsp; // stworzenie warunku
+w kontekœcie lock<br>
+<br>
+lock.lock();<br>
+//....<br>
+try {<br>
+&nbsp;&nbsp;&nbsp; cond.await(); &nbsp;// rygiel jest otwierany, w¹tek
+przechodzi do stanu WAITING<br>
+} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; // i wraca do stanu RUNNABLE z zamkniêtym ponownie ryglem,
+gdy wyst¹pi jedno ze zdarzeñ<br>
+lock.unllock(); &nbsp; &nbsp; // &nbsp;- inny w¹tek wywo³a³ signal lub
+signalAll<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp;// &nbsp;- wyst¹pi³ wyj¹tek InterruptedException<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp;// - spurious wakeup (mechanizmy systemowe
+przerwa³y wait)<br>
+<br>
+<span style="font-weight: bold;">Inny w¹tek:</span><br>
+lock.lock()<br>
+cond.signal() lub cond.signalAll();<br>
+lock.unlock();<br>
+</div><br>
+<br>
+Ró¿nice wobec wait i notify:<br>
+<ul><li>Condition jest obiektem i mo¿na z nim robiæ to co z innymi
+obiektami (np. przekazywaæ)</li><li>oczywiœcie jest zwi¹zany z danym
+ryglem ale dla ka¿dego rygla mo¿e byæ wiele warunków.</li></ul>
+<br>
+<br>
+<span style="font-weight: bold;">Uwaga na mo¿liwoœæ "spurious wakeup" -
+koniecznoœæ dodatkowych warunków i sprawdzania ich w pêtli</span>.<br>
+<br>
+Przyk³ad (modyfikacja kodu Author-Writer):<br>
+<br>
+<pre>import java.util.concurrent.locks.*;
+
+class Teksty {
+
+  Lock lock = new ReentrantLock();
+  Condition txtWritten = lock.newCondition();
+  Condition txtSupplied = lock.newCondition();
+
+  String txt = null;
+  boolean newTxt = false;
+
+  // Metoda ustalaj¹ca tekst - wywo³uje Autor
+  void setTextToWrite(String s) {
+    lock.lock();
+    try {
+      if (txt != null) {
+        while (newTxt == true)
+          txtWritten.await();
+      }
+      txt = s;
+      newTxt = true;
+      txtSupplied.signal();
+    } catch (InterruptedException exc) {
+    } finally {
+         lock.unlock();
+    }
+  }
+
+
+  // Metoda pobrania tekstu - wywo³uje Writer
+   String getTextToWrite() {
+     lock.lock();
+     try {
+       while (newTxt == false)
+         txtSupplied.await(); // mo¿e byæ Interrupted
+       newTxt = false;
+       txtWritten.signal();
+       return txt;
+     } catch (InterruptedException exc) {
+         return null;
+     } finally {
+         lock.unlock();
+     }
+   }
+
+
+}
+
+// Klasa "wypisywacza"
+class Writer extends Thread {
+
+  Teksty txtArea;
+
+  Writer(Teksty t) {
+    txtArea=t;
+  }
+
+  public void run() {
+    String txt = txtArea.getTextToWrite();
+    while(txt != null) {
+      System.out.println("-&gt; " + txt);
+      txt = txtArea.getTextToWrite();
+      }
+  }
+
+}
+
+// Klasa autora
+class Author extends Thread {
+
+  Teksty txtArea;
+
+  Author(Teksty t)  {
+    txtArea=t;
+  }
+
+  public void run() {
+
+    String[] s = { "Pies", "Kot", "Zebra", "Lew", "Owca", "S³oñ", null };
+    for (int i=0; i&lt;s.length; i++) {
+      try { // autor zastanawia siê chwilê co napisaæ
+        sleep((int)(Math.random() * 1000));
+      } catch(InterruptedException exc) { }
+      txtArea.setTextToWrite(s[i]);
+    }
+  }
+
+}
+
+// Klasa testuj¹ca
+public class Koord {
+
+   public static void main(String[] args) {
+     Teksty t = new Teksty();
+     Thread t1 = new Author(t);
+     Thread t2 = new Writer(t);
+     t1.start();
+     try { Thread.sleep(3000); } catch(Exception exc) {}
+     t2.start();
+   }
+
+}</pre>
+<br>
+<br>
+Klasa Condition ma i inne&nbsp; bogate mo¿liwoœci. Oto ilustruj¹cy je
+zestaw metod.<br>
+<br>
+<table summary="" border="1" cellpadding="3" cellspacing="0"
+ width="100%"> <tbody> <tr class="TableRowColor" bgcolor="white"> <td
+ align="right" valign="top" width="1%"> &nbsp;void</td> <td>await() <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Bie¿¹cy w¹tek
+jest wstrzymywany dopóki nie otrzyma sygna³u lub nie zostanie
+przerwany (interrupt).</td> </tr> <tr class="TableRowColor"
+ bgcolor="white"> <td align="right" valign="top" width="1%">
+&nbsp;boolean</td> <td>await(long&nbsp;time, TimeUnit&nbsp;unit) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bie¿¹cy
+watek&nbsp;jest wstrzymywany dopóki nie otrzyma sygna³u lub nie
+zostanie przerwany (interrupt), albo nie minie podany czas.</td> </tr>
+<tr class="TableRowColor" bgcolor="white"> <td align="right"
+ valign="top" width="1%"> &nbsp;long</td> <td>awaitNanos(long&nbsp;nanosTimeout)
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; j.w..</td> </tr>
+<tr class="TableRowColor" bgcolor="white"> <td align="right"
+ valign="top" width="1%"> &nbsp;void</td> <td>awaitUninterruptibly() <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Tu nie ma
+mo¿liwoœci przerwania oczekiwania przez interrupt().</td> </tr> <tr
+ class="TableRowColor" bgcolor="white"> <td align="right" valign="top"
+ width="1%"> &nbsp;boolean</td> <td>awaitUntil(Date&nbsp;deadline) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Oczekiwanie
+dopóki nei ma signal, interrupt() lub nie minie podana data.</td> </tr>
+<tr class="TableRowColor" bgcolor="white"> <td align="right"
+ valign="top" width="1%"> &nbsp;void</td> <td>signal() <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Budzi jedne z
+czakjacych na warunku w¹tków.</td> </tr> <tr class="TableRowColor"
+ bgcolor="white"> <td align="right" valign="top" width="1%"> &nbsp;void</td>
+<td>signalAll() <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Budzi wsyztskie
+czekaj¹ce watki.</td> </tr> </tbody>
+</table><br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<a name="Synchro.8"></a><h2>8. Synchronizatory wy¿szego poziomu, blokuj¹ce kolejki, konkurencyjne kolekcje i atomiki.</h2>
+<br>
+<!----><!---->Pakiet java.util.concurrent udostêpnia&nbsp;
+synchronizatory wy¿szego poziomu: <br>
+<br>
+<ul><li>Semafory (Semaphore),</li><li>
+Bariery (CyclicBarrier),</li><li>
+Zasuwy (CountDownLatch),</li><li>
+Wymienniki (Exchanger).</li></ul>
+<br>
+<!----><!---->a tak¿e blokuj¹ce kolejki (ulatwiaj¹ce pisanie
+programów wymagaj¹cych koordynacji w¹tków):<br>
+<br>
+<ul><li>
+ArrayBlockingQueue</li><li>
+LinkedBlockingQueue</li></ul>
+<br>
+<!----><!---->Do zestwu kolekcji dodano równie¿ kolekcje
+przygotowane na efektywne dzia³anie w sytuacji du¿ej konkurencji:<br>
+<br>
+<ul><li>ConcurrentHashMap</li><li>ConcurrentLinkedQueue</li></ul>
+<br>
+Pakiet java.util.concurrent.atomic daje natomiast mo¿liwoœci
+wielow¹tkowo bezpiecznego dzialania na zmiennych typów prostych
+bez u¿ycia synchronizaji. Zagwarantowano tu atomistycznoœæ operacji
+modyfikacji zmiennych i dziêki temu mo¿na unikaæ czasowo ksoztownej
+synchronizaji.<br>
+<br>
+Proszê zapoznaæ siê z dokumentacj¹ przedstawionych klas.<br>
+<hr style="width: 100%; height: 2px;"></body></html>

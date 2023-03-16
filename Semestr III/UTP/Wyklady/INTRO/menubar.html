@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+ "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+  <meta name="author" content="Krzysztof Barteczko">
+  <meta name="description" content="Uniwersalne techniki programowania">
+  <meta name="copyright" content="(c) Krzysztof Barteczko">
+  <link rel="stylesheet" type="text/css" href="../STYLE/spis.css">   
+  <title>Uniwersalne techniki programowania</title>
+
+ <script type="text/javascript">
+
+
+ var ol_width = 250;
+ var ol_closeclick = 1;
+ var ol_cap = "Wybór wykładu";
+ var ol_fgcolor = "#dcdcdc";
+ var ol_fixx = 5;
+ var ol_fixy = 5;
+ var ol_bgcolor = "#369";
+ var ol_capcolor = "aliceblue";
+ var ol_border = 2;
+ var ol_closesize = "3";
+ var ol_textsize = 2;
+ var ol_closecolor = "red";
+ var ol_close = "<b>X</b>";
+
+function getTxt() {
+
+txt = "<div id=\"spis\">" +
+"<a href=\"javascript:void(parent.frames[1].location.href='../Generics/Genericsspis.html');" +
+"void(parent.frames[2].location.href='../Generics/Generics.html#Generics');\">&nbsp;1. Typy sparametryzowane</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../PrgFunk/PrgFunkspis.html');" +
+"void(parent.frames[2].location.href='../PrgFunk/PrgFunk.html#PrgFunk');\">&nbsp;2. Wprowadzenie do programowania funkcyjnego</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Lambda/Lambdaspis.html');" +
+"void(parent.frames[2].location.href='../Lambda/Lambda.html#Lambda');\">&nbsp;3. Interfejsy funcyjne i lambda-wyrażenia</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Kolekcje/Kolekcjespis.html');" +
+"void(parent.frames[2].location.href='../Kolekcje/Kolekcje.html#Kolekcje');\">&nbsp;4. Kolekcje</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../PrzetwStrum/PrzetwStrumspis.html');" +
+"void(parent.frames[2].location.href='../PrzetwStrum/PrzetwStrum.html#PrzetwStrum');\">&nbsp;5. Przetwarzanie strumieniowe</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Strumienie/Strumieniespis.html');" +
+"void(parent.frames[2].location.href='../Strumienie/Strumienie.html#Strumienie');\">&nbsp;6. Strumienie we-wy</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Wykonawcy/Wykonawcyspis.html');" +
+"void(parent.frames[2].location.href='../Wykonawcy/Wykonawcy.html#Wykonawcy');\">&nbsp;7. Narzędzia programowania współbieżnego: wykonawcy</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Synchro/Synchrospis.html');" +
+"void(parent.frames[2].location.href='../Synchro/Synchro.html#Synchro');\">&nbsp;8. Narzędzia programowania współbieżnego: synchronizatory</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Reflex/Reflexspis.html');" +
+"void(parent.frames[2].location.href='../Reflex/Reflex.html#Reflex');\">&nbsp;9. Dynamiczna Java: refleksja</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../JavaBeans/JavaBeansspis.html');" +
+"void(parent.frames[2].location.href='../JavaBeans/JavaBeans.html#JavaBeans');\">10. JavaBeans</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Adnotacje/Adnotacjespis.html');" +
+"void(parent.frames[2].location.href='../Adnotacje/Adnotacje.html#Adnotacje');\">11. Metadane i adnotacje</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Skrypty/Skryptyspis.html');" +
+"void(parent.frames[2].location.href='../Skrypty/Skrypty.html#Skrypty');\">12. Skrypty w Javie</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../PrgBd/PrgBdspis.html');" +
+"void(parent.frames[2].location.href='../PrgBd/PrgBd.html#PrgBd');\">13. Java i bazy danych (JDBC)</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Intern/Internspis.html');" +
+"void(parent.frames[2].location.href='../Intern/Intern.html#Intern');\">14. Internacjonalizacja aplikacji</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Wzorce1/Wzorce1spis.html');" +
+"void(parent.frames[2].location.href='../Wzorce1/Wzorce1.html#Wzorce1');\">15. Wzorce projektowe (1)</a><br>" +
+
+"<a href=\"javascript:void(parent.frames[1].location.href='../Wzorce2/Wzorce2spis.html');" +
+"void(parent.frames[2].location.href='../Wzorce2/Wzorce2.html#Wzorce2');\">16. Wzorce projektowe (2)</a><br>" +
+
+"</div>";
+
+
+
+ return txt;
+ }
+ </SCRIPT>
+
+<script langauge="JavaScript" src="../JS/overlib_mini.js"></script><!-- overLIB (c) Erik Bosrup -->
+<script langauge="JavaScript" src="../JS/openwin.js"></script>
+<script langauge="JavaScript" src="../JS/overlib_crossframe_mini.js"></script>
+</head>
+
+<body id="spisbody">
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<a href="javascript:void(0);" onclick="return overlib(FUNCTION, getTxt, FRAME, parent.lbott, STICKY);"><img src=run_tool.gif border=0 TITLE="Szybki wybór wykładu"></a>
+<a href="spis1.html" target="lbott" onclick="parent.right.location.href='spis2.html'"><img src=class_hi.gif border=0 TITLE="Szczegółowy spis treści"></a>
+<a href="javascript:popUp('slind.html',75,75)"><img src=bookmarks_view.gif border=0 TITLE="Słownik-indeks"></a>
+<a href="spismain.html" target="lbott" onclick="parent.right.location.href='info.html'"><img src=help.gif border=0 TITLE="Informacje początkowe"></a>
+
+
+</body>
+</html>

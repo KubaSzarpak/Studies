@@ -1,20 +1,31 @@
 # Distributed Database
 
-# Jakub Szarpak
+## Get started
 
----
+### Installation
 
-## How to run this program:
+To generate database node you need to run this command:
 
----
-To generate database node you need to run "src/DatabaseNode/Main/DatabaseNode.java" with "-tcpport port" argument.  
-The "-connect address:port" and "-record key:value" operations are additional commands.  
-"-connect address:port" - this command connects server to the node on **address** and **port**.  
-"-record key:value" - this command stores **value** under **key** on this server.
+``` bash
+javac ./DatabaseNode/src/DatabaseNode/Main/DatabaseNode.java
+java ./DatabaseNode/src/DatabaseNode/Main/DatabaseNode.java --tcpport [port]
+```
 
+The `-connect [address]:[port]` and `-record [key]:[value]` operations are additional commands.  
+`-connect [address]:[port]` - this command connects server to the node on ip **address** and **port**.  
+`-record [key]:[value]` - this command stores **value** under **key** on this server.
 
+### Usage
 
----
+This project is a distributed database, which is a database not on one device but on a few devices. 
+Every device is a database node. If you want to be part of a database then you need to connect your node to another node using `-connect [address]:[port]` command while starting a program.
+This distributed database has **ring topology**, which means, no mater how you connect the nodes, they will always
+create a ring of connections.
+
+When database is created (has more than one node), you can control it by TCP clients. Exemplary client is in `DatabaseNode/src/DatabaseClient.java` file.
+Client has few operation which will be operated by node, nodes or whole database. More about clients you can find in `client` part of documentation.
+
+If you want to try it out, you can run exemplary scripts. You can find them in `DatabaseNode/Scripts`.
 
 ## Description:
 
@@ -55,22 +66,22 @@ New node's next node is **node** and new node's previous node is also **node**.
 
 ![Image_6.jpg](Images/Image_6.jpg)
 
-**Client** can affect the database. Exemplary database **client**: "DatabaseNode/src/DatabaseClient.java".  
-Client should run with arguments "**-gateway** address:port **-operation** operation with parameters".
-Client have few allowed operations:
+### Client
 
-- **set-value** key:value - set value on **key** to **value**. Returns communicate "OK" if **key** was found and **
-  value** is set or "ERROR" if **key** was not found and **value** is not set.
-- **get-value** key - returns communique "key:value" if **key** was found or "ERROR" if **key** was not found.
-- **find-key** key - returns "address:value" if **key** was found or "ERROR" if **key** was not found.
-- **get-max** - returns communique "key:value" of the biggest value in database.
-- **get-min** - returns communique "key:value" of the smallest value in database.
-- **new-record** key:value - sets new **key** and new **value** on node to which the request was sent.
-- **terminate** - shutdown the node to which the request was sent.
+When you have created a distributed database by connection few nodes, then you want to actually use it somehow.
+The TCP client is responsible for this. If you want, you can connect your own TCP client, there is only one rule, first communique need to be "Client" message.   
+Client has few available requests:
+
+- `set-value** [key]:[value]` - set value on **key** to **value**. Returns communicate "OK" if **key** was found and **value** is set or "ERROR" if **key** was not found and **value** is not set.
+- `get-value [key]` - returns communique "key:value" if **key** was found or "ERROR" if **key** was not found.
+- `find-key [key]` - returns "address:value" if **key** was found or "ERROR" if **key** was not found.
+- `get-max` - returns communique "key:value" of the biggest value in database.
+- `get-min` - returns communique "key:value" of the smallest value in database.
+- `new-record` key:value - sets new **key** and new **value** on node to which the request was sent.
+- `terminate` - shutdown the node to which the request was sent.
 
 Client can use one operation at the time.  
-To the database can connect few clients at the same time. (I run test with 50 clients connected at the same time with
-the same node)
+To the database can connect few clients at the same time. Database node is multithreaded server, so operations should not collide with each other.
 
 #### Trip of the request:
 
@@ -96,8 +107,6 @@ for that.
 
 ## Description of the individual elements of the DistributedDatabase:
 
----
-
 ### DatabaseNode
 
 DatabaseNode class is the Main class. It recognizes information given in arguments of project to start the server. It
@@ -113,26 +122,24 @@ node. ![Image_5.jpg](Images/Image_5.jpg) ![Image_6.jpg](Images/Image_6.jpg)
 
 Now server is set up.
 
----
-
 #### Methods:
 
-- #### main(String[] args):
+- `main(String[] args)`
 
-> This is **main** method. It sets up whole server.  
-> Server can be set up with or without record, with or without connection, but it needs to have port number.  
-> Main checks if args are fine and starts creates DatabaseNodeCenter, which is the brain of the server.
+    This is **main** method. It sets up whole server.  
+    Server can be set up with or without record, with or without connection, but it needs to have port number.  
+    Main checks if args are fine and starts creates DatabaseNodeCenter, which is the brain of the server.
 
-- #### recognizeCommand(String[] commands):
+- `recognizeCommand(String[] commands)`
 
-> This method recognizes and divides commands from **commands** array.  
-> At first, fields are set to error values like "" or -1.  
-> Then three patterns are created:
-> - **portPattern** for recognizing the area with port.
-> - **connectionPattern** for recognizing the area with connection data.
-> - **recordPattern** for recognizing the area with value.
->
-> Then, in for loop every pattern gets recognized and the fields are assigned with correct values.
+    This method recognizes and divides commands from **commands** array.  
+    At first, fields are set to error values like "" or -1.  
+    Then three patterns are created:
+   - **portPattern** for recognizing the area with port.
+   - **connectionPattern** for recognizing the area with connection data.
+   - **recordPattern** for recognizing the area with value.
+
+    Then, in for loop every pattern gets recognized and the fields are assigned with correct values.
 
 ---
 
@@ -160,30 +167,29 @@ There are getters and setters for **nextNodePort** and **nextNodeAddress**.
 There is also **addOperateThread(String requestMessage, PrintWriter writer)** method, which creates and starts new **
 OperateThread** with PrintWriter parameter.
 
----
 
 #### Methods:
 
-- #### connect(String destinationAddress, int destinationPort):
+- `connect(String destinationAddress, int destinationPort)`
 
-> This method is used to connect to the web. Its parameters are String **destinationAddress** and int **
-> destinationPort**, whose are ip **address** and **port** of the node that it tries to connect.
->
-> It creates **TCP** connection with node that it tries to connect (That node will be called "**previous node**").
-> Then it sends "Node" message to let previous node know that it is a correct node, neither client nor inappropriate
-> server.
-> Next it sends its PORT and reads line of text (**response**).
-> It checks if previous node allows to continue connection or if connection is already broke.  
-> If **response** is "ERROR", then it means that connection can not be executed. The previous node responses are printed
-> and "connect" method ends. Printed information should look like this:
-> > "ERROR"  
-> "PORT ALREADY CONNECTED"
->
-> If **response** is not "ERROR", then connection can be executed and **nextNodePort** field is declared.
-> Next, by reading next line **nextNodeAddress** field is declared.  
-> Next it assigns **previous node** port and address to **previousNodeAddress** and **previousNodePort** fields.  
-> At the end, TCP connection can be closed by calling **Socket.close()** method and information "Connected to the node"
-> is printed.
+    This method is used to connect to the web. Its parameters are String **destinationAddress** and int **
+     destinationPort**, whose are ip **address** and **port** of the node that it tries to connect.
+    
+    It creates **TCP** connection with node that it tries to connect (That node will be called "**previous node**").
+    Then it sends "Node" message to let previous node know that it is a correct node, neither client nor inappropriate
+    server.
+    Next it sends its PORT and reads line of text (**response**).
+    It checks if previous node allows to continue connection or if connection is already broke.  
+    If **response** is "ERROR", then it means that connection can not be executed. The previous node responses are printed
+    and "connect" method ends. Printed information should look like this:
+    "ERROR"  
+    "PORT ALREADY CONNECTED"
+    
+    If **response** is not "ERROR", then connection can be executed and **nextNodePort** field is declared.
+    Next, by reading next line **nextNodeAddress** field is declared.  
+    Next it assigns **previous node** port and address to **previousNodeAddress** and **previousNodePort** fields.  
+    At the end, TCP connection can be closed by calling **Socket.close()** method and information "Connected to the node"
+    is printed.
 
 ---
 
@@ -213,46 +219,45 @@ There are three constructors. Every one of them is for different purpose.
 - **OperateThread(String requestMessage, boolean isFirst)** - request that need to be sent to next or previous node. It
   is used only during **connect()** method.
 
----
-
 #### Methods:
 
-- #### createSocket(int localPort):
+- `createSocket(int localPort)`
 
-> This method tries to create UDP server on given **localPort** with timeout of 500 milliseconds.
+This method tries to create UDP server on given **localPort** with timeout of 500 milliseconds.
 
-- ### run():
+- `run()`
 
-> This method is run method from Runnable interface.
-> Firstly, it recognizes **operation** and call corresponding methods. The result of these methods is stored in **
-> String[] result** variable.  
-> Then First element of **result** is checked.  
-> If this is "OK", then second element is sent to TCP client if this is first node of the request, or to source UDP
-> client.
-> - If this is "ERROR", then request is sent to next node or "ERROR" message goes back to source UDP client. If
-    forwarding was possible then it waits for response which is stored in **String response** variable.
-> - If **response** equals "NULL", then it means there was no received message and "ERROR" message is sent back to TCP
-    client or source UDP client. If not, then it is sends **response** to TCP client or source UDP client.
-> - If this is "ROUND", then it means this is "get-max" or "get-min" operation, and it was to go threw all nodes in
-    database.
->
-> At the end, if **writer** is not null then it is closed.
+    This method is run method from Runnable interface.
+    Firstly, it recognizes **operation** and call corresponding methods. The result of these methods is stored in **
+    String[] result** variable.  
+    Then First element of **result** is checked.  
+    If this is "OK", then second element is sent to TCP client if this is first node of the request, or to source UDP
+    client.
+  - If this is "ERROR", then request is sent to next node or "ERROR" message goes back to source UDP client. If
+      forwarding was possible then it waits for response which is stored in **String response** variable.
+  - If **response** equals "NULL", then it means there was no received message and "ERROR" message is sent back to TCP
+      client or source UDP client. If not, then it is sends **response** to TCP client or source UDP client.
+  - If this is "ROUND", then it means this is "get-max" or "get-min" operation, and it was to go threw all nodes in
+      database.
 
-- #### receiveMsg():
+    At the end, if **writer** is not null then it is closed.
 
-> This method received message from other UDP clients.
-> It also prints "Message received from [**sourcePort**]: [**message**]".  
-> It returns the **message** in String format.  
-> If there was no message received, then returns "NULL".
+- `receiveMsg()`
 
-- #### sendMsg(String msg, InetAddress destinationAddress, int destinationPort):
+    This method received message from other UDP clients.
+    It also prints "Message received from [**sourcePort**]: [**message**]".  
+    It returns the **message** in String format.  
+    If there was no message received, then returns "NULL".
 
-> This method sends given **msg** to UDP server on given **destinationAddress** and **destinationPort**.
-> It also prints "Message send from [this server PORT] to [**destinationPort**]: [**msg**]".  
-> If there is a problem with sending the message, then it prints "Message send ERROR".
+- `sendMsg(String msg, InetAddress destinationAddress, int destinationPort)`
 
-- ### setValue(String[] values):
+    This method sends given **msg** to UDP server on given **destinationAddress** and **destinationPort**.
+    It also prints "Message send from [this server PORT] to [**destinationPort**]: [**msg**]".  
+    If there is a problem with sending the message, then it prints "Message send ERROR".
 
+- `setValue(String[] values)`
+    
+    *Source code:*
 ``` java
 private String[] setValue(String[] values) {
     if (key == Integer.parseInt(values[0])) {
@@ -272,8 +277,9 @@ private String[] setValue(String[] values) {
 }
 ```
 
-- ### getValue(int givenKey):
+- `getValue(int givenKey)`
 
+  *Source code:*
 ``` java
  private String[] getValue(int givenKey) {
     if (key == givenKey) {
@@ -292,7 +298,9 @@ private String[] setValue(String[] values) {
 }
 ```
 
-- ### findKey(int givenKey):
+- `findKey(int givenKey)`
+
+  *Source code:*
 ``` java
 private String[] findKey(int givenKey) {
     if (key == givenKey) {
@@ -311,7 +319,9 @@ private String[] findKey(int givenKey) {
 }
 ```
 
-- ### getMax(int max):
+- `getMax(int max)`
+
+  *Source code:*
 ``` java 
 private String[] getMax(int max) {
     int newMax = Math.max(value, max);
@@ -324,7 +334,9 @@ private String[] getMax(int max) {
 }
 ```
 
-- ### getMin(int min):
+- `getMin(int min)`
+
+  *Source code:*
 ``` java
 private String[] getMin(int min) {
     int newMin = Math.min(value, min);
@@ -337,7 +349,9 @@ private String[] getMin(int min) {
 }
 ```
 
-- ### newRecord(String[] values):
+- `newRecord(String[] values)`
+
+  *Source code:*
 ``` java 
 private String[] newRecord(String[] values) {
     key = Integer.parseInt(values[0]);
@@ -351,13 +365,15 @@ private String[] newRecord(String[] values) {
 }
 ```
 
-- ### String[] terminate():
+- `String[] terminate()`
+
+  *Source code:*
 ``` java 
 private String[] terminate() {
     sendMsg(PORT + " newPrevious " + previousNodeAddress.getHostAddress() + ":" + previousNodePort, nextNodeAddress, nextNodePort);
     sendMsg(PORT + " newNext " + nextNodeAddress.getHostAddress() + ":" + nextNodePort, previousNodeAddress, previousNodePort);
 
-    new Thread(() -> {
+    new Thread(() -{
         try {
             Thread.sleep(500);
             writer.close();
@@ -390,14 +406,17 @@ it has three fields:
 There is a constructor which creates **socket** on this node's **PORT**.
 
 #### Methods:
-- ### run();
-> This method is run method from Runnable interface.  
-> This method receives message over and over again.
-> Then it creates OperateThread with these received message.
 
-- ### receiveMsg():
-> This method receives messages from UDP clients.
-> If message is received then "Message received from  [sourcePort]: [message]".
+- `run()`
+
+    This method is run method from Runnable interface.  
+    This method receives message over and over again.
+    Then it creates OperateThread with these received message.
+
+- `receiveMsg()`
+
+    This method receives messages from UDP clients.
+    If message is received then "Message received from  [sourcePort]: [message]".
 
 ---
 
@@ -410,33 +429,33 @@ It has one field:
 
 There is a constructor which job is to assign **node** field.
 
----
-
 #### Methods:
 
-- #### run():
+- `run()`
 
-> This method is run method from Runnable interface. Its listens for incoming TCP connections.
-> In constant while loop **socket** variable is assigned by calling **accept()** method on **server** variable, which is
-> ServerSocket.
-> Then this assigned **socket** variable is sent to **recognizeSocket()** method.
+    This method is run method from Runnable interface. Its listens for incoming TCP connections.
+    In constant while loop **socket** variable is assigned by calling **accept()** method on **server** variable, which is
+    ServerSocket.
+    Then this assigned **socket** variable is sent to **recognizeSocket()** method.
 
-- #### recognizeSocket(Socket socket):
+- `recognizeSocket(Socket socket)`
 
-> This method communicate with given **socket** and handle it properly.
-> It communicates by BufferedReader **read** variable and PrintWriter **write** variable.
->
-> Firstly, it reads first message. There are three possible options:
-> > If it is "Node", then it means a node is tying to connect to this node.
-> > Then next message is read. This message is this new node's port.
-> > Then **nextNodePort** and **nextNodeAddress** are sent using **println()** method on **write** variable.
-> > Then **nextNodePort** and **nextNodeAddress** are set to socket's **address** and given **socket's** **port**.
-> > Next "Node connected" message is printed.
->
-> > If it is "Client", then it means a client is trying to communicate with this node.
-> > new OperateThread is created with message from this client and **write** variable. It
-> > handles this client and "Client connected" is printed.
->
-> > If it is any other option, then is means the node can not recognize it and sends "Not recognized" message using **
-> > println()** method on **write** variable.
-> > Then "Not recognized socket :: ip = " with address of given **socket** is printed and given **socket** is closed.
+    This method communicate with given **socket** and handle it properly.
+    It communicates by BufferedReader **read** variable and PrintWriter **write** variable.
+    
+    Firstly, it reads first message. There are three possible options:
+    If it is "Node", then it means a node is tying to connect to this node.
+    Then next message is read. This message is this new node's port.
+    Then **nextNodePort** and **nextNodeAddress** are sent using **println()** method on **write** variable.
+    Then **nextNodePort** and **nextNodeAddress** are set to socket's **address** and given **socket's** **port**.
+    Next "Node connected" message is printed.
+    
+    If it is "Client", then it means a client is trying to communicate with this node.
+    new OperateThread is created with message from this client and **write** variable. It
+    handles this client and "Client connected" is printed.
+    
+    If it is any other option, then is means the node can not recognize it and sends "Not recognized" message using **
+    println()** method on **write** variable.
+    Then "Not recognized socket :: ip = " with address of given **socket** is printed and given **socket** is closed. 
+
+# Jakub Szarpak
