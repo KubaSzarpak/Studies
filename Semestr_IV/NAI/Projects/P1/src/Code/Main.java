@@ -1,7 +1,6 @@
 package Code;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main {
@@ -11,91 +10,53 @@ public class Main {
         List<Data> testDataList = new ArrayList<>();
 
         try {
-//Training data -------------------------------------------------------------------------
             Scanner reader = new Scanner(new File(args[1]));
-
             while (reader.hasNext()) {
-
-                String[] line = reader.nextLine().split(",");
-                String[] vector = new String[line.length - 1]; //line without last element, which will be type name
-                System.arraycopy(line, 0, vector, 0, line.length - 1);
-
-
-                trainingDataList.add(new Data(vector, line[line.length - 1]));
-
+                trainingDataList.add(readData(reader.nextLine()));
             }
 
-
-//Test data -------------------------------------------------------------------------
             reader = new Scanner(new File(args[2]));
-
             while (reader.hasNext()) {
-
-                String[] line = reader.nextLine().split(",");
-                String[] vector = new String[line.length - 1]; //line without last element, which will be type name
-                System.arraycopy(line, 0, vector, 0, line.length - 1);
-
-
-                testDataList.add(new Data(vector, line[line.length - 1]));
-
+                testDataList.add(readData(reader.nextLine()));
             }
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-
 //Finding k the shortest points and prepare conclusion -------------------------------------------------------
-        DataWithDistance[] kShortest;
+
         int types = testDataList.size();
         int correctTypes = 0;
 
         for (Data d : testDataList) {
-            kShortest = findKShortest(k, trainingDataList, d);
-
-            //Find correct type --------------
-            List<DataWithAmount> tmp = new ArrayList<>();
-            boolean exists;
-
-            for (DataWithDistance dwd : kShortest) {
-                exists = false;
-                for (DataWithAmount a : tmp) {
-                    if (dwd.data.getType().equals(a.data.getType())) {
-                        exists = true;
-                        a.amount++;
-                        break;
-                    }
-                }
-
-                if (!exists) {
-                    tmp.add(new DataWithAmount(dwd.data, 1));
-                }
-            }
-
-            //Searches for the type that occurred most often
-            DataWithAmount maxA = null;
-            int maxAmount = 0;
-
-            for (DataWithAmount a : tmp) {
-                if (a.amount > maxAmount) {
-                    maxA = a;
-                    maxAmount = a.amount;
-                }
-            }
-
-            assert maxA != null;
-
-            /*
-            System.out.println("{ Expected type: " + d.getType() + "\nClassified type: " + maxA.data.getType() + " }\n"); //Print expected and classified type
-            */
-
-            if (d.getType().equals(maxA.data.getType())){
-                correctTypes++;
-            }
+            correctTypes = func(k, d, trainingDataList, correctTypes, false);
         }
 
-        //Final answer -----------------------------
+
+        //Answer of given data ------------------------------------------------------------------
         System.out.println("Ilość danych: " + types + "\nIlość poprawnych danych: " + correctTypes);
+
+
+        //Data given by user---------------------------------------------------------------------
+        Scanner sysReader = new Scanner(System.in);
+
+        System.out.println("Podaj wektor " + types + " wymiarowy lub napisz [exit] jeśli chcesz zakonczyc");
+        String line = sysReader.nextLine();
+
+        int newK;
+        Data tmp;
+
+        while (!line.equals("exit")) {
+            System.out.println("Podaj k: ");
+            newK = Integer.parseInt(sysReader.nextLine());
+
+            tmp = readData(line);
+            func(newK, tmp, trainingDataList, 0, true);
+
+            System.out.println("Podaj wektor " + types + " wymiarowy lub napisz [exit] jeśli chcesz zakonczyc");
+            line = sysReader.nextLine();
+        }
+
     }
 
     private static DataWithDistance[] findKShortest(int k, List<Data> trainingDataList, Data data) {
@@ -131,7 +92,61 @@ public class Main {
 
         return kShortest;
     }
+
+    private static Data readData(String line) {
+        String[] lineArr = line.split(",");
+        String[] vector = new String[lineArr.length - 1]; //line without last element, which will be type name
+        System.arraycopy(lineArr, 0, vector, 0, lineArr.length - 1);
+
+        return new Data(vector, lineArr[lineArr.length - 1]);
+    }
+
+    private static int func(int k, Data data, List<Data> trainingDataList, int correctTypes, boolean isHandGiven) {
+        DataWithDistance[] kShortest = findKShortest(k, trainingDataList, data);
+
+        //Find correct type --------------
+        List<DataWithAmount> tmp = new ArrayList<>();
+        boolean exists;
+
+        for (DataWithDistance dwd : kShortest) {
+            exists = false;
+            for (DataWithAmount a : tmp) {
+                if (dwd.data.getType().equals(a.data.getType())) {
+                    exists = true;
+                    a.amount++;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                tmp.add(new DataWithAmount(dwd.data, 1));
+            }
+        }
+
+        //Searches for the type that occurred most often
+        DataWithAmount maxA = null;
+        int maxAmount = 0;
+
+        for (DataWithAmount a : tmp) {
+            if (a.amount > maxAmount) {
+                maxA = a;
+                maxAmount = a.amount;
+            }
+        }
+
+        assert maxA != null;
+
+        if (isHandGiven)
+            System.out.println("{ Expected type: " + data.getType() + "\nClassified type: " + maxA.data.getType() + " }\n"); //Print expected and classified type
+
+
+        if (data.getType().equals(maxA.data.getType())) {
+            correctTypes++;
+        }
+        return correctTypes;
+    }
 }
+
 class DataWithAmount {
     public Data data;
     public int amount;
