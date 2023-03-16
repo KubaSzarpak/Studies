@@ -2,10 +2,7 @@ package Code;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,9 +17,8 @@ public class Main {
             while (reader.hasNext()) {
 
                 String[] line = reader.nextLine().split(",");
-                String[] vector = new String[line.length - 2]; //line without last element, which will be type name
-                for (int i = 0; i < line.length - 2; i++)
-                    vector[i] = line[i];
+                String[] vector = new String[line.length - 1]; //line without last element, which will be type name
+                System.arraycopy(line, 0, vector, 0, line.length - 1);
 
 
                 trainingDataList.add(new Data(vector, line[line.length - 1]));
@@ -36,9 +32,8 @@ public class Main {
             while (reader.hasNext()) {
 
                 String[] line = reader.nextLine().split(",");
-                String[] vector = new String[line.length - 2]; //line without last element, which will be type name
-                for (int i = 0; i < line.length - 2; i++)
-                    vector[i] = line[i];
+                String[] vector = new String[line.length - 1]; //line without last element, which will be type name
+                System.arraycopy(line, 0, vector, 0, line.length - 1);
 
 
                 testDataList.add(new Data(vector, line[line.length - 1]));
@@ -54,10 +49,8 @@ public class Main {
         DataWithDistance[] kShortest;
         int types = testDataList.size();
         int correctTypes = 0;
-        int i = 1;
 
         for (Data d : testDataList) {
-            System.out.println(i + ".");
             kShortest = findKShortest(k, trainingDataList, d);
 
             //Find correct type --------------
@@ -90,13 +83,18 @@ public class Main {
                 }
             }
 
-            System.out.println("{ Oczekiwany typ: " + d.getType() + "\nSprawdzony typ: " + maxA.data.getType() + " }\n");
+            assert maxA != null;
+
+            /*
+            System.out.println("{ Expected type: " + d.getType() + "\nClassified type: " + maxA.data.getType() + " }\n"); //Print expected and classified type
+            */
 
             if (d.getType().equals(maxA.data.getType())){
                 correctTypes++;
             }
-            i++;
         }
+
+        //Final answer -----------------------------
         System.out.println("Ilość danych: " + types + "\nIlość poprawnych danych: " + correctTypes);
     }
 
@@ -108,21 +106,28 @@ public class Main {
         DataWithDistance[] kShortest = new DataWithDistance[k]; //Array of k the closest points
         List<DataWithDistance> distanceList = new ArrayList<>(); //List of objects that contains distance and Data
 
-        for (Data d : trainingDataList) { //Prints all
+        for (Data d : trainingDataList) {
             distanceList.add(new DataWithDistance(d, d.distanceBetween(data)));
         }
+
         distanceList.sort((Comparator.comparing(o -> o.distance)));
 
-        for (DataWithDistance dwd : distanceList){
+        /*
+        for (DataWithDistance dwd : distanceList){ //Prints all distances sorted from closest
             System.out.println("Data: " + dwd.data.getType() + " | Dystans: " + dwd.distance);
         }
+        */
+
         for (int i = 0; i < k; i++) {
             kShortest[i] = distanceList.get(i);
         }
 
-//        for (DataWithDistance dwd : kShortest){
-//            System.out.println("Data: " + dwd.data.getType() + " | Dystans: " + dwd.distance);
-//        }
+        /*
+        for (DataWithDistance dwd : kShortest){ //Prints three closest points
+            System.out.println("Data: " + dwd.data.getType() + " | Dystans: " + dwd.distance);
+        }
+        */
+
 
         return kShortest;
     }
