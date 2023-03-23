@@ -11,20 +11,16 @@
       <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.data" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.test.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.test.data" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UTP41.iml" beforeDir="false" afterPath="$PROJECT_DIR$/UTP41.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$3.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$4.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$5.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$6.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/zad1/GUI.form" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/zad1/GUI.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/zad1/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/zad1/Service.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/Service.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$5.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame$6.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/Frame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/Frame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/GUI2.form" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/GUI2.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -207,7 +203,7 @@
       <workItem from="1679513801675" duration="12073000" />
       <workItem from="1679528128727" duration="1906000" />
       <workItem from="1679565982011" duration="9963000" />
-      <workItem from="1679589550244" duration="16424000" />
+      <workItem from="1679589550244" duration="18123000" />
     </task>
     <servers />
   </component>

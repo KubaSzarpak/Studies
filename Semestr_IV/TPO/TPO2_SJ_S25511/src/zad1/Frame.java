@@ -5,7 +5,6 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
-
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
@@ -133,11 +132,10 @@ public class Frame extends JFrame {
                     cityButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            city = countryText.getText();
+                            city = cityText.getText();
                             cityText.setText("");
                             isCityGiven = true;
-
-//                            frame.pack();
+                            Platform.runLater(frame::createJFXContent);
                         }
                     });
 
@@ -214,7 +212,6 @@ public class Frame extends JFrame {
                             } else {
                                 weatherLabel.setText("Podaj kraj");
                             }
-                            Platform.runLater(frame::createJFXContent);
                         }
                     });
 
@@ -276,12 +273,10 @@ public class Frame extends JFrame {
         this.setResizable(false);
         this.add(panel);
         this.setLocationRelativeTo(null);
-//        this.pack();
     }
 
     private void createJFXContent() {
         WebView webView = new WebView();
-        System.out.println(city);
         webView.getEngine().load("https://pl.wikipedia.org/wiki/" + city);
         Scene scene = new Scene(webView);
         jfxPanel.setScene(scene);
