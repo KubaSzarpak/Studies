@@ -2,44 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2d033843-2300-472a-bf05-ae9e5cb0568b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.classpath" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/UTP7_SJ_S25511.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/gson_2_10_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UTP41.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hs_err_pid4844.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/AbstractLayout.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/DimensionInfo.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/GridConstraints.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/GridLayoutManager.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/HorizontalInfo.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/LayoutState.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/Spacer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/SupportCode$TextWithMnemonic.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/SupportCode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/Util.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/VerticalInfo.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$2.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$3.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$4.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$5.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$6.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/JsonRateFor.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Main.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zad1/GUI.form" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zad1/GUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zad1/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zad1/Service.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../../Semestr IV/TPO/TPO1_SJ_S25511/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../../../Semestr IV/TPO/TPO1_SJ_S25511/.idea/workspace.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Code/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Code/Main.class" afterDir="false" />
@@ -48,14 +10,26 @@
       <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Code/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Code/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.data" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.test.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.test.data" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UTP41.iml" beforeDir="false" afterPath="$PROJECT_DIR$/UTP41.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$5.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$6.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/GUI.form" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/GUI.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/Service.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/Service.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileColors">
-    <fileColor scope="Open Files" color="Rose" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -79,22 +53,22 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH&quot;: &quot;319&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/kubas/Downloads/gson-2.10.1.jar&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH": "319",
+    "WebServerToolWindowFactoryState": "false",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "last_opened_file_path": "C:/Users/kubas/Downloads/flatlaf-intellij-themes-3.0.jar",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settings.ide.settings.file-colors"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="zad1" />
@@ -232,7 +206,8 @@
       <workItem from="1679416412378" duration="715000" />
       <workItem from="1679513801675" duration="12073000" />
       <workItem from="1679528128727" duration="1906000" />
-      <workItem from="1679565982011" duration="6984000" />
+      <workItem from="1679565982011" duration="9963000" />
+      <workItem from="1679589550244" duration="16424000" />
     </task>
     <servers />
   </component>

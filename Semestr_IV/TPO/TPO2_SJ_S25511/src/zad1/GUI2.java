@@ -1,8 +1,8 @@
 package zad1;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import javafx.geometry.HorizontalDirection;
 import javafx.scene.Scene;
 import javafx.scene.web.WebView;
 
@@ -12,7 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GUI extends JFrame{
+public class GUI2 extends JFrame{
 
     private JPanel panel;
     private JTextField krajText;
@@ -30,8 +30,6 @@ public class GUI extends JFrame{
     private JButton weatherButton;
     private JButton currencyButton;
     private JButton NBPButton;
-    private JPanel krajPanel;
-    private JPanel miastoPanel;
     private JPanel textfieldsPanel;
     private JPanel wikiPanel;
     private JLabel currLabel;
@@ -46,13 +44,23 @@ public class GUI extends JFrame{
     private boolean podaneMiasto;
     private String miasto;
     private String currency;
-    private GUI gui;
+    private GUI2 gui;
 
-    public GUI() {
+    public GUI2() {
         this.gui = this;
         this.setVisible(true);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
+
+        FlatDarculaLaf.setup();
+        FlatDarculaLaf.updateUI();
+
+
+        try {
+            UIManager.setLookAndFeel(new FlatDarculaLaf());
+        } catch (UnsupportedLookAndFeelException e) {
+            throw new RuntimeException(e);
+        }
 
 
         Font defaultFont = new Font("Comic sans ms", Font.BOLD, 28);
@@ -60,19 +68,21 @@ public class GUI extends JFrame{
         Color foregroundLight = new Color(0xE1E1E1);
 
         //Panels settings
-        this.panel.setBackground(backgroundColor);
+        this.panel.setBackground(null);
         this.panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        this.textfieldsPanel.setBackground(backgroundColor);
+        this.textfieldsPanel.setBackground(null);
         this.textfieldsPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-        this.labelsPanel.setBackground(backgroundColor);
+        this.labelsPanel.setBackground(null);
         this.labelsPanel.setPreferredSize(new Dimension(300, 180));
-        this.buttonsPanel.setPreferredSize(new Dimension(200, 180));
-        this.buttonsPanel.setBackground(backgroundColor);
-        this.wikiPanel.setBackground(backgroundColor);
-        this.bodyPanel.setBackground(backgroundColor);
-        this.textsPanel.setBackground(backgroundColor);
-        this.lPanel.setBackground(backgroundColor);
-        this.bPanel.setBackground(backgroundColor);
+        this.buttonsPanel.setPreferredSize(new Dimension(400, 180));
+        this.buttonsPanel.setBackground(null);
+        this.wikiPanel.setBackground(null);
+        this.bodyPanel.setBackground(null);
+        this.textsPanel.setBackground(null);
+        this.textsPanel.setMinimumSize(new Dimension(250, 180));
+        this.lPanel.setBackground(null);
+        this.bPanel.setBackground(null);
+
 
 
         //Kraj field settings
@@ -84,6 +94,7 @@ public class GUI extends JFrame{
         this.krajButton.setText("Potwierdź kraj");
         this.krajButton.setFont(defaultFont);
         this.krajButton.setPreferredSize(new Dimension(300, 50));
+        this.krajButton.setBackground(null);
         this.krajText.setFont(defaultFont);
         this.krajText.setPreferredSize(new Dimension(200, 50));
 
@@ -143,7 +154,7 @@ public class GUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 currency = currText.getText();
-                currLabel.setText("");
+                currText.setText("");
             }
         });
 
@@ -195,7 +206,7 @@ public class GUI extends JFrame{
         this.NBPLabel.setForeground(foregroundLight);
         this.NBPLabel.setBorder(new BevelBorder(BevelBorder.RAISED));
         this.NBPLabel.setPreferredSize(new Dimension(300, 35));
-        this.NBPButton.setText("Wyświetl kurs złotego do waluty podanego kraju");
+        this.NBPButton.setText("Wyświetl kurs złotego");
         this.NBPButton.setFont(defaultFont);
         this.NBPButton.addActionListener(new ActionListener() {
             @Override
