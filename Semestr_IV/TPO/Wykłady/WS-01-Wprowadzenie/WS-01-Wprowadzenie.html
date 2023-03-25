@@ -1,0 +1,1153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type"
+	content="text/html; charset=windows-1250">
+<meta name="author" content="Edgar G³owacki">
+<meta name="description"
+	content="Web Services w oparciu o Apache Axis2 - wprowadzenie">
+<meta name="copyright" content="(c) Edgar G³owacki PJWSTK 2010">
+<link rel="stylesheet" type="text/css" href="../STYLE/common.css">
+<title>Web Services – wprowadzenie</title>
+</head>
+<body>
+<div align="center">
+<a name="WS-01-Wprowadzenie"></a><h1>Web Services – wprowadzenie</h1>
+</div>
+<hr>
+<br>
+<i>Niniejszy wyk³ad stanowi wprowadzenie do technologii us³ug
+webowych (Web Services, lub te¿ XML Web Services). WS to szkielet
+warstwy poœredniej, który jak dot¹d - dziêki licznym implementacjom - w
+sposób najpe³niejszy spe³ni³ obietnice interoperacyjnoœci umo¿liwiaj¹c
+tym samym integracjê systemów niejednorodnych (heterogenous). Do
+najbardziej dojrza³ych implementacji zalicza siê Apache Axis2, w oparciu
+o któr¹ opracowano praktyczne przyk³ady omawiane w ramach niniejszego
+wyk³adu. </i>
+<br>
+
+<hr>
+<a name="WS-01-Wprowadzenie.1"></a><h2>Web Services</h2>
+
+<p>Ka¿dy kto chocia¿by pobie¿nie œledzi rozwój wspó³czesnych
+technologii informatycznych zapewne nieraz spotka³ siê z nazw¹ Web
+Services (WS), t³umaczone na polski jako us³ugi webowe, lub mniej
+poprawnie us³ugi sieciowe [<a href="#references">1</a>]. Czym s¹ WS? W
+pewnym uproszczeniu jest to mechanizm umo¿liwiaj¹cy komunikacjê miêdzy
+aplikacjami na zasadzie zdalnych wywo³añ, której podstawowym
+zastosowaniem jest umo¿liwienie wspó³dzia³ania heterogenicznych
+rozwi¹zañ informatycznych. Takiej odpowiedzi udzieli³by ka¿dy, kto choæ
+trochê pozna³ zasadê dzia³ania WS – w³¹czaj¹c do tego grona autora
+niniejszego wyk³adu. Koncepcja WS nie jest zatem specjalnie ró¿na od
+bardzo ju¿ leciwej, bo datuj¹cej siê na drug¹ po³owê lat 80-tych
+ubieg³ego wieku technologii Remote Procedure Call (RPC) [<a
+	href="#references">2</a>]? WS nie jest równie¿ pierwszym podejœciem
+maj¹cym na celu dostarczenie mechanizmu umo¿liwiaj¹cego wspó³dzia³anie
+systemów opartych o technologie niejednorodne. Pierwsze wersje dwóch
+g³ównych specyfikacji tworz¹cych WS, czyli (1) Simple Object Access
+Protocol (SOAP) oraz (2) Web Service Description Language (WSDL) zosta³y
+opublikowane 10 lat temu. W ci¹gu tej dekady WS sta³y siê technologi¹
+najbardziej kojarzon¹ i najczêœciej wykorzystywan¹ w obszarze integracji
+rozwi¹zañ informatycznych. Co sprawi³o, ¿e WS nie podzieli³y losu
+wczeœniejszych prób, które albo koñczy³y siê sporym rozczarowaniem jak
+Common Object Request Broker Architecture (CORBA) [<a href="#references">3</a>]
+[<a href="#references">4</a>] (patrz. ni¿ej), posiada³y bardzo
+ograniczone zastosowanie jak Distributed Component Object Model (DCOM) [<a
+	href="#references">5</a>] (patrz. ni¿ej), lub te¿ stawa³y siê
+technologiami niszowymi, jak Electronic Data Interchange (EDI) [<a
+	href="#references">6</a>].</p>
+
+<hr>
+<a name="WS-01-Wprowadzenie.2"></a><h2>Systemy spadkowe i heterogeniczne</h2>
+
+<P>Informatyka jako dziedzina wiedzy liczy ju¿ sobie kilkadziesi¹t
+lat. W trakcie tego d³ugiego okresu powsta³o wiele mniej lub bardziej
+udanych technologii oraz rozwi¹zañ informatycznych budowanych na ich
+podstawie. Im dana organizacja ma d³u¿sz¹ tradycjê w wykorzystywaniu
+narzêdzi informatycznych w swojej dzia³alnoœci operacyjnej, tym wiêksza
+szansa posiadania tzw. oprogramowania spadkowego (legacy). Rozwi¹zania
+oparte o technologie, o których praktycznie nikt ju¿ nie pamiêta, albo
+ma³o kto s³ysza³ czêsto stanowi¹ krytyczny element procesów biznesowych
+realizowanych w danej organizacji. W tym ostatnim przypadku
+oprogramowanie spadkowe zosta³o najczêœciej stworzone z myœl¹ o
+konkretnym zastosowaniu. Ze wzglêdu na wysokie koszty budowy rozwi¹zañ
+dostosowanych do potrzeb danego odbiorcy problem ten dotyczy przede
+wszystkim du¿ych organizacji dostarczaj¹cych swoje produkty lub us³ugi
+wielu ró¿nym klientom. Do grupy tej nale¿y zaliczyæ przede wszystkim
+banki, towarzystwa ubezpieczeniowe, czy operatorzy telekomunikacyjni,
+ale tak¿e instytucje administracji publicznej.</P>
+
+<p>Terminem „system spadkowy” przyjê³o siê okreœlaæ przede wszystkim
+rozwi¹zania budowane w oparciu o przestarza³¹, b¹dŸ te¿ powszechnie
+nieu¿ywan¹ powszechnie technologiê. Nie oznacza to jednak, ¿e takie
+oprogramowanie nie posiada wsparcia technicznego, lub te¿ nie jest w
+dalszym ci¹gu rozwijane. Budowa nowego rozwi¹zania przy u¿yciu bardziej
+wspó³czesnej technologii mo¿e byæ bowiem pozbawiona sensu z biznesowego
+punktu widzenia. Sam cykl rozwoju mo¿e byæ na tyle d³ugi, ¿e wybrana
+technologia mo¿e sporo utraciæ ze swej „œwie¿oœci” zanim system osi¹gnie
+odpowiedni stan dojrza³oœci.</p>
+
+<p>W du¿ych instytucjach mo¿e jednoczeœnie funkcjonowaæ wiele
+ró¿nych systemów, z których ka¿dy jest odpowiedzialny za przechowywanie
+i przetwarzanie jakiejœ czêœci ca³kowitego woluminu informacji bêd¹cej w
+wewnêtrznym obiegu. Coraz czêœciej procesy biznesowe wymagaj¹ scalenia
+tak rozproszonych danych. W tym miejscu pojawia siê problem, bowiem
+takie rozwi¹zania s¹ najczêœciej wzajemnie niekompatybilne – przede
+wszystkim dlatego, ¿e zosta³y zbudowane w ró¿nym czasie i w oparciu o
+ró¿ne technologie. Mówimy wówczas o tzw. systemach heterogenicznych
+(heterogenous), b¹dŸ te¿ niejednorodnych.</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.3"></a><h2>Integracja systemów heterogenicznych</h2>
+
+<p>Istniej¹ ró¿ne podejœcia do integracji systemów niejednorodnych
+ró¿ni¹ce siê przede wszystkim z³o¿onoœci¹ koncepcji, która wynika ze
+stopnia zrozumienia zagadnienia jakie stanowi w³aœciwe wspó³dzielenie
+informacji miêdzy ró¿nymi systemami. Chc¹c jakoœ sklasyfikowaæ spotykane
+w praktyce rozwi¹zania mo¿emy pos³u¿yæ siê doœæ prostym kryterium –
+zasadniczo prostota jest odwrotnie proporcjonalna do u¿ytecznoœci, a
+zw³aszcza adekwatnoœci dla istoty problemu.</p>
+
+<p>Najprostszym podejœciem jest integracja na najni¿szym poziomie –
+tj. warstwy trwa³oœci (persistence) w modelu trójwarstwowym (three
+tier). W ogólnoœci jest to rozwi¹zanie posiadaj¹ce same wady i bardzo
+niewiele zalet, które rzadko kiedy rekompensuj¹ te pierwsze. Zgodnie z
+teori¹ odpowiedzialnoœæ warstwy trwa³oœci powinna ograniczaæ siê do
+zapewnienia przechowania stanu systemu miêdzy poszczególnymi
+uruchomieniami. Oznacza to, ¿e funkcjonalnoœæ tej warstwy nie powinna
+wykraczaæ poza operacje typu CRUD (Create-Retrieve-Update-Delete) – byæ
+mo¿e jakoœ zoptymalizowane pod k¹tem wydajnoœci. Jest to jedno z
+podstawowych za³o¿eñ mechanizmu mapowania obiektowo-relacyjnego
+(Object-Relational Map ping – ORM) stanowi¹cego pomost miêdzy warstwami
+trwa³oœci i tzw. logiki biznesowej (business logic) odpowiedzialnej za
+w³aœciw¹ realizacjê funkcjonalnoœci identyfikowalnej przez u¿ytkownika.
+Ograniczenie odpowiedzialnoœci silnika bazy danych do minimum – czyli
+CRUD – daje najwiêksze szanse na zagwarantowanie, by warstwa trwa³oœci
+mog³a byæ realizowana w oparciu o ró¿ne systemy zarz¹dzania bazami
+danych (DataBase Management System – DBMS).</p>
+
+<p>Integracja na poziomie tak rozumianej warstwy trwa³oœci oznacza
+tak naprawdê bezpoœredni dostêp do danych innego rozwi¹zania
+informatycznego. Praktyczn¹ realizacj¹ tego rodzaju podejœcia mo¿e byæ
+(1) wspólny schemat bazy danych wspó³dzielony przez systemy, b¹dŸ te¿
+(2) replikacja danych uwzglêdniaj¹ca ich odpowiedni¹ konwersjê miêdzy
+ró¿nymi schematami.</p>
+
+<p>Wariant pierwszy ma najbardziej ograniczone zastosowanie i jest
+jednoczeœnie najgorszym z mo¿liwych. Jedyne w miarê sensowne u¿ycie
+nak³ada bowiem ograniczenia, które faktycznie oznaczaj¹, ¿e nie mamy do
+czynienia z wieloma rozwijanymi niezale¿nie rozwi¹zaniami, a jednym
+spójnym systemem. Koniecznoœæ uzgadniania ka¿dej zmiany schematu ze
+wzglêdu na niebezpieczeñstwo niekontrolowanej propagacji sprawia, ¿e de
+facto nie mo¿e byæ mowy o ¿adnej integracji autonomicznych rozwi¹zañ.
+Trudno siê te¿ spodziewaæ, ¿e dwa niezale¿nie rozwijanych systemy bêd¹
+korzysta³y z jednakowej reprezentacji informacji o tej samej semantyce.
+Raczej oczekiwalibyœmy, ¿e reprezentacja ta bêdzie adekwatna do rodzaju
+funkcjonalnoœci dostarczanej przez ka¿dy z tych systemów. Przyk³adowo
+system ksiêgowy banku bêdzie przechowywa³ inaczej informacjê o rachunku
+bankowym klienta ni¿ system.</p>
+
+<p>Podejœcie zak³adaj¹ce replikacjê umo¿liwia niezale¿ny rozwój, ale
+równie¿ nie jest pozbawione wad, z których najwiêksz¹ jest od³¹czenie
+danych od zarz¹dzaj¹cego nimi systemu, który jest w stanie najlepiej je
+przetwarzaæ. Ten problem mo¿na w pewien sposób rozwi¹zaæ zapewniaj¹c
+bie¿¹c¹ synchronizacjê zmian – niestety oznacza to równie¿ umieszczenie
+czêœci logiki integrowanych systemów w regu³ach synchronizacji.
+Przypomnijmy, ¿e warstwa trwa³oœci jest bardzo newralgicznym miejscem –
+przechowuje bowiem bie¿¹cy stan systemu. Z tego wzglêdu nie mo¿na
+dopuœciæ, by trafi³y tam dane niezweryfikowane przez regu³y biznesowe
+pod wzglêdem spójnoœci ze stanem faktycznym. Integracjê przez replikacjê
+trudno jest zatem zaliczyæ jako podejœcie bazuj¹ce wy³¹cznie na danych.
+Byæ mo¿e taka klasyfikacja wynika z faktu, ¿e warstwê trwa³oœci
+uto¿samia siê z baz¹ danych – najczêœciej relacyjn¹. Mo¿liwoœci
+wykorzystywanych w praktyce silników relacyjnych baz danych znacznie
+wykraczaj¹ poza operacje w skrócie okreœlane jako CRUD. Jedynie MySQL
+przez bardzo d³ugi okres czasu – bo a¿ do wersji 5.0 wydanej pod koniec
+2005 roku – nie posiada³ wsparcia dla jêzyka imperatywnego
+rozszerzaj¹cego mo¿liwoœci jêzyka zapytañ – czyli po innymi s³owy
+procedur i funkcji sk³adowanych (stored procedures and functions).</p>
+
+<p>Postarajmy siê podsumowaæ nasze dotychczasowe wnioski. Po
+pierwsze integracja na poziomie danych (tj. schematu) w praktyce
+oznacza, ¿e mamy do czynienia z jednym spójnie rozwijanym systemem
+informatycznym opartym o ten sam model danych. Z kolei replikacja danych
+umo¿liwiaj¹ca niezale¿ny rozwój ró¿nym rozwi¹zaniom wi¹¿e siê zazwyczaj
+z przetwarzaniem – a zatem nie s¹ to ju¿ statyczne dane. Zauwa¿my pewn¹
+prawid³owoœæ w naszych rozwa¿aniach – o integracji mo¿emy zacz¹æ mówiæ
+dopiero w momencie pojawienia siê regu³ wymuszaj¹cych spójnoœæ danych, a
+te stanowi¹ sk³adnik warstwy logiki biznesowej, która znajduje siê
+powy¿ej warstwy trwa³oœci.</p>
+
+<p>Czy to oznacza, ¿e to warstwa logiki biznesu, jest
+najodpowiedniejszym miejscem dla integracji ró¿nych systemów? Tak¹ tezê
+na pewno potwierdza zasada mówi¹ca, by nie od³¹czaæ danych od
+przetwarzaj¹cego je systemu – inaczej bêdziemy musieli przenieœæ
+przynajmniej czêœæ regu³ odpowiedzialnych za integralnoœæ danych na
+poziom replikacji. Z drugiej jednak strony integracja nie mo¿e oznaczaæ
+udostêpnienia na zewn¹trz zbyt wielu wewnêtrznych mechanizmów, by nie
+doprowadziæ do zbyt wielu powi¹zañ – tym razem na poziomie logiki
+biznesu. Jeœli siê d³u¿ej zastanowimy, dojdziemy do przekonania, ¿e oba
+te warunki nie s¹ ze sob¹ sprzeczne – wystarczy bowiem w sposób
+kontrolowany udostêpniaæ funkcjonalnoœæ, która mo¿e byæ przydatna innym
+rozwi¹zaniom. Musimy zatem stworzyæ warstwê opakowuj¹c¹ logikê biznesu w
+celu udostêpnienia wybranej funkcjonalnoœci na zewn¹trz – czyli innymi
+s³owy warstwê poœredni¹ (middleware).</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.4"></a><h2>Middleware – sposób na integracjê</h2>
+
+<p>Zanim odpowiemy sobie na pytanie postawione we wstêpie
+przyjrzyjmy siê bli¿ej problematyce rozwoju rozwi¹zañ warstwy poœredniej
+(middleware). Budowa technologii, która uproœci³aby integracjê
+niejednorodnych rozwi¹zañ informatycznych stanowi nad wyraz ambitny cel.
+Tego rodzaju infrastruktura powinna bowiem przej¹æ odpowiedzialnoœæ za
+mo¿liwie najwiêksz¹ liczbê czynników maj¹cych wp³yw na z³o¿onoœæ
+komunikacji miêdzy wspó³pracuj¹cymi rozwi¹zaniami, które powtarzaj¹ siê
+przy okazji ka¿dej integracji, a które s¹ drugorzêdne w stosunku do
+przedmiotu tworzonego rozwi¹zania. Mowa w tym miejscu o typowych tzw.
+wymaganiach pozafunkcjonalnych (non-functional requirements)
+pojawiaj¹cych siê podczas integracji wielu rozwi¹zañ.</p>
+
+<p>Do tej grupy nale¿y w pierwszej kolejnoœci zaliczyæ mo¿liwoœæ
+asynchronicznej komunikacji, czyli nie wymagaj¹cej dostêpnoœci
+wszystkich uczestników – najczêœciej problem ten rozwi¹zuje siê poprzez
+u¿ycie mechanizmów kolejkowania komunikatów. Kolejnym niemniej wa¿nym
+elementem jest umo¿liwienie objêcia czêœci interakcji w ramy logicznej
+transakcji, tak aby niepowodzenie którejkolwiek operacji uruchomionej w
+trakcie konwersacji miêdzy wspó³pracuj¹cymi systemami wi¹za³o siê z
+wycofaniem skutków pozosta³ych dzia³añ. Warto zauwa¿yæ, ¿e dla
+scenariuszy interakcji wystêpuj¹cych podczas integracji systemów
+informatycznych tradycyjny model 2PC (2-Phase Commit – podwójne
+zatwierdzanie) [<a href="#references">7</a>] mo¿e czêsto okazaæ siê
+niewystarczaj¹cy. Protokó³ 2PC zak³ada bowiem mo¿liwoœæ wycofania
+skutków realizacji operacji objêtych transakcj¹ oraz ich ca³kowit¹
+przezroczystoœæ – lub te¿ lepiej „niewidzialnoœæ” – a tak¿e izolacjê od
+operacji wykonywanych poza transakcj¹. Taki model mo¿e staæ w
+sprzecznoœci z logik¹ funkcjonowania integrowanych systemów – zw³aszcza
+jeœli pierwotnie by³y one tworzone z myœl¹ o autonomicznym dzia³aniu.
+Jeœli bowiem skutkiem ubocznym operacji jest przyk³adowo wys³anie
+wiadomoœci do klienta za poœrednictwem poczty elektronicznej, b¹dŸ
+sms-em nie bêdzie mo¿liwoœci ich cofniêcia. W opisanej sytuacji
+anulowanie biznesowych skutków ubocznych oznacza³oby koniecznoœæ
+wykonania operacji kompensuj¹cej, co w tym konkretnym przypadku oznacza
+wys³anie kolejnej wiadomoœci anuluj¹cej poprzedni¹.</p>
+
+<p>Do grupy wymagañ pozafunkcjonalnych pojawiaj¹cych siê najczêœciej
+podczas integracji rozwi¹zañ informatycznych nale¿y zaliczyæ równie¿
+kwestiê szeroko rozumianego bezpieczeñstwa. Wspó³dzia³anie do tej pory
+odizolowanych od siebie systemów oznacza koniecznoœæ wzajemnego
+uwzglêdnienia polityk bezpieczeñstwa reguluj¹cych funkcjonowanie ka¿dego
+z nich. W zale¿noœci od sytuacji mo¿e to wi¹zaæ siê z koniecznoœci¹
+zapewnienia poufnoœci i/lub integralnoœci komunikacji, uwierzytelnieniem
+stron, czy te¿ zagwarantowanie niezaprzeczalnoœci podjêtych dzia³añ.
+Oczywiœcie wsparcie wywo³añ asynchronicznych, transakcyjnoœci i
+bezpieczeñstwa nie zamyka listy potrzeb powtarzaj¹cych siê przy okazji
+integracji autonomicznych systemów informatycznych.</p>
+
+<p>Dostarczenie ka¿dej z wy¿ej wymienionych funkcjonalnoœci zwiêksza
+stopieñ z³o¿onoœci budowanego rozwi¹zania. Powodem powstawania
+szkieletów rozproszonych, takich jak CORBA, czy WS jest rozwi¹zanie
+opisanych problemów w mo¿liwie najbardziej ogólny sposób, by tym samym
+odci¹¿yæ twórców konkretnych rozwi¹zañ.</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.5"></a><h2>CORBA – niespe³nione nadzieje</h2>
+
+<p>Z technologi¹ CORBA wi¹zano spore nadzieje, by³a to bowiem
+pierwsza tak powa¿na próba zmierzenia siê z problemem heterogenicznoœci
+rozwi¹zañ informatycznych wynikaj¹cej z ró¿norodnoœci technologii
+wykorzystywanych w implementacji. Pod koniec lat 90-tych ubieg³ego CORBA
+by³a uznawana za bardzo obiecuj¹c¹ technologiê, do tego stopnia, ¿e na
+jej podstawie budowano du¿e systemy m.in. na potrzeby instytucji
+finansowych, czy administracji publicznej [<a href="#references">8</a>].
+Na prze³omie ubieg³ego wieku wydawa³o siê, ¿e CORBA „wysz³a z wieku
+niemowlêcego” i jej przysz³oœæ jako technologii integracji rysuje siê w
+jasnych barwach [<a href="#references">9</a>]. By³ to jednoczeœnie
+moment przesilenia, w którym œwiat informatyki zacz¹³ odwracaæ siê od
+standardu CORBA.</p>
+
+<p>Na zmianê ogólnego trendu wp³yw mia³o kilka przyczyn. Przede
+wszystkim œwiat³o dzienne ujrza³y technologie wchodz¹ce w sk³ad J2EE
+(obecnie Java™ EE), w tym przede wszystkim Enterprise Java Beans (EJB),
+Java™ Servlet i Java™ Server Pages. Mniej wiêcej w tym samym okresie
+Microsoft razem z DevelopMentor z³o¿yli na rêce konsorcjum W3C
+propozycjê protoko³u bazuj¹cego na notacji XML umo¿liwiaj¹cego zdalne
+wywo³ania – SOAP. W tym czasie firma Microsoft odesz³a od promowania
+DCOM – bezpoœredniego konkurenta CORBA korzystaj¹cego z funkcjonalnoœci
+us³ug COM+. Z natury rzeczy DCOM by³ technologi¹ przywi¹zan¹ do
+platformy Windows, co automatycznie wyklucza³o go z najczêstszych
+zastosowañ. Sytuacji nie zmieni³o pojawienie siê na rynku implementacji
+DCOM pod systemy unixowe. Niew¹tpliwie CORBA sta³a siê równie¿ ofiar¹
+sukcesu rynkowego notacji XML. Dzia³ania marketingowe towarzysz¹ce
+pojawieniu siê XML doprowadzi³o do doœæ kuriozalnej sytuacji, kiedy
+wsparcie, b¹dŸ korzystanie z tej notacji decydowa³y o tym, czy dana
+technologia by³a postrzegana jako nowoczesna. Mo¿na by³o odnieœæ
+wra¿enie, ¿e XML – czyli de facto uproszczony Standard Generalized
+Markup Language (SGML) [<a href="#references">10</a>] [<a
+	href="#references">11</a>] – wprowadzi³ jak¹œ now¹ jakoœæ – zupe³nie
+tak, jakby œwiat IT nie zna³ wspomnianego ju¿ SGML, czy Abstract Syntax
+Notation One (ASN.1) [<a href="#references">12</a>] [<a
+	href="#references">13</a>]. Kolejn¹ niepo¿¹dan¹ w³aœciwoœci¹ CORBA
+dzia³aj¹c¹ na niekorzyœæ tej technologii by³o zestawianie ka¿dego
+przychodz¹cego po³¹czenia na osobnym porcie. Jeœli druga strona
+komunikacji znajdowa³a siê poza sieci¹ korporacyjn¹ oznacza³o to
+oczywiœcie koniecznoœæ przepuszczania ruchu na tym porcie przez œcianê
+ogniow¹. Wspomniana cecha, a tak¿e fakt, i¿ Internet Inter-ORB Protocol
+(IIOP) przekazuje dane w trudnej do analizy za pomoc¹ sniffera postaci
+binarnej razem powodowa³o, ¿e CORBA – w odró¿nieniu do WS – nigdy nie
+budzi³a zaufania u administratorów [<a href="#references">14</a>].</p>
+
+<p>Oczywiœcie mo¿na doszukiwaæ siê innych zewnêtrznych powodów
+odrzucenia standardu CORBA oraz tworzenia nieprzychylnej atmosfery wokó³
+tej technologii [<a href="#references">15</a>]. Prawda jest jednak taka,
+¿e najwiêksz¹ odpowiedzialnoœæ za utratê w³asnej popularnoœci ponosi
+sama CORBA. Z punktu widzenia u¿ytkownika najwiêkszym problemem CORBA
+by³y Ÿle zaprojektowane i nadmiernie skomplikowane interfejsy wi¹zañ do
+popularnych jêzyków programowania (language binding) [<a
+	href="#references">9</a>]. Niedopracowane API mia³o niekorzystny wp³yw
+na nieproporcjonalnie wysokie nak³ady pracy ponoszone w trakcie budowy
+ka¿dego mniej trywialnego rozwi¹zania. W efekcie interfejs
+programistyczny – wypadaj¹cy szczególnie niekorzystnie w zestawieniu z
+EJB – stanowi¹cy „zewnêtrzn¹ wizytówkê” skutecznie zniechêca³
+deweloperów do korzystania z CORBA [<a href="#references">9</a>].
+ród³em tej najbardziej rzucaj¹cej siê w oczy wady CORBA, jak równie¿
+wielu innych problemów zwi¹zanych ze stosowaniem tej technologii, a
+tak¿e wynikaj¹cych st¹d rozczarowañ by³ sposób powstawania specyfikacji.
+CORBA jest przyk³adem standardu cierpi¹cego na syndrom okreœlany jako
+„projekt komitetu” (design by committee). Podczas tworzenia specyfikacji
+dochodzi³o do sytuacji, w których konkurencyjne propozycje (request for
+proposal – RFP) stawa³y siê czêœci¹ standardu, poniewa¿ nie zosta³o
+powo³ane cia³o, które rozstrzyga³oby tego rodzaju konflikty [<a
+	href="#references">3</a>] [<a href="#references">9</a>]. Brak w³aœciwej
+koordynacji podczas rozpatrywania zasadnoœci poszczególnych wniosków
+spowodowa³, ¿e w specyfikacji znalaz³y siê elementy zbêdne
+niewprowadzaj¹ce ¿adnej u¿ytecznej funkcjonalnoœci, b¹dŸ te¿ trudne w
+realizacji [<a href="#references">3</a>] [<a href="#references">14</a>].
+W efekcie powsta³y standard jest miejscami niespójny i kosztowny w
+implementacji. Proces standaryzacyjny ujawni³ te¿ konflikt interesów
+wewn¹trz samego komitetu sk³adaj¹cego siê w wiêkszoœci z przedstawicieli
+dostawców. Interoperacyjnoœæ poszczególnych dystrybucji CORBA
+przyczyni³a siê do wzrostu konkurencji miêdzy ich producentami –
+u¿ytkownicy mogli doœæ ³atwo wymieniæ dotychczas u¿ywan¹ implementacjê
+na inn¹. Inaczej ni¿ w przypadku np. EJB nigdy nie powsta³a referencyjna
+implementacja, która wyznaczy³aby œcie¿kê, któr¹ powinni pod¹¿aæ
+pozostali [<a href="#references">3</a>] [<a href="#references">14</a>].
+W rezultacie tylko czêœæ dystrybucji CORBA implementuje najwa¿niejsze
+elementów standardu. Dodatkowo dostawcy chc¹c skutecznie utrudniæ
+przejœcie na produkt konkurencji zaczêli wprowadzaæ wzajemnie
+niekompatybilne w³asne rozszerzenia standardu, co oczywiœcie nie
+pozosta³o bez wp³ywu na jego wiarygodnoœæ.</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.6"></a><h2>Web Services – anatomia sukcesu</h2>
+
+<p>Na postawione na wstêpie pytanie o przyczynê sukcesu WS
+udzieliliœmy czêœciowo odpowiedzi analizuj¹c przyczyny niepowodzenia
+CORBA. Nie wyjaœnia to jednak do koñca powodów, czemu to WS, a nie jakaœ
+inna technologia szybko zdoby³a sobie popularnoœæ w obszarze integracji
+rozwi¹zañ informatycznych. Specyfikacja SOAP w wersji przedstawionej
+konsorcjum W3C przez Microsoft by³a niedojrza³a i posiada³a powa¿ne
+braki. Mimo to us³ugi web zdo³a³y przyci¹gn¹æ do siebie wielu dostawców
+rozwi¹zañ, którzy postanowili porzuciæ CORBA i zaanga¿owaæ siê na
+tworz¹cym siê w³aœnie rynku technologii WS [<a href="#references">9</a>].</p>
+
+<p>Swoje powodzenie WS w najwiêkszym stopniu zawdziêczaj¹
+wykorzystaniu XML i protoko³u HTTP. Niezale¿nie od naiwnoœci takiego
+wyjaœnienia, po d³u¿szym zastanowieniu dojdziemy do wniosku, ¿e
+paradoksalnie jest ono najbli¿sze prawdy. Wydaje siê doœæ absurdalne, ¿e
+tak drugorzêdne powody zadecydowa³y o popularnoœci technologii, której
+na wyrost przypisuje siê dokonanie „rewolucji” okreœlanej jako Service
+Oriented Architecture (SOA).</p>
+
+<p>Relatywna prostota modelu XML Infoset [<a href="#references">16</a>]
+oraz podstawowego formatu serializacji jakim jest poprawny (well-formed)
+dokument XML, a tak¿e kampania maj¹ca na celu rozpowszechnienie XML
+(patrz. wy¿ej) przyczyni³a siê do powstania w stosunkowo krótkim czasie
+wielu implementacji XML. Zwa¿ywszy na panuj¹c¹ atmosferê zniechêcenia do
+standardu CORBA oraz prowadzone równoczeœnie dzia³ania na rzecz
+popularyzacji koncepcji WS nie trzeba by³o d³ugo czekaæ na pojawienie
+siê kolejnych dystrybucji WS. Praktycznie ka¿da znajduj¹ca siê w
+powszechnym u¿yciu technologia rozwoju oprogramowania posiada³a w³asn¹
+implementacjê XML, która z czasem zosta³a uzupe³niona o realizacjê WS. W
+efekcie to w³aœnie technologia WS jako pierwsza umo¿liwi³a integracjê
+systemów niejednorodnych na skalê wczeœniej niespotykan¹ i przy
+relatywnie niskich kosztach.</p>
+
+<p>Bior¹c pod uwagê wy³¹cznie techniczne w³aœciwoœci XML w
+po³¹czeniu z HTTP nie stanowi¹ wcale najlepszego fundamentu do budowy
+szkieletu komunikacji rozproszonej. XML Infoset nie jest pierwszym
+modelem umo¿liwiaj¹cym dowoln¹ strukturalizacjê danych. W momencie, gdy
+by³a opracowywana pierwsza wersja XML istnia³y ju¿ co najmniej dwie co
+najmniej tak samo dobre notacje – wspomniane wczeœniej: (1) ASN.1 oraz
+(2) SGML. Trudno doszukiwaæ siê jakichœ wyj¹tkowych zalet XML w
+zestawieniu z obiema tymi notacjami – zw³aszcza, ¿e XML to tak naprawdê
+zubo¿ony SGML. Z kolei w notacji ASN.1 (powszechnie wykorzystywanej
+m.in. w kryptografii) dostrze¿ono potencja³ umo¿liwiaj¹cy wyeliminowanie
+wad XML maj¹cych niekorzystny wp³yw na wydajnoœæ WS. Osoby tworz¹ce
+oprogramowanie wykorzystuj¹ce WS doskonale zdaj¹ sobie sprawê z
+wielkoœci narzutu wprowadzanego przez SOAP do komunikacji. Badania
+dowiod³y, ¿e zapis danych w postaci XML zwiêksza ich objêtoœæ
+dziesiêciokrotnie (!) w porównaniu z reprezentacj¹ binarn¹ [<a
+	href="#references">17</a>], czyli dok³adnie tak¹ jaka jest
+wykorzystywana przez protoko³y RPC i IIOP (patrz. wy¿ej). Z tych samych
+powodów XML niespecjalnie nadaje siê równie¿ do opisu interfejsu
+komunikacji [<a href="#references">18</a>]. O ile zatem z marketingowego
+punktu widzenia XML by³ na wskroœ trafnym wyborem, o tyle od strony
+technicznej jest to wybór wrêcz fatalny. Relatywnie niska wydajnoœæ WS
+wynikaj¹ca z zapisu komunikatów SOAP w postaci dokumentów XML ma wp³yw
+na powszechnie panuj¹cy s¹d, ¿e WS nie s¹ wcale tak¹ „lekk¹”
+(lightweight) technologi¹ warstwy poœredniej jak zapowiadano. Konsorcjum
+W3C wydaje siê byæ œwiadome tego problemu [<a href="#references">18</a>],
+skoro powo³a³o grupê robocz¹ pracuj¹c¹ nad bardziej efektywnym
+kodowaniem danych zestrukturalizowanych w postaci XML Infoset [<a
+	href="#references">19</a>] oraz jego wykorzystaniem w WS [<a
+	href="#references">20</a>].</p>
+
+<p>Pomimo podejmowanych prób (patrz. wy¿ej) WS trudno sobie
+wyobraziæ bez XML. Obie technologie powstawa³y w tym samym czasie, tj. u
+schy³ku ubieg³ego wieku. Obie stanowi¹ dla siebie wzajemnie wsparcie z
+rynkowego punktu widzenia. Zwi¹zek WS z HTTP jest o wiele bardziej
+luŸny. Powszechne kojarzenie WS z HTTP wynika z faktu, i¿ kolejne
+specyfikacje SOAP pocz¹wszy od wersji 1.0 zawieraj¹ tzw. wi¹zanie do
+HTTP w roli protoko³u transportu. Wybór HTTP mia³ na celu zachêciæ do
+stosowania WS – HTTP ze wzglêdu na powszechnoœæ u¿ycia nie przysparza³
+tyle problemów podczas konfiguracji zapór ogniowych, co np. CORBA [<a
+	href="#references">9</a>]. Zdecydowana mniejszoœæ osób korzystaj¹cych z
+technologii WS ma œwiadomoœæ, ¿e komunikaty SOAP mog¹ byæ przekazywane
+od nadawcy do odbiorcy za pomoc¹ dowolnego protoko³u transportowego [<a
+	href="#references">21</a>], w tym równie¿ bezpo³¹czeniowego, tak jak
+UDP [<a href="#references">22</a>].</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.7"></a><h2>SOAP – powszechnie niedoceniany atut</h2>
+
+<p>Wiemy, ¿e zasadniczy wp³yw na sukces tandemu XML WS mia³a
+promocja i wsparcie udzielone ze strony takich graczy rynku IT, jak
+Microsoft, IBM, czy Oracle (g³ównie za spraw¹ BEA Systems), których
+przedstawiciele zasiadaj¹ w komitetach standaryzacyjnych opracowuj¹cych
+standardy tworz¹ce WS. Bez w¹tpienia ju¿ sam fakt zaanga¿owania ze
+strony takich tuzów wywar³ efekt psychologiczny na resztê œwiata IT.
+Microsoft, IBM i inni tworz¹ testowe implementacje specyfikacji celem
+weryfikacji ich przydatnoœci. Z czasem – po uzyskaniu pewnej dojrza³oœci
+– implementacje te s¹ w³¹czane do produktów wypuszczanych na rynek. To
+w³aœnie fakt, i¿ powstaj¹ce specyfikacje nie pozostaj¹ tylko na papierze
+sprawi³, ¿e WS ciesz¹ siê powszechnym zaufaniem, a u¿ytkownicy pozostaj¹
+w b³ogiej nieœwiadomoœci, ¿e WS s¹ równie niedojrza³¹ technologi¹ jak
+CORBA.</p>
+
+<p>WS znajduj¹ siê wci¹¿ we wstêpnej fazie rozwoju, a wzglêdn¹
+dojrza³oœæ osi¹gnê³y zaledwie podstawowe specyfikacje. Niewiele osób
+jest œwiadomych tego faktu – g³ównie ze wzglêdu na œcie¿kê rozwoju WS
+obranej przez W3C, która w du¿ej mierze przyczyni³a siê do sukcesu tej
+technologii. Przyjêta strategia rozwoju zak³ada³a przede wszystkim
+dzia³anie na rzecz upowszechnienia koncepcji WS, tak aby powsta³o
+mo¿liwie wiele implementacji trzech podstawowych specyfikacji, które z
+czasem zosta³y objête profilem WS-I Basic Profile (BP) w wersji 1.0 [<a
+	href="#references">23</a>], czyli SOAP, WSDL i UDDI. Profil WS-I to nic
+innego jak zbiór wytycznych okreœlaj¹ce sposób wspó³dzia³ania wybranych
+specyfikacji WS, tak aby by³ on zgodny z „duchem” WS i intencjami
+twórców. WS-I Basic Profile to najwa¿niejszy spoœród wszystkich profili
+WS-I dotycz¹cy zasad interoperacyjnoœci podstawowych standardów WS.
+Zmiany wprowadzane w kolejnych wersjach tego profilu stanowi¹ one
+doskona³¹ ilustracjê dla przyjêtej przez W3C strategii rozwoju, dziêki
+której WS uda³o siê unikn¹æ losu CORBA. Przyk³adem mo¿e byæ chocia¿by
+wersja 1.2 dokumentu WS-I BP [<a href="#references">24</a>], która poza
+znanymi wszystkim podstawowymi specyfikacjami WS obejmuje równie¿ SOAP
+Messager Transmission Optimization Mechanism (MTOM) [<a
+	href="#references">20</a>] maj¹cy byæ recept¹ na podniesienie
+wydajnoœci WS, ale tak¿e WS-Addressing [<a href="#references">25</a>].
+WS uzyska³y odpowiedni¹ pozycjê na rynku, nadszed³ zatem czas by
+rozszerzyæ zestaw standardów stanowi¹cych fundament tej technologii.
+Zastanawiaj¹cy jest fakt, czemu profil WS-I BP 1.2 od przesz³o dwóch lat
+nie zosta³ zatwierdzony jako wersja oficjalna. Prawdopodobn¹ przyczyn¹
+jest zbyt s³abe jeszcze wsparcie MTOM i WS-Addressing ze strony
+istniej¹cych produktów. Oznacza³oby to, ¿e profil podstawowy WS-I sta³by
+siê – przynajmniej czêœciowo – dokumentem martwym, co z kolei mog³oby
+byæ pierwszym krokiem prowadz¹cym do utraty kontroli nad rozwojem WS.</p>
+
+<p>Ale sukcesu rynkowego WS – podobnie zreszt¹ jak pora¿ki CORBA –
+nie mo¿na t³umaczyæ wy³¹cznie dzia³aniami marketingowymi. Sprowadzanie
+WS do „dobrze sprzedanego” RPC jest równie b³êdne jak twierdzenie, ¿e WS
+jest „lekk¹” warstw¹ poœredni¹. Prawda o WS jest taka, ¿e jest to dobra
+technologia, która posiada mniejsze lub wiêksze s³aboœci – w czym akurat
+nie jest odosobniona. Najwiêksze przekleñstwo WS bêd¹ce jednoczeœnie
+Ÿród³em ogromnego sukcesu ju¿ omówiliœmy, mo¿emy zatem skupiæ siê na
+zaletach.</p>
+
+<p>Przy okazji omawiania strategii rozwoju WS zosta³a przytoczona
+specyfikacja WS-Addressing – warto chwilê poœwiêciæ tej specyfikacji,
+poniewa¿ u³atwi to zrozumienie rzeczywistych zalet technologii WS. Celem
+WS-Addressing jest umo¿liwienie umieszczenia informacji adresowej w
+komunikacie SOAP w sposób niezale¿ny od wykorzystywanego transportu, co
+pozwala m.in. na jednoznaczn¹ identyfikacjê instancji us³ugi
+obs³uguj¹cej konkretn¹ sesjê [<a href="#references">25</a>].
+Rozszerzenie mo¿liwoœci SOAP przez WS-Addressing nie by³oby mo¿liwe,
+gdyby nie pewna ma³o znana w³aœciwoœæ protoko³u SOAP, która jednoczeœnie
+jest najwiêkszym atutem technologii WS.</p>
+
+<p>Na kopertê (envelope) SOAP – czyli innymi s³owy komunikat –
+sk³adaj¹ siê dwa elementy: (1) nag³ówek (header) i (2) cia³o (body).
+SOAP okreœla zawartoœæ cia³o komunikatu – czyli struktury danych
+stanowi¹cej w³aœciwe wywo³anie metody us³ugi (lub jej odpowiedŸ) wraz z
+elementami, których w tym miejscu byœmy siê spodziewali, takimi jak
+m.in. argumenty, czy wynik wywo³ania. Z kolei treœæ nag³ówka nie jest
+tak naprawdê zdefiniowana – SOAP jedynie precyzuje semantykê trzech
+atrybutów, które mog¹ pojawiæ siê w dowolnych elementach nag³ówka.
+Atrybuty te okreœlaj¹ akcjê, która powinna zostaæ podjêta przez wêze³
+(node) SOAP w momencie odebrania komunikatu [<a href="#references">21</a>].</p>
+
+<p>By zrozumieæ znaczenie ka¿dego z tych atrybutów, nale¿y w
+pierwszej kolejnoœci pokrótce omówiæ model przetwarzania komunikatów
+SOAP. Wbrew powszechnie panuj¹cemu przekonaniu paradygmat komunikacji
+SOAP nie ogranicza siê wy³¹cznie do wymiany wiadomoœci miêdzy us³ug¹ a
+klientem. Model wymiany danych w oparciu o SOAP nie jest bowiem
+dwustronny (tj. klient-serwer) a wielostronny –sama specyfikacja SOAP
+okreœla go jako komunikacjê „koniec-koniec” (end-to-end). Termin ten
+zosta³ wprowadzony w celu odró¿nienia komunikacji SOAP od po³¹czenia
+punkt-punkt (point-to-point) wystêpuj¹cym w protoko³ach transportowych
+znajduj¹cych siê poni¿ej SOAP – czyli HTTP, czy TCP. Dwa skrajne wêz³y
+po³¹czenia SOAP okreœlane s¹ jako: (1) pierwotny nadawca (initial
+sender), oraz (2) koñcowy odbiorca (ultimate receiver). Pomiêdzy nimi
+znajduj¹ siê wêz³y poœrednicz¹ce (intermediaries) [<a href="#references">21</a>].
+Trasa jak¹ przebêdzie komunikat od nadawcy do odbiorcy okreœla siê jako
+œcie¿kê komunikatu (message path).</p>
+
+<p>Zgodnie z modelem komunikacji SOAP ka¿dy wêze³ w chwili
+otrzymania komunikatu musi: (1) zidentyfikowaæ wszystkie adresowane do
+siebie bloki nag³ówka, a nastêpnie (2) odpowiednio przetworzyæ wszystkie
+sekcje nag³ówka odfiltrowane w kroku pierwszym [<a href="#references">21</a>].
+Do okreœlenia odbiorcy bloku nag³ówka s³u¿y rola (role) – czyli jeden z
+atrybutów zdefiniowanych w specyfikacji SOAP. Paradygmat komunikacji
+SOAP nak³ada na ka¿dy wêze³ obowi¹zek: (1) usuniêcia z wiadomoœci
+wszystkich adresowanych do niego bloków nag³ówka, a nastêpnie (2)
+przeprowadzenia ich interpretacji. Wêze³ SOAP mo¿e pomin¹æ adresowan¹ do
+siebie sekcjê nag³ówka jedynie w sytuacji, kiedy nie jest w stanie go
+w³aœciwie przetworzyæ. Nale¿y przyj¹æ, ¿e w praktycznych zastosowaniach
+ignorowanie bloków nag³ówka bêdzie stanowczo mniej przydatne, ni¿
+wymuszenie ich poprawnej interpretacji, bez której nie bêdzie mo¿liwa
+w³aœciwa obs³uga komunikatu. W tym celu w specyfikacji SOAP wprowadzono
+atrybut mustUnderstand, którego zadaniem jest oznaczenie danej sekcji
+nag³ówka jako „wymagan¹” (mandatory). Ka¿dy wêze³ SOAP jest zobowi¹zany
+do przetworzenia wszystkich adresowanych do niego bloków nag³ówka
+opatrzonych atrybutem mustUnderstand. Problem z interpretacj¹
+którejkolwiek sekcji obowi¹zkowej oznacza przerwanie obs³ugi komunikatu
+i przekazanie informacji o b³êdzie do nadawcy.</p>
+
+<p>Sekcja body komunikatu SOAP stanowi medium wymiany informacji
+miêdzy dwoma skrajnymi koñcami komunikacji SOAP: (1) pierwotnym nadawc¹
+i (2) odbiorc¹ koñcowym. Z tego wzglêdu cia³o koperty SOAP okreœla siê
+czasami mianem „³adunku” (payload) poprzez analogiê do tradycyjnych
+protoko³ów komunikacji. Cia³o komunikatu SOAP jest bowiem
+„nieprzejrzyste” (opaque) dla wêz³ów poœrednicz¹cych na tej samej
+zasadzie co niewidoczny dla routerów ³adunek datagramu IP zawieraj¹cy
+dane wykorzystywane przez wy¿sze warstwy stosu protoko³ów. Skojarzenie
+wêz³a poœrednicz¹cego z routerem nasuwa siê samo, jeœli porównamy sposób
+przetwarzania nag³ówków SOAP i IP. Oba rodzaje wêz³ów aktywnie
+uczestnicz¹ w komunikacji, a ich zachowanie jest okreœlane przez
+zawartoœæ nag³ówka. Podobnie jak router – choæ w zdecydowanie wiêkszym
+stopniu – wêze³ intermediary mo¿e równie¿ wp³ywaæ na zachowanie innych
+uczestników poprzez manipulowanie treœci¹ nag³ówka. Ka¿dy odbiorca
+komunikatu SOAP domyœlnie usuwa wszystkie zaadresowane do niego sekcje
+nag³ówka (patrz. wy¿ej). Taki sposób obs³ugi nie zawsze jest w³aœciwy –
+zw³aszcza, jeœli wêze³, który umieœci³ dany blok nag³ówka nie posiada
+¿adnej wiedzy, który w kolejnoœci odbiorca wiadomoœci bêdzie w stanie
+prawid³owo go zinterpretowaæ i zaadresuje dan¹ sekcjê do wêz³a
+nastêpnego w kolejnoœci wykorzystuj¹c w tym celu rolê next [<a
+	href="#references">21</a>]. Rozwi¹zaniem opisanego problemu mechanizm
+przekazywania (relaying) komunikatów w oparciu o wartoœæ atrybutu relay
+bêd¹cego trzecim i ostatnim elementem nag³ówka okreœlonym w specyfikacji
+SOAP. Opatrzenie bloku nag³ówka atrybutem relay oznacza koniecznoœæ
+ponownego umieszczenia go w wiadomoœci w postaci oryginalnej przed
+wys³aniem do kolejnego wêz³a znajduj¹cego siê na œcie¿ce.</p>
+
+<p>Model przetwarzania komunikatów wyraŸnie wskazuje, ¿e SOAP
+stanowi tak naprawdê fundament czegoœ na kszta³t alternatywnego „stosu
+protoko³ów” znajduj¹cego siê powy¿ej warstwy transportu OSI. Bloki
+nag³ówka umo¿liwiaj¹ wymianê informacji pomiêdzy implementacjami
+poszczególnych tzw. modu³ów SOAP dostarczaj¹cych dodatkow¹
+funkcjonalnoœæ, której „konsumentem” jest cia³o komunikatu. Poza
+definicj¹ opisanych wy¿ej atrybutów nag³ówka standard SOAP nie poœwiêca
+wspomnianym modu³om zbyt wiele miejsca. SOAP nie narzuca równie¿
+szczególnie restrykcyjnych ograniczeñ pozostawiaj¹c sporo swobody
+twórcom specyfikacji rozszerzaj¹cych SOAP – w³¹cznie z ingerencj¹ w
+model przetwarzania lub sposób interpretacji cia³a komunikatu [<a
+	href="#references">21</a>].</p>
+
+<p>Praktycznie niczym nieskrêpowana mo¿liwoœæ rozbudowy semantyki
+komunikatu SOAP jest najwiêksz¹ zalet¹ technologii WS, z której ma³o kto
+zdaje sobie sprawê. Mechanizm modu³ów SOAP zosta³ wprowadzony dopiero w
+najnowszej wersji 1.2 protoko³u, której wersja oficjalna zosta³a
+opublikowana w roku 2007. W ci¹gu kilku lat od czasu rozpoczêcia prac
+rozwojowych – podjêtych jeszcze w roku 2001 – powsta³o ³¹cznie
+kilkadziesi¹t specyfikacji rozszerzaj¹cych mo¿liwoœci SOAP [<a
+	href="#references">26</a>]. Poniewa¿ nazwy wszystkich tych standardów
+rozpoczynaj¹ siê od prefiksu „WS-” u¿ywa siê wobec nich ogólnej nazwy
+specyfikacji WS-* (WS-asteriks). Niektóre Ÿród³a nies³usznie do rodziny
+WS-* zaliczaj¹ tak¿e standardy stanowi¹ce uzupe³nienie XML, takie jak
+XML-Encryption [<a href="#references">27</a>], czy XML-Signature [<a
+	href="#references">28</a>] bêd¹ce podstaw¹ w³aœciwych rozszerzeñ WS.</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.8"></a><h2>Specyfikacje WS-* – nieco chaotyczny rozwój WS</h2>
+
+<p>Przedrostek „WS-” to w³aœciwie jedyna cecha ³¹cz¹ca wszystkie
+specyfikacje WS-* – trudno jest bowiem na ich podstawie zdefiniowaæ
+jak¹œ spójn¹ koncepcjê rozwoju [<a href="#references">29</a>]. W ramach
+rodziny WS-* mo¿na wyró¿niæ grupy wzajemnie uzupe³niaj¹cych siê i
+spójnych standardów, które razem tworz¹ tzw. szkielety (frameworks)
+dostarczaj¹ce pewn¹ funkcjonalnoœæ – najczêœciej stanowi¹c¹ realizacjê
+okreœlonego wymagania pozafunkcjonalnego, np. bezpieczeñstwa,
+transakcyjnoœci, czy przetwarzania asynchronicznego (patrz. wy¿ej).
+Dojrza³oœæ zarówno szkieletów, jak i wchodz¹cych w ich sk³ad
+specyfikacji bywa bardzo ró¿na. Bez w¹tpienia czêœæ z nich jest
+przedmiotem doœæ intensywnego rozwoju o czym œwiadcz¹ pojawiaj¹ce siê
+regularnie rekomendacje, profile interoperacyjnoœci, profile rozszerzeñ
+(patrz. ni¿ej), czy wreszcie wersje robocze i oficjalne standardów.
+Publikowane dokumenty (deliverables) s¹ owocem zarówno badañ
+laboratoryjnych, jak równie¿ doœwiadczeñ zebranych w trakcie tworzenia
+implementacji oraz wdro¿eñ [<a href="#references">30</a>] [<a
+	href="#references">31</a>]. Dla przeciêtnego u¿ytkownika korzyœci¹
+p³yn¹c¹ z tak prowadzonych prac rozwojowych s¹ przede wszystkim produkty
+implementuj¹ce zapisy specyfikacji, dziêki czemu maj¹ mo¿liwoœæ
+wykorzystania rozszerzeñ WS we w³asnych rozwi¹zaniach. Prawda o
+specyfikacjach WS-* jest jednak taka, ¿e te rozwijane od d³u¿szego
+czasu, posiadaj¹ce sprawdzone implementacje, a co za tym idzie dojrza³e
+raczej stanowi¹ mniejszoœæ. Co do reszty specyfikacji WS-* trudno jest
+siê wypowiadaæ nt. przydatnoœci, bowiem albo istniej¹ tylko „na
+papierze”, albo te¿ po b¹dŸ te¿ na podstawie d³u¿szego braku aktywnoœci
+w publikowaniu nowych dokumentów mo¿na domniemywaæ, i¿ w ogóle
+zaprzestano ich rozwoju. Przy bli¿szej analizie rozwoju standardów WS
+mo¿na te¿ zauwa¿yæ, ¿e po okresie chaotycznego rozwoju, podczas którego
+pojawia³y siê konkurencyjne specyfikacje [<a href="#references">29</a>]
+nastêpuje konsolidacja wysi³ków maj¹ca na celu stworzenie w miarê
+spójnych szkieletów realizuj¹cych okreœlone wymagania pozafunkcjonalne.</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.9"></a><h2>Web Service Definition Language</h2>
+
+<p>Podstaw¹ komunikacji miêdzy klientem a us³ug¹ jest tzw. kontrakt
+opisuj¹cy sposób wykorzystania funkcjonalnoœci us³ugi, który w pewnym
+uproszczeniu mo¿emy uto¿samiaæ z API. Ka¿dy szkielet u³atwiaj¹cy
+integracjê rozwi¹zañ heterogenicznych musi udostêpniaæ mechanizm
+umo¿liwiaj¹cy definicjê API, która by³aby niezale¿na od konkretnej
+implementacji. Standard OMG CORBA wprowadzi³ w tym celu Interface
+Definition Language (IDL) – czyli jêzyk abstrakcyjnego opisu API
+obiektów udostêpnianych w ramach infrastruktury CORBA. Odpowiednikiem
+IDL w œwiecie WS jest Web Service Definition Language (WSDL) – w chwili
+obecnej w wersji 2.0 (wczeœniej opracowywanej jak 1.2), która jest
+jednoczeœnie rekomendacj¹ konsorcjum W3C.</p>
+<p>Elementy opisu WSDL 1.1 oraz 2.0</p>
+<ul>
+	<li>Service (1.1)/Service (2.0) – reprezentuje w³aœciw¹ us³ugê,
+	czyli implementacjê konkretnych interfejsów dostêpn¹ jako konkretny
+	zasób sieciowy za poœrednictwem okreœlonych mechanizmów komunikacji. Od
+	strony opisu us³uga jest kolekcj¹ punktów koñcowych (end point), lub w
+	wersji 1.1 portów.</li>
+	<li>Port (1.1)/EndPoint (2.0) – deklaruje URI pod którym dostêpne
+	jest tzw. wi¹zanie (binding). Nale¿y w tym miejscu zaznaczyæ, ¿e us³uga
+	nie musi byæ koniecznie uruchomiona pod URI wskazanym w punkcie
+	koñcowym.</li>
+	<li>Binding (1.1)/Binding (2.0) – okreœla sposób realizacji danego
+	interfejsu abstrakcyjnego precyzuj¹c sposób komunikacji, a tak¿e
+	formatowanie i kodowanie wiadomoœci przekazywanych w ramach
+	poszczególnych operacji (metod).</li>
+	<li>PortType (1.1)/Interface (2.0) – abstrakcyjny opis interfejsu
+	sk³adaj¹cy siê na definicjê poszczególnych operacji. Same operacje
+	sk³adaj¹ siê z komunikatów przekazywanych miêdzy stron¹ klienck¹ a
+	us³ug¹. Komunikacja WS jest oparta o paradygmat ¿¹danie/odpowiedŸ
+	(request/response), dlatego ka¿da operacja musi definiowaæ format
+	wiadomoœci przychodz¹cej (input) oraz wychodz¹cej (output). Wygl¹d
+	poszczególnych komunikatów jest specyfikowany niezale¿nie od operacji.</li>
+	<li>Message (1.1)/ nie wystêpuje – sekcja definiuj¹ca komunikaty z
+	których zbudowane s¹ poszczególne operacje. W WSDL 2.0 porzucono tê
+	sekcjê, poniewa¿ w praktyce duplikowa³a ona informacjê i tak zawart¹ w
+	czêœci definiuj¹cej schemat komunikatów. Dobre praktyki u¿ycia WS
+	zalecaj¹ bowiem deklaracjê poszczególnych komunikatów jako osobnych
+	typów danych. Rezygnacja z tej sekcji w wersji 2.0 wykluczy³a mo¿liwoœæ
+	definicji komunikatów niezgodnie z zaleceniami.</li>
+	<li>Types (1.1) / Types (2.0) – definicja typów danych
+	wykorzystywanych w trakcie komunikacji – w tym równie¿ samych
+	komunikatów.</li>
+</ul>
+
+<hr />
+<a name="WS-01-Wprowadzenie.10"></a><h2>Apache Axis2</h2>
+
+<p>Decyzja o wyborze implementacji WS jest przede wszystkim
+uzale¿niona od technologii, która stanowi podstawê naszego rozwi¹zania.
+Niniejszy kurs zosta³ poœwiêcony programowaniu rozproszonemu z
+wykorzystaniem platformy Java™. Przy takim za³o¿eniu naturalnym wyborem
+jest Apache Axis2 – czyli ca³kowicie przeprojektowana i przepisana od
+nowa implementacja WS rozwijana w ramach Apache Software Foundation
+(ASF). Przebudowany od strony architektonicznej Axis2 nie jest
+kompatybilny od strony API ze swoj¹ starsz¹ wersj¹. Nie nale¿y jednak
+czyniæ wiêkszych zarzutów pod adresem twórców Apache Axis. Podobna
+„wpadka” sta³a siê równie¿ udzia³em Microsoft, który równie¿ zmieni³
+implementacjê WS wprowadzaj¹c Windows Communication Foundation i
+zaprzesta³ wsparcia WebServices Enhancements – poprzedniej implementacji
+wybranych specyfikacji WS-*. Jak ka¿dy produkt powstaj¹cy pod auspicjami
+ASF Axis2 jest oprogramowaniem otwartym (open source) udostêpnianym na
+licencji Apache License. Oznacza to, ¿e Axis2 mo¿e byæ nieodp³atnie
+wykorzystany w trakcie budowy dowolnego – w tym równie¿ komercyjnego –
+rozwi¹zania wykorzystuj¹cego WS. Jedynym warunkiem u¿ycia oprogramowania
+rozpowszechnianego na zasadach Apache License jest koniecznoœæ
+za³¹czenia pliku zawieraj¹cego treœæ licencji.</p>
+
+<p><a name="development-environment">UWAGA: DLA ZAOSZCZÊDZENIA
+SOBIE CZASU I PROBLEMÓW PODCZAS URUCHAMIANIA PRZYK£ADÓW NALE¯Y DOK£ADNIE
+ZAPOZNAÆ SIÊ Z WYMAGANIAMI, JAKIE POWINNO SPE£NIAÆ ŒRODOWISKO ROZWOJU.</a></p>
+
+<p>Osoby posiadaj¹ce nawet niewielkie doœwiadczenie w rozwoju
+oprogramowania doskonale zdaj¹ sobie sprawê, ¿e w³aœciwe œrodowisko mo¿e
+znacz¹co usprawniæ nasz¹ pracê u³atwiaj¹c nam wykonywanie powtarzaj¹cych
+siê czynnoœci. W trakcie przygotowywania wszystkich wyk³adów
+poœwiêconych technologii WS u¿yto nastêpuj¹cego œrodowiska rozwoju:</p>
+<ul>
+	<li>Eclipse IDE z zainstalowanym dodatkiem Web Tools Platform
+	(WTP) oraz Apache Ant (w wersji &gt;= 1.6) umo¿liwiaj¹cej definicjê
+	w³asnych makr (podstawowa dystrybucja Eclipse IDE jest zintegrowana z
+	Apache Ant). Sposób uruchamiania celów (targets) Ant z poziomu Eclipse
+	zosta³a zarejestrowana jako <a href="run-ant-task.html">screencast</a>;</li>
+	<li>Apache Tomcat (wersja &gt;= 6.0);</li>
+	<li>Axis2;</li>
+	<li>Definicjê zale¿noœci poszczególnych projektów oparto o
+	narzêdzie Apache Maven 2 oraz dodatek do M2Eclipse (<a
+		href="install-m2eclipse.html">zobacz screencast</a>), dziêki czemu
+	mo¿na by³o ograniczyæ rozmiar dystrybucji kodu Ÿród³owego i
+	jednoczeœnie uproœciæ proces budowy plików wdro¿eniowych Axis2 (Axis2
+	archives). Pe³ne wykorzystanie mo¿liwoœci Maven i M2Eclipse wymaga
+	zmiany konfiguracji Eclipse IDE polegaj¹cej na ustawieniu maszyny
+	wirtualnej dystrybuowanej z JDK jako domyœlnej (<a
+		href="set-jdk-as-eclipse-vm.html">zobacz screencast</a>).</li>
+</ul>
+
+<p>Sposób importu projektów zawieraj¹cymi przyk³ady do æwiczeñ
+zosta³ zarejestrowany w postaci <a
+	href="../WS-01-Wprowadzenie/import-samples.html">screencast</a>.</p>
+
+<p>Na kontenerze serwletów Apache Tomcat nale¿y wdro¿yæ archiwum
+axis2.war zgodnie z instrukcj¹ [<a href="#references">32</a>].</p>
+
+<p>Rozwój oprogramowania nieod³¹cznie wi¹¿e siê z ró¿nego rodzaju
+problemami w trakcie prób uruchamiania dopiero co napisanego kodu.
+Dlatego dobrze jest siê zaopatrzyæ w wygodne narzêdzie diagnostyczne.
+Podczas testowania aplikacji rozproszonych w pewnym momencie pojawia siê
+problem, który wymaga podgl¹du komunikacji miêdzy klientem a us³ug¹.
+Oczywiœcie w takich sytuacjach mo¿na skorzystaæ ze zwyk³ego sniffera,
+ale ³atwiej jest u¿yæ narzêdzia zintegrowanego z naszym œrodowiskiem
+rozwoju – np. dodatku TCP Monitor dla Eclipse IDE, który mo¿na pobraæ z
+adresu [<a href="#references">33</a>]. Dzia³a on na zasadzie
+przezroczystego przekazywania ruchu miêdzy klientem a us³ug¹, dziêki
+czemu mo¿emy mieæ podgl¹d ca³ej interesuj¹cej nas komunikacji bez
+koniecznoœci filtrowania ruchu.</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.11"></a><h2>W³asna us³uga web</h2>
+
+<p>Niezale¿nie od tego, jakie narzêdzie wybierzemy do tworzenia
+w³asnej us³ugi web, za ka¿dym razem proces ten powinniœmy rozpocz¹æ od
+definicji jej interfejsu. Jak wiemy jêzykiem opisu kontraktu miêdzy
+us³ug¹ a jej u¿ytkownikami – czyli innymi s³owy interfejsu – jest WSDL.
+Niektóre implementacje WS – w tym równie¿ Axis2 – umo¿liwiaj¹
+wygenerowanie definicji kontraktu w postaci WSDL w oparciu o definicjê
+interfejsu za pomoc¹ jêzyka programowania do ogólnych zastosowañ
+(general purpose programming language) takich jak Java™, czy C#. Nie
+jest to jednak najlepszy sposób tworzenia opisu us³ugi. Definiuj¹c
+us³ugê z poziomu jêzyka programowania nie zawsze bowiem mamy bezpoœredni
+wp³yw na faktyczny wygl¹d komunikatów przesy³anych miêdzy us³ug¹ a
+klientem. Z tego wzglêdu przed opublikowaniem us³ugi powinniœmy zawsze
+zweryfikowaæ opis WSDL pod wzglêdem zgodnoœci z zaleceniami (patrz.
+wy¿ej) – zw³aszcza jeœli us³uga mia³aby byæ udostêpniona na zewn¹trz.</p>
+
+<p>Nasza us³uga bêdzie nazywa³a siê SampleService i bêdzie
+udostêpnia³a jedn¹ metodê, któr¹ nazwiemy EchoMessage. Jej abstrakcyjny
+zapis za pomoc¹ jêzyka Java™ wygl¹da³by nastêpuj¹co. Proszê zwróciæ
+uwagê, ¿e nazwa metody jest zapisana w notacji Pascal Case, b¹dŸ te¿
+Upper Camel Case – wszystkie cz³ony nazwy metody s¹ pisane wielk¹ liter¹
+podczas, gdy w jêzyku Java™ przyjê³o siê zapisywaæ nazwy metod w
+formacie Lower Camel Case – nazwa pierwszego cz³onu jest pisana ma³¹
+liter¹.</p>
+
+<pre>
+public interface SampleService {
+
+	String EchoMessage(String message);
+	
+}
+</pre>
+
+<p>Poni¿ej odpowiadaj¹cy temu interfejsowi opis w postaci WSDL 1.1 –
+oczywiœcie u¿yta w przyk³adzie przestrzeñ nazw
+http://edek.info/tpr/SampleService/ mo¿e byæ zast¹piona dowoln¹ inn¹.</p>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+&lt;wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tpr="http://edek.info/tpr/SampleService/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="SampleService"
+	targetNamespace="http://edek.info/tpr/SampleService/"&gt;
+	
+	&lt;wsdl:types&gt;
+		&lt;xsd:schema targetNamespace="http://edek.info/tpr/SampleService/"&gt;
+			&lt;xsd:element name="EchoMessageRequest"&gt;
+				&lt;xsd:complexType&gt;
+					&lt;xsd:sequence&gt;
+						&lt;xsd:element name="in" type="xsd:string" /&gt;
+					&lt;/xsd:sequence&gt;
+				&lt;/xsd:complexType&gt;
+			&lt;/xsd:element&gt;
+			&lt;xsd:element name="EchoMessageResponse"&gt;
+				&lt;xsd:complexType&gt;
+					&lt;xsd:sequence&gt;
+						&lt;xsd:element name="out" type="xsd:string" /&gt;
+					&lt;/xsd:sequence&gt;
+				&lt;/xsd:complexType&gt;
+			&lt;/xsd:element&gt;
+		&lt;/xsd:schema&gt;
+	&lt;/wsdl:types&gt;
+
+	&lt;wsdl:message name="EchoMessageRequest"&gt;
+		&lt;wsdl:part element="tpr:EchoMessageRequest" name="parameters" /&gt;
+	&lt;/wsdl:message&gt;
+	&lt;wsdl:message name="EchoMessageResponse"&gt;
+		&lt;wsdl:part element="tpr:EchoMessageResponse" name="parameters" /&gt;
+	&lt;/wsdl:message&gt;
+
+	&lt;wsdl:portType name="SampleService"&gt;
+		&lt;wsdl:operation name="EchoMessage"&gt;
+			&lt;wsdl:input message="tpr:EchoMessageRequest" /&gt;
+			&lt;wsdl:output message="tpr:EchoMessageResponse" /&gt;
+		&lt;/wsdl:operation&gt;
+	&lt;/wsdl:portType&gt;
+
+	&lt;wsdl:binding name="SampleService" type="tpr:SampleService"&gt;
+		&lt;soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" /&gt;
+		&lt;wsdl:operation name="EchoMessage"&gt;
+			&lt;soap:operation soapAction="http://edek.info/tpr/SampleService/EchoMessage" /&gt;
+			&lt;wsdl:input&gt;
+				&lt;soap:body use="literal" /&gt;
+			&lt;/wsdl:input&gt;
+			&lt;wsdl:output&gt;
+				&lt;soap:body use="literal" /&gt;
+			&lt;/wsdl:output&gt;
+		&lt;/wsdl:operation&gt;
+	&lt;/wsdl:binding&gt;
+
+	&lt;wsdl:service name="SampleService"&gt;
+		&lt;wsdl:port binding="tpr:SampleService" name="SampleServiceSOAP"&gt;
+			&lt;soap:address location="http://edek.info/" /&gt;
+		&lt;/wsdl:port&gt;
+	&lt;/wsdl:service&gt;
+&lt;/wsdl:definitions&gt;
+</pre>
+
+<p>I odpowiadaj¹cy mu opis w postaci WSDL 2.0.</p>
+
+<pre>
+&lt;description xmlns="http://www.w3.org/ns/wsdl"
+             targetNamespace="http://edek.info/tpr/SampleService/"
+             xmlns:wsoap="http://www.w3.org/ns/wsdl/soap"
+             xmlns:tns="http://edek.info/tpr/SampleService/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:tpr="http://edek.info/tpr/SampleService/"&gt;
+  &lt;types&gt;
+    &lt;xsd:schema targetNamespace="http://edek.info/tpr/SampleService/"&gt;
+			&lt;xsd:element name="EchoMessageRequest"&gt;
+				&lt;xsd:complexType&gt;
+					&lt;xsd:sequence&gt;
+						&lt;xsd:element name="in" type="xsd:string"/&gt;
+					&lt;/xsd:sequence&gt;
+				&lt;/xsd:complexType&gt;
+			&lt;/xsd:element&gt;
+			&lt;xsd:element name="EchoMessageResponse"&gt;
+				&lt;xsd:complexType&gt;
+					&lt;xsd:sequence&gt;
+						&lt;xsd:element name="out" type="xsd:string"/&gt;
+					&lt;/xsd:sequence&gt;
+				&lt;/xsd:complexType&gt;
+			&lt;/xsd:element&gt;
+		&lt;/xsd:schema&gt;
+  &lt;/types&gt;
+  &lt;interface name="SampleService"&gt;
+    &lt;operation name="EchoMessage"
+               pattern="http://www.w3.org/ns/wsdl/in-out"&gt;
+      &lt;input messageLabel="In" element="tns:EchoMessageRequest"/&gt;
+      &lt;output messageLabel="Out" element="tns:EchoMessageResponse"/&gt;
+    &lt;/operation&gt;
+  &lt;/interface&gt;
+  &lt;binding name="SampleService"
+           interface="tns:SampleService"
+           type="http://www.w3.org/ns/wsdl/soap"
+           wsoap:version="1.1"
+           wsoap:protocol="http://www.w3.org/2006/01/soap11/bindings/HTTP"&gt;
+    &lt;operation ref="tns:EchoMessage" wsoap:action="http://edek.info/tpr/SampleService/EchoMessage"&gt;
+    &lt;/operation&gt;
+  &lt;/binding&gt;
+  &lt;service name="SampleService"
+           interface="tns:SampleService"&gt;
+    &lt;endpoint name="SampleServiceSOAP"
+              binding="tns:SampleService"
+              address="http://edek.info/"&gt;
+    &lt;/endpoint&gt;
+  &lt;/service&gt;
+&lt;/description&gt;
+</pre>
+
+<p>Zdefiniowaliœmy abstrakcyjny interfejs, teraz mo¿emy zatem
+przejœæ do konkretnej jego realizacji w oparciu o Axis2. Musimy zatem
+przekszta³ciæ opis w WSDL w coœ, co pozwoli nam stworzyæ (1)
+implementacjê metod interfejsu po stronie us³ugi oraz (2) prost¹
+aplikacjê klienck¹ odwo³uj¹c¹ siê do wspomnianego interfejsu. Innymi
+s³owy potrzebujemy szkieletu (skeleton) us³ugi oraz pieñka (stub)
+okreœlanego w œwiecie WS jako proxy po stronie klienckiej. Szkielet i
+proxy dadz¹ nam pewnoœæ, ¿e nasza implementacja oparta o Axis2 bêdzie
+komunikowaæ siê zgodnie ze specyfikacj¹ zawart¹ w WSDL, a przy okazji
+u³atwi¹ nam u¿ycie API Axis2.</p>
+
+<p>Do wygenerowania szkieletu i proxy mo¿emy pos³u¿yæ siê skryptem
+dostarczanym w ramach dystrybucji Axis2 (wsdl2java.bat/wsdl2java.sh),
+który musimy uruchomiæ z odpowiedni¹ list¹ argumentów. Niestety ten
+sposób generowania plików Ÿród³owych Java™ ma tê u³omnoœæ, ¿e jest ma³o
+ergonomiczny i zmusza nas do dbania, by powsta³e w ten sposób szkielet i
+proxy by³y ze sob¹ spójne. Podczas rozwoju oprogramowania skupiamy siê
+przede wszystkim na budowie rozwi¹zania – dlatego nietrudno o prosty
+b³¹d podczas uruchamiania jakichœ narzêdzi spoza zintegrowanego
+œrodowiska rozwoju – zw³aszcza, jeœli musimy zrobiæ to po raz kolejny,
+bo okaza³o siê, ¿e wykryliœmy b³¹d w definicji abstrakcyjnego
+interfejsu. W³aœnie do u³atwienia wykonywania tego rodzaju czynnoœci
+wymyœlono narzêdzia do budowy oprogramowania, takie jak make, Apache
+Ant, czy MSBuild. Twórcy Axis2 wychodz¹c naprzeciw tego rodzaju
+potrzebom udostêpnili odpowiednie zadania (tasks), które mo¿emy
+wykorzystaæ w naszym pliku build.xml.</p>
+
+<pre>
+&lt;path id="classpath.ant.plugin"&gt;
+        &lt;fileset dir="\\\\\\\${tools.ant.plugin}"&gt;
+            &lt;include name="**/*.jar"/&gt;
+        &lt;/fileset&gt;
+    &lt;/path&gt;
+    &lt;taskdef name="codegen" classname="org.apache.axis2.tool.ant.AntCodegenTask"
+                classpathref="classpath.ant.plugin"/&gt;
+</pre>
+<pre>
+&lt;codegen wsdlfilename="SampleService.wsdl" targetsourcefolderlocation="src/main/java"
+            targetresourcesfolderlocation="src/main/resources/simple"
+            packagename="info.edek.tpr.sample.service.simple"
+            namespacetopackages="http://edek.info/tpr/SampleService/=info.edek.tpr.sample.service.simple"
+            serverside="true" generateservicexml="true" serversideinterface="true"
+            wsdlversion="1.1"/&gt;
+</pre>
+
+<p>W efekcie wykonania celu (target) wsdl2java pliku budowy Ant
+zostan¹ wygenerowane nastêpuj¹ce pliki.</p>
+
+<pre>
+
+src/main/java/
+              info/
+                   edek/
+                        tpr/
+                            sample/
+                                   service/
+                                            EchoMessageRequest.java
+                                            EchoMessageResponse.java
+                                            ExtensionMapper.java
+                                            SampleServiceMessageReceiverInOut.java
+                                            SampleServiceSkeleton.java
+                                            SampleServiceSkeletonImpl.java
+                                            SampleServiceSkeletonInterface.java
+
+src/main/resource/simple/
+                        SampleService.wsdl
+                        services.xml
+</pre>
+
+<p>Klasa info.edek.tpr.sample.service.simple.SampleServiceSkeleton
+reprezentuje czêœæ szkieletu, któr¹ powinniœmy odpowiednio zmodyfikowaæ
+chc¹c uzyskaæ po¿¹dan¹ funkcjonalnoœæ. Przyk³ad implementacji znajduje
+siê poni¿ej.</p>
+
+<pre>
+package info.edek.tpr.sample.service.simple;
+
+import info.edek.tpr.sample.service.timeout.TimeoutSampleServiceSkeletonImpl;
+import info.edek.tpr.sample.service.util.Utility;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.impl.Log4JLogger;
+
+public final class SampleServiceSkeletonImpl implements
+		SampleServiceSkeletonInterface {
+
+	private static final Log logger;
+
+	static {
+		logger = new Log4JLogger(Utility
+				.getLoggerName(TimeoutSampleServiceSkeletonImpl.class));
+	}
+
+	public EchoMessageResponse echoMessage(EchoMessageRequest request) {
+		EchoMessageResponse response = new EchoMessageResponse();
+		response.localOut = Utility.getResponseMessage(this.getClass(),
+				request.localIn);
+		return response;
+	}
+}
+</pre>
+
+<p>Nastêpnym krokiem jest generacja archiwum us³ugi
+SampleService.aar do podkatalogu target projektu
+edek-tpr-sample-service, za pomoc¹ celu aars.</p>
+
+<p>Ostatnim etapem jest wdro¿enie archiwum Axis2 za pomoc¹ panelu
+administracyjnego aplikacji axis2.war (patrz. wy¿ej) dostêpnej pod
+adresem http://&lt;tomcat-host&gt;:&lt;tomcat-port&gt;/axis2/ -
+najczêœciej bêdzie to http://localhost:8080/axis2/. Przed wdro¿eniem
+archiwum Axis2 panel administracyjny za¿¹da uwierzytelnienia. Domyœlne
+dane uwierzytelniaj¹ce admin/axis2 mo¿na zmieniæ w pliku konfiguracyjnym
+&lt;axis2-war-deployment&gt;/WEB-INF/conf/axis2.xml).</p>
+
+<p>Pozosta³o nam tylko sprawdziæ, czy wdro¿ona us³uga jest dostêpna,
+o czym mo¿emy przekonaæ siê odwiedzaj¹c adres
+http://&lt;tomcat-host&gt;:&lt;tomcat-port&gt;/axis2/services/SampleService?wsdl.
+Jeœli naszym oczom nie uka¿e siê WSDL us³ugi oznacza to, ¿e musimy
+zmodyfikowaæ deskryptor wdro¿enia (services.xml), który po generacji
+plików Ÿród³owych zostanie umieszczony w podkatalogu
+src/main/resources/simple i oczywiœcie ponownie wygenerowaæ plik aar.</p>
+
+<p>Jeœli upewniliœmy siê, ¿e nasza us³uga dzia³a prawid³owo mo¿emy
+przyst¹piæ do budowy strony klienckiej.W pakiecie
+info.edek.tpr.sample.client.simple projektu klienckiego znajdziemy plik
+proxy SampleServiceStub.java. Sposób wykorzystania jego funkcjonalnoœci
+przedstawiono poni¿ej. Zanim uruchomimy nasz¹ aplikacjê klienck¹ musimy
+dostosowaæ wartoœæ pola SERVICE_URI_PREFIX klasy
+info.edek.tpr.sample.util.Utility, tak aby wskazywa³o na adres pod
+którym dzia³a aplikacja axis2.war. Pozostaje nam ju¿ tylko kompilacja i
+uruchomienie aplikacji klienckiej.</p>
+
+<pre>
+package info.edek.tpr.sample.client.main;
+
+import info.edek.tpr.sample.client.simple.SampleServiceStub;
+import info.edek.tpr.sample.client.simple.SampleServiceStub.EchoMessageRequest;
+import info.edek.tpr.sample.client.simple.SampleServiceStub.EchoMessageResponse;
+import info.edek.tpr.sample.client.util.Service;
+import info.edek.tpr.sample.client.util.Utility;
+
+import org.apache.axis2.AxisFault;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.impl.Log4JLogger;
+
+public final class MainSimpleCli {
+
+	private static final Log logger;
+
+	static {
+		logger = new Log4JLogger(Utility.getLoggerName(MainSimpleCli.class));
+	}
+
+	private static EchoMessageRequest getEchoMessageRequest() {
+		EchoMessageRequest request = new EchoMessageRequest();
+		request.setIn(Utility.getMessage());
+		return request;
+	}
+
+	private static SampleServiceStub getSampleServiceStub() throws AxisFault {
+		return new SampleServiceStub(Service.SampleService.getServiceUri());
+	}
+
+	public static void main(String... args) {
+		try {
+			logger.info("&lt;application started&gt;");
+			SampleServiceStub sampleServiceStub = getSampleServiceStub();
+			EchoMessageRequest request = getEchoMessageRequest();
+			EchoMessageResponse response = sampleServiceStub
+					.echoMessage(request);
+			logger.info("&lt;SUCCESS&gt; response: " + response.getOut());
+			logger.info("&lt;aplication accomplished&gt;");
+		} catch (Throwable ex) {
+			logger.fatal("execution fault", ex);
+		}
+	}
+}
+</pre>
+
+<hr />
+<a name="WS-01-Wprowadzenie.12"></a><h2>Æwiczenia</h2>
+
+<p>Zadania praktyczne maj¹ce na celu utrwalenie wiedzy zdobytej w
+trakcie lektury wyk³adu zosta³y omówione w jego treœci. Do ca³ego cyklu
+wyk³adów poœwiêconego technologii WS jest do³¹czone archiwum <a
+	href="../WS-01-Wprowadzenie/samples/samples.zip">samples.zip</a>
+zawieraj¹ce zestaw projektów Eclipse IDE umo¿liwiaj¹ce przeæwiczenie
+omówionych zagadnieñ.</p>
+
+<p>Szczegó³owe wymagania na œrodowisko rozwoju oprogramowania
+umo¿liwiaj¹ce uruchomienie przyk³adów towarzysz¹cych wyk³adowi zosta³y
+przedstawione <a
+	href="../WS-01-Wprowadzenie/WS-01-Wprowadzenie.html#development-environment">tutaj</a>
+</p>
+
+<p>Sposób importu projektów zawieraj¹cymi przyk³ady do æwiczeñ
+zosta³ zarejestrowany w postaci <a
+	href="../WS-01-Wprowadzenie/import-samples.html">screencast</a>.</p>
+
+<hr />
+<a name="WS-01-Wprowadzenie.13"></a><h2><a name="references">Bibliografia</a></h2>
+
+<ol>
+	<li><a href="http://pl.wikipedia.org/wiki/Us%C5%82uga_sieciowa">http://pl.wikipedia.org/wiki/Us%C5%82uga_sieciowa</a></li>
+	<li><a href="http://tools.ietf.org/rfc/rfc1057.txt">http://tools.ietf.org/rfc/rfc1057.txt</a></li>
+	<li><a
+		href="http://en.wikipedia.org/wiki/Common_Object_Request_Broker_Architecture">http://en.wikipedia.org/wiki/Common_Object_Request_Broker_Architecture</a></li>
+	<li><a href="http://www.corba.org/">http://www.corba.org/</a></li>
+	<li><a href="http://pl.wikipedia.org/wiki/DCOM">http://pl.wikipedia.org/wiki/DCOM</a></li>
+	<li><a
+		href="http://en.wikipedia.org/wiki/Electronic_Data_Interchange">http://en.wikipedia.org/wiki/Electronic_Data_Interchange</a></li>
+	<li><a
+		href="http://en.wikipedia.org/wiki/Two-phase_commit_protocol">http://en.wikipedia.org/wiki/Two-phase_commit_protocol</a></li>
+	<li><a href="http://www.omg.org/corba/success.htm">http://www.omg.org/corba/success.htm</a></li>
+	<li><a href="http://queue.acm.org/detail.cfm?id=1142044">http://queue.acm.org/detail.cfm?id=1142044</a></li>
+	<li><a
+		href="http://en.wikipedia.org/wiki/Standard_Generalized_Markup_Language">http://en.wikipedia.org/wiki/Standard_Generalized_Markup_Language"</a></li>
+	<li><a href="http://www.w3.org/MarkUp/SGML/">http://www.w3.org/MarkUp/SGML/</a></li>
+	<li><a
+		href="http://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One">http://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One</a></li>
+	<li><a href="http://www.asn1.org/">http://www.asn1.org/</a></li>
+	<li><a
+		href="http://petritsch.co.at/download/SOA_vs_component_based.pdf">http://petritsch.co.at/download/SOA_vs_component_based.pdf</a></li>
+	<li><a href="http://radovanjanecek.net/blog/archives/000334.html">http://radovanjanecek.net/blog/archives/000334.html</a></li>
+	<li><a href="http://www.w3.org/TR/xml-infoset/">http://www.w3.org/TR/xml-infoset/</a></li>
+	<li><a
+		href="http://www2003.org/cdrom/papers/alternate/P872/p872-kohlhoff.html">http://www2003.org/cdrom/papers/alternate/P872/p872-kohlhoff.html</a></li>
+	<li><a href="http://jan.newmarch.name/webservices/critique.pdf">http://jan.newmarch.name/webservices/critique.pdf</a></li>
+	<li><a href="http://www.w3.org/TR/xop10/">http://www.w3.org/TR/xop10/</a></li>
+	<li><a href="http://www.w3.org/TR/soap12-mtom/">http://www.w3.org/TR/soap12-mtom/</a></li>
+	<li><a href="http://www.w3.org/TR/soap12-part1/">http://www.w3.org/TR/soap12-part1/</a></li>
+	<li><a
+		href="http://specs.xmlsoap.org/ws/2004/09/soap-over-udp/soap-over-udp.pdf">http://specs.xmlsoap.org/ws/2004/09/soap-over-udp/soap-over-udp.pdf</a></li>
+	<li><a
+		href="http://www.ws-i.org/Profiles/BasicProfile-1.0-2004-04-16.html">http://www.ws-i.org/Profiles/BasicProfile-1.0-2004-04-16.html</a></li>
+	<li><a href="http://www.ws-i.org/Profiles/BasicProfile-1.2.html">http://www.ws-i.org/Profiles/BasicProfile-1.2.html</a></li>
+	<li><a href="http://www.w3.org/Submission/ws-addressing/">http://www.w3.org/Submission/ws-addressing/</a></li>
+	<li><a
+		href="http://en.wikipedia.org/wiki/List_of_Web_service_specifications">http://en.wikipedia.org/wiki/List_of_Web_service_specifications</a></li>
+	<li><a href="http://www.w3.org/TR/xmlenc-core/">http://www.w3.org/TR/xmlenc-core/</a></li>
+	<li><a href="http://www.w3.org/TR/xmldsig-core/">http://www.w3.org/TR/xmldsig-core/</a></li>
+	<li><a
+		href="http://www.innoq.com/resources/WebServicesStandardsOverview-2005-01.pdf">http://www.innoq.com/resources/WebServicesStandardsOverview-2005-01.pdf</a></li>
+	<li><a
+		href="http://www.ibm.com/developerworks/library/specification/ws-secmap/">http://www.ibm.com/developerworks/library/specification/ws-secmap/</a></li>
+	<li><a
+		href="http://www.webservices.org/categories/technology/standards/oasis_announces_web_services_transaction_ws_tx_standards_committee">http://www.webservices.org/categories/technology/standards/oasis_announces_web_services_transaction_ws_tx_standards_committee</a></li>
+	<li><a
+		href="http://ws.apache.org/axis2/0_94/installationguide.html">http://ws.apache.org/axis2/0_94/installationguide.html</a></li>
+	<li><a
+		href="http://charithaka.blogspot.com/2008/08/how-to-use-tcpmon-inside-eclipse.html">http://charithaka.blogspot.com/2008/08/how-to-use-tcpmon-inside-eclipse.html</a></li>
+</ol>
+<br>
+<hr>
+</body>
+</html>

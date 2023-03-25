@@ -1,0 +1,1 @@
+start "Receiver from queue" run Receiver queue1

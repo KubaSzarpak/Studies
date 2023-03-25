@@ -1,0 +1,777 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type"
+	content="text/html; charset=windows-1250">
+<meta name="author" content="Edgar G³owacki">
+<meta name="description"
+	content="Web Services w oparciu o Apache Axis2 - wywo³ania asynchroniczne">
+<meta name="copyright" content="(c) Edgar G³owacki PJWSTK 2010">
+<link rel="stylesheet" type="text/css" href="../STYLE/common.css">
+<title>Web Services – Wywo³ania asynchroniczne</title>
+</head>
+<body>
+<div align="center">
+<a name="WS-02-Wywolania-Asynchroniczne"></a><h1>Web Services – Wywo³ania asynchroniczne</h1>
+</div>
+<hr>
+<br>
+
+<i>Niniejszy wyk³ad jest drugim z cyklu poœwiêconego us³ugom web w
+ramach przedmiotu Technologie Programowania Rozproszonego. Przedmiotem
+wyk³adu jest wp³yw przetwarzania rozproszonego na u¿ywalnoœæ (usability)
+oprogramowania, a tak¿e sposobom jej poprawienia w oparciu o wywo³ania
+nieblokuj¹ce, lub te¿ asynchroniczne. Ze wzglêdu na liczne implementacje
+technologia WS jak do tej pory najpe³niej spe³ni³a obietnicê
+interoperacyjnoœci. Do najbardziej dojrza³ych z nich zalicza siê Apache
+Axis2 - dostêpn¹ nieodp³atnie dystrybucjê WS rozwijan¹ w ramach Apache
+Software Foundation. Na tej w³aœnie implementacji oparte zosta³y
+przyk³ady praktyczne omawiane w ramach niniejszego wyk³adu.</i>
+<br>
+
+<hr>
+<a name="WS-02-Wywolania-Asynchroniczne.1"></a><h2>Przetwarzanie rozproszone a u¿ywalnoœæ oprogramowania</h2>
+
+<p>W ramach poprzedniego rozdzia³u doœæ ogólnie omówiliœmy koncepcje
+integracji systemów heterogenicznych – ich wady i zalety.
+Przedstawiliœmy równie¿ argumentacjê przemawiaj¹c¹ za wykorzystaniem do
+tego celu szkieletów middleware, by wreszcie skupiæ siê na technologii,
+która – jak dotychczas – najbardziej spe³ni³a obietnice dotycz¹ce
+interoperacyjnoœci – czyli Web Services (WS). Na koniec – po doœæ du¿ej
+dawce teorii – stworzyliœmy nasz¹ pierwsz¹ us³ugê w oparciu o Apache
+Axis2. Zgodnie zatem z dobr¹ praktyk¹ dydaktyczn¹ zakoñczyliœmy
+poprzedni wyk³ad czêœci¹ praktyczn¹ daj¹c czytelnikowi szansê bardziej
+empirycznego zapoznania siê omówionymi zagadnieniami.</p>
+
+<p>W tej czêœci przyjrzymy siê bli¿ej uwarunkowaniom zwi¹zanym z
+wykorzystaniem mechanizmów programowania rozproszonego. Skupimy siê
+przede wszystkim aspektowi u¿ywalnoœci (usability), który zosta³
+ca³kowicie pominiêty ze wzglêdu na obszerny zakres tematyczny
+poprzedniej sekcji. Wróæmy zatem tam, gdzie skoñczyliœmy poprzedni
+wyk³ad – czyli do naszej us³ugi SampleService. Jak ka¿dy tego typu
+przyk³ad maj¹cy na celu mo¿liwie przystêpn¹ prezentacjê u¿ycia danej
+technologii odbiega znacz¹co od praktyki zastosowania. Szkielet
+middleware jest doœæ ciê¿kim narzêdziem. U¿ycie warstwy poœredniej wi¹¿e
+siê bowiem z nastêpuj¹cymi czynnoœciami:</p>
+
+<ul>
+	<li>przygotowaniem komunikatu po stronie klienta obejmuj¹cy m.in.
+	marshalling parametrów, czyli ich dostosowanie do przes³ania w
+	strumieniu asocjacji sieciowej;</li>
+	<li>przes³aniem ¿¹dania przez sieæ;</li>
+	<li>odczytem komunikatu po stronie us³ugi – demarshalling
+	parametrów;</li>
+	<li>realizacj¹ w³aœciwego ¿¹dania przez us³ugê;</li>
+	<li>przygotowaniem odpowiedzi do klienta – ponownie szeregowanie
+	struktur danych przechowywanych w pamiêci;</li>
+	<li>przes³aniem odpowiedzi do klienta;</li>
+	<li>odczyt odpowiedzi – ponownie deserializacja komunikatu.</li>
+</ul>
+
+<p>Sam narzut na zapewnienie komunikacji miêdzy stron¹ klienck¹ a
+serwerow¹ jest na tyle du¿y, ¿e warstwê poœredni¹ zazwyczaj zaprzêga siê
+do zlecenia wykonania stosunkowo z³o¿onych zadañ. Równie¿ pod tym k¹tem
+jest opracowywany interfejs warstwy poœredniej, co jednoczeœnie zapewnia
+du¿y stopieñ izolacji od systemów zewnêtrznych, a co za tym idzie
+autonomicznoœæ i niezale¿ny rozwój.</p>
+
+<p>Co prawda funkcjonalnoœæ naszej prostej us³ugi bardzo odbiega od
+scenariuszy integracyjnych, ale nawet w jej przypadku mo¿emy
+zaobserwowaæ wp³yw u¿ycia szkieletu middleware na wydajnoœæ.
+Uruchamiaj¹c nasz¹ prost¹ aplikacjê klienck¹ mogliœmy zaobserwowaæ pewne
+niedu¿e (trwaj¹ce kilkaset milisekund) opóŸnienie miêdzy wyœwietleniem
+na ekranie komunikatu informuj¹cego o uruchomieniu aplikacji, a kolejnym
+komunikatem prezentuj¹cym efekt wywo³ania. Jednoczeœnie nie
+zaobserwujemy takiego zjawiska podczas prezentacji kolejnego komunikatu,
+który pojawi siê na ekranie w tej samej milisekundzie co rezultat
+wywo³ania.</p>
+
+<hr />
+<a name="WS-02-Wywolania-Asynchroniczne.2"></a><h2>Kliencki interfejs graficzny dla Sample Service</h2>
+
+<p>Nasza aplikacja kliencka by³a do tej pory prostym programem
+uruchamianym z linii poleceñ, który sam z siebie nie dawa³ u¿ytkownikowi
+¿adnego wp³ywu na przebieg przetwarzania. Jest to jak widaæ aplikacja,
+której interfejs u¿ytkownika znacz¹co odbiega od powszechnie przyjêtych
+standardów w zakresie u¿ytecznoœci. W obecnej postaci nasza aplikacja
+mog³aby co najwy¿ej byæ wywo³ywana w trybie wsadowym (batch mode) –
+czyli innymi s³owy jako czêœæ skryptu, b¹dŸ te¿ mog³aby byæ uruchamiana
+przez w³aœciw¹ aplikacjê, z której korzystaj¹ u¿ytkownicy – czyli innymi
+s³owy posiadaj¹cej graficzny interfejs u¿ytkownika.</p>
+
+<p>Zastanówmy siê, jaka jest konsekwencja tego rodzaju zachowania z
+punktu widzenia u¿ytkownika koñcowego, który w trakcie interakcji zleci
+aplikacji wykonanie wywo³anie korzystaj¹ce z warstwy poœredniej.
+OpóŸnienie rzêdu kilkuset milisekund nie jest a¿ tak bardzo odczuwalne,
+ale przeprowadŸmy prosty eksperyment, który w pierwszej kolejnoœci
+bêdzie polega³ na utworzeniu aplikacji klienckiej posiadaj¹cej graficzny
+interfejs u¿ytkownika. Poni¿ej przedstawiamy kod Ÿród³owy takiej
+przyk³adowej aplikacji.</p>
+
+<pre>
+package info.edek.tpr.sample.client.main;
+
+import info.edek.tpr.sample.client.simple.SampleServiceStub;
+import info.edek.tpr.sample.client.simple.SampleServiceStub.EchoMessageRequest;
+import info.edek.tpr.sample.client.simple.SampleServiceStub.EchoMessageResponse;
+import info.edek.tpr.sample.client.util.Service;
+import info.edek.tpr.sample.client.util.Utility;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SpringLayout;
+
+import org.apache.axis2.AxisFault;
+
+public class MainSimpleGui extends JFrame implements ActionListener {
+
+	private static final long serialVersionUID = 465320630720463494L;
+
+	private SampleServiceStub sampleServiceStub;
+
+	private JButton btnEchoMessage;
+
+	private JTextArea txtOutput;
+
+	private JScrollPane scroll;
+
+	private MainSimpleGui() {
+		try {
+			this.sampleServiceStub = getSampleServiceStub();
+			this.btnEchoMessage = new JButton("EchoMessage");
+			this.btnEchoMessage.addActionListener(this);
+			this.txtOutput = new JTextArea(20, 0);
+			this.scroll = new JScrollPane(this.txtOutput);
+			Container content = this.getContentPane();
+			SpringLayout layout = new SpringLayout();
+			content.setLayout(layout);
+			content.add(this.scroll);
+			content.add(this.btnEchoMessage);
+			final int DEFAULT_PADDING = 5;
+			final int DEFAULT_WIDTH = 640;
+			final int DEFAULT_HEIGHT = 480;
+			layout.putConstraint(SpringLayout.WEST, this.scroll,
+					DEFAULT_PADDING, SpringLayout.WEST, content);
+			layout.putConstraint(SpringLayout.NORTH, this.scroll,
+					DEFAULT_PADDING, SpringLayout.NORTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.scroll,
+					-DEFAULT_PADDING, SpringLayout.EAST, content);
+			layout.putConstraint(SpringLayout.WEST, this.btnEchoMessage,
+					DEFAULT_PADDING, SpringLayout.WEST, content);
+			layout.putConstraint(SpringLayout.NORTH, this.btnEchoMessage,
+					DEFAULT_PADDING, SpringLayout.SOUTH, this.scroll);
+			layout.putConstraint(SpringLayout.SOUTH, this.btnEchoMessage,
+					-DEFAULT_PADDING, SpringLayout.SOUTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.btnEchoMessage,
+					-DEFAULT_PADDING, SpringLayout.EAST, content);
+			this.pack();
+			this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+			this.setVisible(true);
+		} catch (AxisFault ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	private static EchoMessageRequest getEchoMessageRequest() {
+		EchoMessageRequest request = new EchoMessageRequest();
+		request.setIn(Utility.getMessage());
+		return request;
+	}
+
+	private static SampleServiceStub getSampleServiceStub() throws AxisFault {
+		return new SampleServiceStub(Service.SampleService.getServiceUri());
+	}
+
+	private void showMessageBox(Throwable ex) {
+		JOptionPane.showMessageDialog(this, ex);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		try {
+			EchoMessageRequest request = getEchoMessageRequest();
+			EchoMessageResponse response = this.sampleServiceStub
+					.echoMessage(request);
+			String output = this.txtOutput.getText() + "\\\\\\\\n" + response.getOut();
+			this.txtOutput.setText(output);
+		} catch (Throwable ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	public static void main(String... args) {
+		new MainSimpleGui();
+	}
+}
+</pre>
+
+<p>Po uruchomieniu i kilkukrotnym wywo³aniu metody EchoMessage
+naszej us³ugi mo¿emy zauwa¿yæ, ¿e mimo opóŸnienia, które mogliœmy
+zaobserwowaæ na wyjœciu wersji pozbawionej interfejsu graficznego, nasza
+aplikacja z GUI posiada ca³kiem dobr¹ responsywnoœæ.</p>
+
+<hr />
+<a name="WS-02-Wywolania-Asynchroniczne.3"></a><h2>Timeout Sample Service</h2>
+
+<p>Spróbujmy zatem przeprowadziæ kolejny eksperyment, który w prosty
+sposób bêdzie naœladowa³ zachowanie aplikacji wykorzystuj¹cej warstwê
+poœredni¹ w rzeczywistym œrodowisku wdro¿eniowym. Utwórzmy now¹ us³ugê o
+nazwie TimeoutSampleService, która tak jak poprzednia bêdzie
+udostêpnia³a jedn¹ metodê TimeoutEchoMessage, z t¹ ró¿nic¹, ¿e metoda ta
+nie bêdzie zwraca³a wyniku od razu, ale po up³ywie œciœle okreœlonego
+czasu. OpóŸnienie przekazania odpowiedzi do strony klienckiej pozwoli
+nam zaobserwowaæ zachowanie, z którym bêdziemy mieæ bardzo czêsto do
+czynienia w œrodowisku rozproszonym – czyli trwaj¹ce od kilku do nawet
+kilkudziesiêciu sekund oczekiwanie na odpowiedŸ ze strony serwera.
+Przyk³adowy opis interfejsu us³ugi znajduje siê poni¿ej.</p>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+&lt;wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tpr="http://edek.info/tpr/TimeoutSampleService/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="TimeoutSampleService"
+	targetNamespace="http://edek.info/tpr/TimeoutSampleService/"&gt;
+	
+	&lt;wsdl:types&gt;
+		&lt;xsd:schema targetNamespace="http://edek.info/tpr/TimeoutSampleService/"&gt;
+			&lt;xsd:element name="TimeoutEchoMessageRequest"&gt;
+				&lt;xsd:complexType&gt;
+					&lt;xsd:sequence&gt;
+						&lt;xsd:element name="in" type="xsd:string" /&gt;
+					&lt;/xsd:sequence&gt;
+				&lt;/xsd:complexType&gt;
+			&lt;/xsd:element&gt;
+			&lt;xsd:element name="TimeoutEchoMessageResponse"&gt;
+				&lt;xsd:complexType&gt;
+					&lt;xsd:sequence&gt;
+						&lt;xsd:element name="out" type="xsd:string" /&gt;
+					&lt;/xsd:sequence&gt;
+				&lt;/xsd:complexType&gt;
+			&lt;/xsd:element&gt;
+		&lt;/xsd:schema&gt;
+	&lt;/wsdl:types&gt;
+
+	&lt;wsdl:message name="TimeoutEchoMessageRequest"&gt;
+		&lt;wsdl:part element="tpr:TimeoutEchoMessageRequest" name="parameters" /&gt;
+	&lt;/wsdl:message&gt;
+	&lt;wsdl:message name="TimeoutEchoMessageResponse"&gt;
+		&lt;wsdl:part element="tpr:TimeoutEchoMessageResponse" name="parameters" /&gt;
+	&lt;/wsdl:message&gt;
+
+	&lt;wsdl:portType name="TimeoutSampleService"&gt;
+		&lt;wsdl:operation name="TimeoutEchoMessage"&gt;
+			&lt;wsdl:input message="tpr:TimeoutEchoMessageRequest" /&gt;
+			&lt;wsdl:output message="tpr:TimeoutEchoMessageResponse" /&gt;
+		&lt;/wsdl:operation&gt;
+	&lt;/wsdl:portType&gt;
+
+	&lt;wsdl:binding name="TimeoutSampleService" type="tpr:TimeoutSampleService"&gt;
+		&lt;soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" /&gt;
+		&lt;wsdl:operation name="TimeoutEchoMessage"&gt;
+			&lt;soap:operation soapAction="http://edek.info/tpr/TimeoutSampleService/TimeoutEchoMessage" /&gt;
+			&lt;wsdl:input&gt;
+				&lt;soap:body use="literal" /&gt;
+			&lt;/wsdl:input&gt;
+			&lt;wsdl:output&gt;
+				&lt;soap:body use="literal" /&gt;
+			&lt;/wsdl:output&gt;
+		&lt;/wsdl:operation&gt;
+	&lt;/wsdl:binding&gt;
+
+	&lt;wsdl:service name="TimeoutSampleService"&gt;
+		&lt;wsdl:port binding="tpr:TimeoutSampleService" name="TimeoutSampleServiceSOAP"&gt;
+			&lt;soap:address location="http://edek.info/" /&gt;
+		&lt;/wsdl:port&gt;
+	&lt;/wsdl:service&gt;
+&lt;/wsdl:definitions&gt;
+</pre>
+
+<p>W nastêpnej kolejnoœci musimy wygenerowaæ szkielet i proxy –
+analogicznie jak uczyniliœmy to przy okazji SampleService omówionej w
+poprzednim rozdziale. Powinniœmy te¿ wype³niæ wygenerowany szkielet
+odpowiedni¹ implementacj¹, której przyk³ad przedstawiamy poni¿ej.</p>
+
+<pre>
+package info.edek.tpr.sample.service.timeout;
+
+import info.edek.tpr.sample.service.util.Utility;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.impl.Log4JLogger;
+
+public class TimeoutSampleServiceSkeletonImpl implements
+		TimeoutSampleServiceSkeletonInterface {
+
+	private static final Log logger;
+
+	private static final long SLEEP_TIME_MILLIS = 10000;
+
+	static {
+		logger = new Log4JLogger(Utility
+				.getLoggerName(TimeoutSampleServiceSkeletonImpl.class));
+	}
+
+	public TimeoutEchoMessageResponse timeoutEchoMessage(
+			TimeoutEchoMessageRequest request) {
+		TimeoutEchoMessageResponse response = new TimeoutEchoMessageResponse();
+		response.localOut = Utility.getResponseMessage(this.getClass(),
+				request.localIn);
+		try {
+			Thread.sleep(SLEEP_TIME_MILLIS);
+		} catch (InterruptedException ex) {
+			logger.error("Exception has been caught", ex);
+		}
+		return response;
+	}
+}
+</pre>
+
+<p>Ponownie za pomoc¹ celu aars zdefiniowanego w pliku build.xml
+mo¿emy wygenerowaæ archiwum Axis2 zawieraj¹ce implementacjê us³ugi,
+któr¹ powinniœmy wdro¿yæ w ten sam sposób, jak uczyniliœmy to z nasz¹
+pierwsz¹ us³ug¹ SampleService. Zanim przejdziemy do tworzenia aplikacji
+klienckiej powinniœmy upewniæ siê, ¿e nasza us³uga dzia³a poprawnie –
+najproœciej jest zwyczajnie otworzyæ URI z WSDL us³ugi – analogicznie
+jak zrobiliœmy to w przypadku poprzednim.</p>
+
+<p>Po pomyœlnym zakoñczeniu wszystkich opisanych wy¿ej czynnoœci
+mo¿emy spokojnie przejœæ do tworzenia aplikacji klienckiej. Dla lepszego
+porównania zachowania nowa wersja aplikacji powinna umo¿liwiaæ nam
+skorzystanie z funkcjonalnoœci obu us³ug: (1) SampleService i (2)
+TimeoutSampleService. Przyk³adowy kod aplikacji klienckiej móg³by zatem
+wygl¹daæ nastêpuj¹co.</p>
+
+<pre>
+package info.edek.tpr.sample.client.main;
+
+import info.edek.tpr.sample.client.simple.SampleServiceStub;
+import info.edek.tpr.sample.client.simple.SampleServiceStub.EchoMessageRequest;
+import info.edek.tpr.sample.client.simple.SampleServiceStub.EchoMessageResponse;
+import info.edek.tpr.sample.client.timeout.TimeoutSampleServiceStub;
+import info.edek.tpr.sample.client.timeout.TimeoutSampleServiceStub.TimeoutEchoMessageRequest;
+import info.edek.tpr.sample.client.timeout.TimeoutSampleServiceStub.TimeoutEchoMessageResponse;
+import info.edek.tpr.sample.client.util.Service;
+import info.edek.tpr.sample.client.util.Utility;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SpringLayout;
+
+import org.apache.axis2.AxisFault;
+
+public class MainTimeoutGuiBlocking extends JFrame implements ActionListener {
+
+	private static final long serialVersionUID = 465320630720463494L;
+
+	private SampleServiceStub sampleServiceStub;
+
+	private TimeoutSampleServiceStub timeoutSampleServiceStub;
+
+	private JButton btnEchoMessage;
+
+	private JButton btnTimeoutEchoMessage;
+
+	private JTextArea txtOutput;
+
+	private JScrollPane scroll;
+
+	private MainTimeoutGuiBlocking() {
+		try {
+			this.sampleServiceStub = getSampleServiceStub();
+			this.timeoutSampleServiceStub = getTimeoutSampleServiceStub();
+			this.btnEchoMessage = new JButton("EchoMessage");
+			this.btnEchoMessage.addActionListener(this);
+			this.btnTimeoutEchoMessage = new JButton("TimeoutEchoMessage");
+			this.btnTimeoutEchoMessage.addActionListener(this);
+			this.txtOutput = new JTextArea(20, 0);
+			this.scroll = new JScrollPane(this.txtOutput);
+			Container content = this.getContentPane();
+			SpringLayout layout = new SpringLayout();
+			content.setLayout(layout);
+			content.add(this.scroll);
+			content.add(this.btnEchoMessage);
+			content.add(this.btnTimeoutEchoMessage);
+			final int DEFAULT_PADDING = 5;
+			final int DEFAULT_WIDTH = 640;
+			final int DEFAULT_HEIGHT = 480;
+			// layout for scroll
+			layout.putConstraint(SpringLayout.WEST, this.scroll,
+					DEFAULT_PADDING, SpringLayout.WEST, content);
+			layout.putConstraint(SpringLayout.NORTH, this.scroll,
+					DEFAULT_PADDING, SpringLayout.NORTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.scroll,
+					-DEFAULT_PADDING, SpringLayout.EAST, content);
+			// layout for btnEchoMessage
+			layout.putConstraint(SpringLayout.WEST, this.btnEchoMessage,
+					DEFAULT_PADDING, SpringLayout.WEST, content);
+			layout.putConstraint(SpringLayout.NORTH, this.btnEchoMessage,
+					DEFAULT_PADDING, SpringLayout.SOUTH, this.scroll);
+			layout.putConstraint(SpringLayout.SOUTH, this.btnEchoMessage,
+					-DEFAULT_PADDING, SpringLayout.SOUTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.btnEchoMessage,
+					-DEFAULT_PADDING, SpringLayout.VERTICAL_CENTER, content);
+			// layout for btnTimeoutEchoMessage
+			layout.putConstraint(SpringLayout.WEST, this.btnTimeoutEchoMessage,
+					DEFAULT_PADDING, SpringLayout.VERTICAL_CENTER, content);
+			layout.putConstraint(SpringLayout.NORTH,
+					this.btnTimeoutEchoMessage, DEFAULT_PADDING,
+					SpringLayout.SOUTH, this.scroll);
+			layout.putConstraint(SpringLayout.SOUTH,
+					this.btnTimeoutEchoMessage, -DEFAULT_PADDING,
+					SpringLayout.SOUTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.btnTimeoutEchoMessage,
+					-DEFAULT_PADDING, SpringLayout.EAST, content);
+			this.pack();
+			this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+			this.setVisible(true);
+		} catch (AxisFault ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	private static EchoMessageRequest getEchoMessageRequest() {
+		EchoMessageRequest request = new EchoMessageRequest();
+		request.setIn(Utility.getMessage());
+		return request;
+	}
+
+	private static TimeoutEchoMessageRequest getTimeoutEchoMessageRequest() {
+		TimeoutEchoMessageRequest request = new TimeoutEchoMessageRequest();
+		request.setIn(Utility.getMessage());
+		return request;
+	}
+
+	private static SampleServiceStub getSampleServiceStub() throws AxisFault {
+		return new SampleServiceStub(Service.SampleService.getServiceUri());
+	}
+
+	private static TimeoutSampleServiceStub getTimeoutSampleServiceStub()
+			throws AxisFault {
+		return new TimeoutSampleServiceStub(Service.TimeoutSampleService
+				.getServiceUri());
+	}
+
+	private void showMessageBox(Throwable ex) {
+		JOptionPane.showMessageDialog(this, ex);
+	}
+
+	public void actionPerformed(ActionEvent ev) {
+		try {
+			String output = null;
+			if (ev.getSource() == this.btnEchoMessage) {
+				EchoMessageRequest request = getEchoMessageRequest();
+				EchoMessageResponse response = this.sampleServiceStub
+						.echoMessage(request);
+				output = this.txtOutput.getText() + "\\\\\\\\n" + response.getOut();
+			} else if (ev.getSource() == this.btnTimeoutEchoMessage) {
+				TimeoutEchoMessageRequest request = getTimeoutEchoMessageRequest();
+				TimeoutEchoMessageResponse response = this.timeoutSampleServiceStub
+						.timeoutEchoMessage(request);
+				output = this.txtOutput.getText() + "\\\\\\\\n" + response.getOut();
+			}
+			if (output != null) {
+				this.txtOutput.setText(output);
+			}
+		} catch (Throwable ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	public static void main(String... args) {
+		new MainTimeoutGuiBlocking();
+	}
+}
+</pre>
+
+<p>Po uruchomieniu naszej aplikacji doœæ szybko dojdziemy do
+wniosku, ¿e niespecjalnie chcielibyœmy na co dzieñ korzystaæ z jej
+funkcjonalnoœci. O ile bowiem aplikacja zachowuje siê poprawnie podczas
+uruchomienia SampleService.EchoMessage, o tyle wciœniêcie przycisku
+TimeoutEchoMessage wywo³uj¹cego metodê o tej samej nazwie powoduje
+ca³kowite „zamro¿enie” interfejsu. Takie wymuszone przerwy w interakcji
+z aplikacj¹ mog¹ mieæ fatalny wp³yw psychologiczny na u¿ytkownika.
+Oprogramowanie, które z za³o¿enia ma pomóc u¿ytkownikowi w wykonywaniu
+powierzonego mu zadania, sprawia, ¿e albo zaczyna on powoli wpadaæ we
+frustracjê wynikaj¹c¹ z bezsilnoœci, albo te¿ przestaje przywi¹zywaæ
+wagê do efektywnoœci swojej pracy. Oczywiœcie mo¿emy doœæ ³atwo
+wyt³umaczyæ zaobserwowane zachowanie aplikacji, nie zmienia to jednak
+faktu, ¿e jest ono nieakceptowane.</p>
+
+<hr />
+<a name="WS-02-Wywolania-Asynchroniczne.4"></a><h2>Wywo³anie nieblokuj¹ce Timeout Sample Service</h2>
+
+<p>U¿ytkownik jest w stanie zrozumieæ, ¿e wykonanie niektórych akcji
+wywo³ywanych przez niego za pomoc¹ interfejsu u¿ytkownika mo¿e trwaæ
+doœæ d³ugo. Przyk³adem mo¿e byæ chocia¿by zadanie polegaj¹ce na
+wygenerowaniu z³o¿onego raportu statystycznego agreguj¹cego dane
+przechowywane w wielu rozwi¹zaniach. U¿ytkownik nie bêdzie równie¿
+protestowa³, kiedy ze wzglêdu na rodzaj przetwarzania bêdziemy zmuszeni
+odebraæ mu mo¿liwoœæ zlecenia wykonania zadania okreœlonego typu, jeœli
+w danym momencie inne zlecenie tego typu jest ju¿ realizowane.
+U¿ytkownik oczekuje, ¿e zachowa w ka¿dej sytuacji bêdzie posiada³
+kontrolê nad aplikacj¹ i ¿e jej stan bêdzie korespondowa³ ze stanem
+ca³ej wykorzystywanej przez ni¹ infrastruktury informatycznej.</p>
+
+<p>Jakiego zatem zachowania oczekiwalibyœmy od naszego interfejsu
+u¿ytkownika? Poniewa¿ jest to aplikacja demonstracyjna nie dzia³aj¹ca w
+jakimœ konkretnym œrodowisku, gdzie musielibyœmy uwzglêdniaæ
+uwarunkowania biznesowe i techniczne, mo¿emy wyobraziæ sobie kilka
+wariantów. Jedn¹ z mo¿liwoœci by³oby zablokowanie przycisku
+TimeoutEchoMessage do chwili otrzymania odpowiedzi ze strony us³ugi
+pozostawiaj¹c jednoczeœnie mo¿liwoœæ wywo³ywania metody
+SampleService.EchoMessage.</p>
+
+<p>Jak moglibyœmy uzyskaæ po¿¹dany efekt? Przede wszystkim musimy
+u¿yæ mechanizmu, który umo¿liwi nam zachowanie nam pe³nej kontroli nad
+aplikacj¹ nawet w przypadku uruchomienia d³ugotrwa³ej operacji, której
+wykonanie pozostaje poza nasz¹ kontrol¹. Aby uzyskaæ wspomniany efekt
+musimy utworzyæ w¹tek, któremu przeka¿emy kontrolê sterowania wywo³aniem
+zdalnym. Oczywiœcie musimy równie¿ daæ mo¿liwoœæ poinformowania g³ównego
+w¹tku aplikacji o zakoñczeniu przetwarzania – i do tego celu
+wykorzystamy obiekt wywo³ania zwrotnego (callback). Powsta³y mechanizm
+stanowi jedn¹ z mo¿liwych implementacji tzw. wywo³ania asynchronicznego
+(asynchronous call) – czyli uruchomienia okreœlonej funkcjonalnoœci bez
+przekazywania kontroli nad g³ównym w¹tkiem przetwarzania. Powy¿szy opis
+prezentuje doœæ tradycyjny sposób realizacji wywo³añ asynchronicznych,
+który jest dostarczany przez ró¿ne implementacje WS – w tym Apache
+Axis2, czy te¿ implementacja WS w Microsoft .NET Framework. Podsumowuj¹c
+tê ogóln¹ dyskusjê poœwiêcon¹ wywo³aniom asynchronicznych nale¿y
+podkreœliæ, ¿e jest to mechanizm realizowany w wiêkszoœci przypadków
+wy³¹cznie po stronie klienta – us³uga zazwyczaj nie jest œwiadoma z
+jakiego typu wywo³aniem ma do czynienia, poniewa¿ za ka¿dym razem
+przejmuje kontrolê nad sterowaniem. To po stronie klienckiej s¹
+podejmowane dzia³ania, które sprawiaj¹, ¿e us³uga nie przejmuje kontroli
+nad przep³ywem sterowania w¹tku g³ównego aplikacji.</p>
+
+<p>Spróbujmy zatem u¿yæ mechanizmu wywo³añ asynchronicznych Axis2 w
+naszej aplikacji. Jeœli przyjrzymy siê uwa¿niej dowolnemu wygenerowanemu
+przez nas plikowi proxy zauwa¿ymy, ¿e ka¿dej metodzie us³ugi (np.
+TimeoutEchoMessage) odpowiadaj¹ po stronie klienckiej dwie metody. Jedna
+z nich to zapisana w notacji Lower Camel Case nazwa metody us³ugi
+(timeoutEchoMessage) – i w³aœnie tê wykorzystywaliœmy do tej pory. Nazwa
+drugiej metody powstaje poprzez doklejenie przedrostka start do nazwy
+metody pierwszej – czyli starttimeoutEchoMessage. Ten drugi wariant
+Zwróæmy uwagê, ¿e w odró¿nieniu do wywo³ywanej przez nas dotychczas
+metody timeoutEchoMessage, metoda starttimeoutEchoMessage nie zwraca
+¿adnego wyniku przyjmuje natomiast jeszcze jeden argument – obiekt
+wywo³ania zwrotnego. Rozszerzaj¹c klasê
+TimeoutSampleServiceCallBackHandler poprzez dostarczenie cia³a metodom:
+(1) receiveResulttimeoutEchoMessage oraz (2)
+receiveErrortimeoutEchoMessage jesteœmy w stanie odpowiednio skonsumowaæ
+wynik wywo³ania oraz obs³u¿yæ b³¹d, który zostanie zg³oszony podczas
+wywo³ania. Poni¿ej kod Ÿród³owy aplikacji klienckiej po stosownych
+modyfikacjach.</p>
+
+<pre>
+package info.edek.tpr.sample.client.main;
+
+import info.edek.tpr.sample.client.simple.SampleServiceStub;
+import info.edek.tpr.sample.client.simple.SampleServiceStub.EchoMessageRequest;
+import info.edek.tpr.sample.client.simple.SampleServiceStub.EchoMessageResponse;
+import info.edek.tpr.sample.client.timeout.TimeoutSampleServiceCallbackHandler;
+import info.edek.tpr.sample.client.timeout.TimeoutSampleServiceStub;
+import info.edek.tpr.sample.client.timeout.TimeoutSampleServiceStub.TimeoutEchoMessageRequest;
+import info.edek.tpr.sample.client.timeout.TimeoutSampleServiceStub.TimeoutEchoMessageResponse;
+import info.edek.tpr.sample.client.util.Service;
+import info.edek.tpr.sample.client.util.Utility;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SpringLayout;
+
+import org.apache.axis2.AxisFault;
+
+public class MainTimeoutGuiNonBlocking extends JFrame implements ActionListener {
+
+	private static final long serialVersionUID = 465320630720463494L;
+
+	private SampleServiceStub sampleServiceStub;
+
+	private TimeoutSampleServiceStub timeoutSampleServiceStub;
+
+	private JButton btnEchoMessage;
+
+	private JButton btnTimeoutEchoMessage;
+
+	private JTextArea txtOutput;
+
+	private JScrollPane scroll;
+
+	private MainTimeoutGuiNonBlocking() {
+		try {
+			this.sampleServiceStub = getSampleServiceStub();
+			this.timeoutSampleServiceStub = getTimeoutSampleServiceStub();
+			this.btnEchoMessage = new JButton("EchoMessage");
+			this.btnEchoMessage.addActionListener(this);
+			this.btnTimeoutEchoMessage = new JButton("TimeoutEchoMessage");
+			this.btnTimeoutEchoMessage.addActionListener(this);
+			this.txtOutput = new JTextArea(20, 0);
+			this.scroll = new JScrollPane(this.txtOutput);
+			Container content = this.getContentPane();
+			SpringLayout layout = new SpringLayout();
+			content.setLayout(layout);
+			content.add(this.scroll);
+			content.add(this.btnEchoMessage);
+			content.add(this.btnTimeoutEchoMessage);
+			final int DEFAULT_PADDING = 5;
+			final int DEFAULT_WIDTH = 640;
+			final int DEFAULT_HEIGHT = 480;
+			// layout for scroll
+			layout.putConstraint(SpringLayout.WEST, this.scroll,
+					DEFAULT_PADDING, SpringLayout.WEST, content);
+			layout.putConstraint(SpringLayout.NORTH, this.scroll,
+					DEFAULT_PADDING, SpringLayout.NORTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.scroll,
+					-DEFAULT_PADDING, SpringLayout.EAST, content);
+			// layout for btnEchoMessage
+			layout.putConstraint(SpringLayout.WEST, this.btnEchoMessage,
+					DEFAULT_PADDING, SpringLayout.WEST, content);
+			layout.putConstraint(SpringLayout.NORTH, this.btnEchoMessage,
+					DEFAULT_PADDING, SpringLayout.SOUTH, this.scroll);
+			layout.putConstraint(SpringLayout.SOUTH, this.btnEchoMessage,
+					-DEFAULT_PADDING, SpringLayout.SOUTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.btnEchoMessage,
+					-DEFAULT_PADDING, SpringLayout.VERTICAL_CENTER, content);
+			// layout for btnTimeoutEchoMessage
+			layout.putConstraint(SpringLayout.WEST, this.btnTimeoutEchoMessage,
+					DEFAULT_PADDING, SpringLayout.VERTICAL_CENTER, content);
+			layout.putConstraint(SpringLayout.NORTH,
+					this.btnTimeoutEchoMessage, DEFAULT_PADDING,
+					SpringLayout.SOUTH, this.scroll);
+			layout.putConstraint(SpringLayout.SOUTH,
+					this.btnTimeoutEchoMessage, -DEFAULT_PADDING,
+					SpringLayout.SOUTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.btnTimeoutEchoMessage,
+					-DEFAULT_PADDING, SpringLayout.EAST, content);
+			this.pack();
+			this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+			this.setVisible(true);
+		} catch (AxisFault ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	private static EchoMessageRequest getEchoMessageRequest() {
+		EchoMessageRequest request = new EchoMessageRequest();
+		request.setIn(Utility.getMessage());
+		return request;
+	}
+
+	private static TimeoutEchoMessageRequest getTimeoutEchoMessageRequest() {
+		TimeoutEchoMessageRequest request = new TimeoutEchoMessageRequest();
+		request.setIn(Utility.getMessage());
+		return request;
+	}
+
+	private static SampleServiceStub getSampleServiceStub() throws AxisFault {
+		return new SampleServiceStub(Service.SampleService.getServiceUri());
+	}
+
+	private static TimeoutSampleServiceStub getTimeoutSampleServiceStub()
+			throws AxisFault {
+		return new TimeoutSampleServiceStub(Service.TimeoutSampleService
+				.getServiceUri());
+	}
+
+	private void showMessageBox(Throwable ex) {
+		JOptionPane.showMessageDialog(this, ex);
+	}
+
+	public void actionPerformed(ActionEvent ev) {
+		try {
+			String message = null;
+			if (ev.getSource() == this.btnEchoMessage) {
+				EchoMessageRequest request = getEchoMessageRequest();
+				EchoMessageResponse response = this.sampleServiceStub
+						.echoMessage(request);
+				message = response.getOut();
+			} else if (ev.getSource() == this.btnTimeoutEchoMessage) {
+				TimeoutEchoMessageRequest request = getTimeoutEchoMessageRequest();
+				this.enableTimeoutEchoMessageInvocation(false);
+				this.timeoutSampleServiceStub.starttimeoutEchoMessage(request,
+						new TimeoutSampleServiceCallbackHandlerImpl());
+			}
+			if (message != null) {
+				this.appendOutput(message);
+			}
+		} catch (Throwable ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	private void appendOutput(String message) {
+		if (message != null) {
+			String output = this.txtOutput.getText() + "\\\\\\\\n" + message;
+			this.txtOutput.setText(output);
+		}
+	}
+
+	private void enableTimeoutEchoMessageInvocation(boolean enable) {
+		this.btnTimeoutEchoMessage.setEnabled(enable);
+	}
+
+	public static void main(String... args) {
+		new MainTimeoutGuiNonBlocking();
+	}
+
+	private final class TimeoutSampleServiceCallbackHandlerImpl extends
+			TimeoutSampleServiceCallbackHandler {
+
+		public void receiveResulttimeoutEchoMessage(
+				TimeoutEchoMessageResponse response) {
+			appendOutput(response.getOut());
+			enableTimeoutEchoMessageInvocation(true);
+		}
+
+		public void receiveErrortimeoutEchoMessage(Exception ex) {
+			showMessageBox(ex);
+		}
+	}
+}
+</pre>
+
+<hr />
+<a name="WS-02-Wywolania-Asynchroniczne.5"></a><h2>Æwiczenia</h2>
+
+<p>Zadania praktyczne maj¹ce na celu utrwalenie wiedzy zdobytej w
+trakcie lektury wyk³adu zosta³y omówione w jego treœci. Do ca³ego cyklu
+wyk³adów poœwiêconego technologii WS jest do³¹czone archiwum <a
+	href="../WS-01-Wprowadzenie/samples/samples.zip">samples.zip</a>
+zawieraj¹ce zestaw projektów Eclipse IDE umo¿liwiaj¹ce przeæwiczenie
+omówionych zagadnieñ.</p>
+
+<p>Szczegó³owe wymagania na œrodowisko rozwoju oprogramowania
+umo¿liwiaj¹ce uruchomienie przyk³adów towarzysz¹cych wyk³adowi zosta³y
+przedstawione <a
+	href="../WS-01-Wprowadzenie/WS-01-Wprowadzenie.html#development-environment">tutaj</a>
+</p>
+
+<p>Sposób importu projektów zawieraj¹cymi przyk³ady do æwiczeñ
+zosta³ zarejestrowany w postaci <a
+	href="../WS-01-Wprowadzenie/import-samples.html">screencast</a>.</p>
+
+<hr />
+</body>
+</html>

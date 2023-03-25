@@ -1,0 +1,932 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type"
+	content="text/html; charset=windows-1250">
+<meta name="author" content="Edgar G³owacki">
+<meta name="description"
+	content="Web Services w oparciu o Apache Axis2 - bardziej z³o¿one scenariusze komunikacji">
+<meta name="copyright" content="(c) Edgar G³owacki PJWSTK 2010">
+<link rel="stylesheet" type="text/css" href="../STYLE/common.css">
+<title>Web Services – bardziej z³o¿one scenariusze komunikacji</title>
+</head>
+<body>
+<div align="center">
+<a name="WS-03-Bardziej-Zlozone-Scenariusze-Komunikacji"></a><h1>Web Services – bardziej z³o¿one scenariusze komunikacji</h1>
+</div>
+<hr>
+
+<br>
+<i>Niniejszy wyk³ad jest ostatnim z cyklu poœwiêconego Web Service.
+Wyk³ad omawia tzw. wzorce wymiany komunikatów (Message Exchange
+Patterns) oraz ich implementacje w oparciu o Apache Axis2 - jedn¹ z
+najbardziej dojrza³ych dystrybucji WS.</i>
+<br>
+
+<hr>
+<a name="WS-03-Bardziej-Zlozone-Scenariusze-Komunikacji.1"></a><h2>Wzorce wymiany komunikatów</h2>
+
+<p>W poprzednich dwóch rozdzia³ach omówiliœmy najbardziej tradycyjny
+schemat komunikacji wykorzystywany w komunikacji sieciowej – czyli
+¿¹danie/odpowiedŸ (request/response). Jest to oczywiœcie paradygmat
+komunikacji znajduj¹cy najczêstsze zastosowanie, jednak WS umo¿liwiaj¹
+realizacjê bardzo ró¿nych scenariuszy wymiany informacji, które w
+œwiecie WS okreœla siê jako wzorce wymiany komunikatów (Message Exchange
+Patterns – MEP).</p>
+
+<p>Czêœæ druga specyfikacji WSDL 2.0 zawieraj¹ce ró¿nego rodzaju
+dodatki [<a href="#references">1</a>] przedstawia trzy podstawowe MEP:</p>
+
+<ul>
+	<li>In-Out – tradycyjny schemat zak³adaj¹cy komunikacjê dwustronn¹
+	– czyli wspomniany ju¿ request/response. Zazwyczaj w tak¹ wymianê
+	zaanga¿owanych jest dwóch uczestników – klient i us³uga. Zwróæmy jednak
+	uwagê, ¿e taki model komunikacji obejmuje przes³anie dwóch ró¿nych
+	wiadomoœci. Zawsze odbiorc¹ ¿¹dania i nadawc¹ odpowiedzi jest ta sama
+	us³uga, ale wcale niekoniecznie uczestnik konsumuj¹cy wynik wywo³ania
+	musi byæ to¿samy z inicjuj¹cym komunikacjê. Technologia WS udostêpnia
+	mechanizmy umo¿liwiaj¹ce realizacjê scenariusza opartego o paradygmat
+	In-Out, w który bêd¹ zaanga¿owane trzy strony;</li>
+	<li>In-Only – jest to wzorzec komunikacji, który w standardzie OMG
+	CORBA by³ okreœlany jako fire-and-forget. Ten schemat zak³ada
+	komunikacjê jednokierunkow¹, gdzie nadawca nie jest zainteresowany
+	skonsumowaniem wyniku wywo³anej akcji. In-Only nie przewiduje równie¿
+	¿adnego mechanizmu obs³ugi b³êdów, co oznacza, ¿e klient nigdy nie mo¿e
+	mieæ pewnoœci, ¿e wykonanie zleconej przez niego operacji zakoñczy³o
+	siê sukcesem. Ta ostatnia cecha praktycznie eliminuje ten model
+	komunikacji z praktycznego u¿ycia. Oczywiœcie niezawodny (reliable)
+	protokó³ transmisji, taki jak TCP, daje nam gwarancjê, ¿e wywo³anie
+	dotrze do miejsca przeznaczenia. Rzadko jednak mamy do czynienia ze
+	scenariuszem, w którym aplikacja kliencka nie bêdzie zupe³nie
+	zainteresowana, czy zlecone przez ni¹ zadanie zosta³o wykonane
+	poprawnie.</li>
+	<li>Robust In-Only – jest to wariant poprzedniego schematu
+	rozszerzony o mo¿liwoœæ propagacji b³êdów, dziêki czemu klient ma
+	mo¿liwoœæ odpowiedniej reakcji w razie niepowodzenia wykonania
+	operacji.</li>
+</ul>
+
+<p>Na bazie tych trzech elementarnych paradygmatów wymiany
+komunikatów mo¿emy budowaæ ró¿nego rodzaju scenariusze [<a
+	href="#references">2</a>], z których czêœæ zostanie dok³adniej omówiona
+w trakcie niniejszego wyk³adu.</p>
+
+<hr />
+<a name="WS-03-Bardziej-Zlozone-Scenariusze-Komunikacji.2"></a><h2>Schemat Trigger Action</h2>
+
+<p>Zacznijmy od najprostszego schematu komunikacji, jaki mo¿na sobie
+wyobraziæ – czyli zlecenia wykonania operacji przez us³ugê na zasadach
+fire-and-forget – czyli z pominiêciem odpowiedzi i bez zapewnienia
+jakiegokolwiek mechanizmu obs³ugi b³êdów. Poni¿ej zamieœciliœmy opis
+przyk³adowej us³ugi dzia³aj¹cej w taki w³aœnie sposób. Zwróæmy uwagê na
+brak definicji komunikatów odpowiedzi – nie ma potrzeby ich definiowaæ,
+poniewa¿ operacje sk³adaj¹ce siê na interfejs us³ugi nie posiadaj¹
+wyjœcia (output).</p>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+&lt;wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tpr="http://edek.info/tpr/TriggerActionSampleService/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="TriggerActionSampleService"
+	targetNamespace="http://edek.info/tpr/TriggerActionSampleService/"&gt;
+	
+	&lt;wsdl:types&gt;
+		&lt;xsd:schema targetNamespace="http://edek.info/tpr/TriggerActionSampleService/"&gt;
+			&lt;xsd:element name="TriggerActionRequest"&gt;
+				&lt;xsd:complexType&gt;
+					&lt;xsd:sequence&gt;
+						&lt;xsd:element name="in" type="xsd:string" /&gt;
+					&lt;/xsd:sequence&gt;
+				&lt;/xsd:complexType&gt;
+			&lt;/xsd:element&gt;
+		&lt;/xsd:schema&gt;
+	&lt;/wsdl:types&gt;
+
+	&lt;wsdl:message name="TriggerActionRequest"&gt;
+		&lt;wsdl:part element="tpr:TriggerActionRequest" name="parameters" /&gt;
+	&lt;/wsdl:message&gt;
+
+	&lt;wsdl:portType name="TriggerActionSampleService"&gt;
+		&lt;wsdl:operation name="TriggerAction"&gt;
+			&lt;wsdl:input message="tpr:TriggerActionRequest" /&gt;
+		&lt;/wsdl:operation&gt;
+	&lt;/wsdl:portType&gt;
+
+	&lt;wsdl:binding name="TriggerActionSampleService" type="tpr:TriggerActionSampleService"&gt;
+		&lt;soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" /&gt;
+		&lt;wsdl:operation name="TriggerAction"&gt;
+			&lt;soap:operation soapAction="http://edek.info/tpr/TriggerActionSampleService/TriggerAction" /&gt;
+			&lt;wsdl:input&gt;
+				&lt;soap:body use="literal" /&gt;
+			&lt;/wsdl:input&gt;
+		&lt;/wsdl:operation&gt;
+	&lt;/wsdl:binding&gt;
+
+	&lt;wsdl:service name="TriggerActionSampleService"&gt;
+		&lt;wsdl:port binding="tpr:TriggerActionSampleService" name="TriggerActionSampleServiceSOAP"&gt;
+			&lt;soap:address location="http://edek.info/" /&gt;
+		&lt;/wsdl:port&gt;
+	&lt;/wsdl:service&gt;
+&lt;/wsdl:definitions&gt;
+</pre>
+
+<p>Wygenerujmy zatem szkielet i proxy na podstawie WSDL –
+tradycyjnie za pomoc¹ build.xml. Znów zauwa¿ymy kolejn¹ ró¿nicê –
+zmieni³ siê typ zwracany przez nasz¹ metodê – tym razem bowiem nie
+zwraca on ¿adnej wartoœci (void). Przyst¹pmy do budowy w³aœciwej
+funkcjonalnoœci us³ugi. Przyk³adowa implementacja mog³aby wygl¹daæ tak
+jak poni¿ej. Zwróæmy uwagê, ¿e ze wzglêdu na sygnaturê metody szkieletu
+nie mo¿emy przekazaæ efektu dzia³ania metody na zewn¹trz – dlatego tym
+razem musieliœmy odnotowaæ fakt wywo³ania w rejestrze zdarzeñ. Do tego
+celu u¿yliœmy biblioteki Apache Commons.Logging, której API opakowuje
+m.in. popularny szkielet logowania Apache Log4J.</p>
+
+<pre>
+package info.edek.tpr.sample.service.triggerAction;
+
+import info.edek.tpr.sample.service.util.Utility;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.impl.Log4JLogger;
+
+public class TriggerActionSampleServiceSkeletonImpl implements
+		TriggerActionSampleServiceSkeletonInterface {
+
+	private static final Log logger;
+
+	static {
+		logger = new Log4JLogger(Utility
+				.getLoggerName(TriggerActionSampleServiceSkeletonImpl.class));
+	}
+
+	public void triggerAction(TriggerActionRequest request) {
+		String message = request.getIn();
+		logger.info(Utility.getRequestReceivedLog(
+				TriggerActionSampleServiceSkeletonImpl.class, message));
+	}
+}
+</pre>
+
+<p>Na koniec przyjrzyjmy siê tak¿e deskryptorowi wdro¿enia us³ugi
+services.xml, który zostaje do³¹czony do pliku aar. Zwróæmy uwagê na
+znacznik messageReceiver, którego atrybut mep okreœla wzorzec wymiany
+komunikatu.</p>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!-- This file was auto-generated from WSDL --&gt;
+&lt;!-- by the Apache Axis2 version: 1.5.1  Built on : Oct 19, 2009 (10:59:00 EDT) --&gt;
+&lt;serviceGroup&gt;
+    &lt;service name="TriggerActionSampleService"&gt;
+        &lt;messageReceivers&gt;
+            &lt;messageReceiver mep="http://www.w3.org/ns/wsdl/in-only"
+            class="info.edek.tpr.sample.service.triggerAction.TriggerActionSampleServiceMessageReceiverInOnly"/&gt;
+        &lt;/messageReceivers&gt;
+        &lt;parameter name="ServiceClass"&gt;info.edek.tpr.sample.service.triggerAction.TriggerActionSampleServiceSkeletonImpl&lt;/parameter&gt;
+        &lt;parameter name="useOriginalwsdl"&gt;false&lt;/parameter&gt;
+        &lt;parameter name="modifyUserWSDLPortAddress"&gt;true&lt;/parameter&gt;
+        &lt;operation name="TriggerAction"
+                      mep="http://www.w3.org/ns/wsdl/in-only"
+                      namespace="http://edek.info/tpr/TriggerActionSampleService/"&gt;
+            &lt;actionMapping&gt;http://edek.info/tpr/TriggerActionSampleService/TriggerAction&lt;/actionMapping&gt;
+        &lt;/operation&gt;
+    &lt;/service&gt;
+&lt;/serviceGroup&gt;
+</pre>
+
+<p>Mamy ju¿ implementacjê, zatem czas j¹ przetestowaæ. Wygenerujmy
+zatem archiwum Axis2 – oczywiœcie za pomoc¹ build.xml, by nastêpnie
+wdro¿yæ je za pomoc¹ panelu administracyjnego axis2.war. Zanim
+przejdziemy do budowy aplikacji klienckiej upewnijmy siê jeszcze, ze
+nasza us³uga zosta³a pomyœlnie uruchomiona, tak jak robiliœmy to
+wczeœniej – czyli podgl¹daj¹c WSDL us³ugi.</p>
+
+<p>Funkcjonalnoœæ aplikacji klienckiej jest tym razem prostsza ni¿
+dotychczas – nie jest ona w stanie skonsumowaæ efektu wywo³ania, bowiem
+interfejs proxy jej tego nie umo¿liwia – metoda przekazuj¹ca zlecenie
+wykonania operacji przez us³ugê równie¿ nie zwraca ¿adnego wyniku.
+Poni¿ej przedstawiamy kod przyk³adowej aplikacji klienckiej.</p>
+
+<pre>
+package info.edek.tpr.sample.client.main;
+
+import info.edek.tpr.sample.client.triggerAction.TriggerActionSampleServiceStub;
+import info.edek.tpr.sample.client.triggerAction.TriggerActionSampleServiceStub.TriggerActionRequest;
+import info.edek.tpr.sample.client.util.Service;
+import info.edek.tpr.sample.client.util.Utility;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SpringLayout;
+
+import org.apache.axis2.AxisFault;
+
+public class MainTriggerActionGui extends JFrame implements ActionListener {
+
+	private static final long serialVersionUID = 465320630720463494L;
+
+	private TriggerActionSampleServiceStub triggerActionSampleServiceStub;
+
+	private JButton btnTriggerAction;
+
+	private MainTriggerActionGui() {
+		try {
+			this.triggerActionSampleServiceStub = getTriggerActionSampleServiceStub();
+			this.btnTriggerAction = new JButton("TriggerAction");
+			this.btnTriggerAction.addActionListener(this);
+			Container content = this.getContentPane();
+			SpringLayout layout = new SpringLayout();
+			content.setLayout(layout);
+			content.add(this.btnTriggerAction);
+			final int DEFAULT_PADDING = 5;
+			final int DEFAULT_WIDTH = 300;
+			final int DEFAULT_HEIGHT = 200;
+			layout.putConstraint(SpringLayout.WEST, this.btnTriggerAction,
+					DEFAULT_PADDING, SpringLayout.WEST, content);
+			layout.putConstraint(SpringLayout.NORTH, this.btnTriggerAction,
+					DEFAULT_PADDING, SpringLayout.NORTH, content);
+			layout.putConstraint(SpringLayout.SOUTH, this.btnTriggerAction,
+					-DEFAULT_PADDING, SpringLayout.SOUTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.btnTriggerAction,
+					-DEFAULT_PADDING, SpringLayout.EAST, content);
+			this.pack();
+			this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+			this.setVisible(true);
+		} catch (AxisFault ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	private static TriggerActionRequest getTriggerActionRequest() {
+		TriggerActionRequest request = new TriggerActionRequest();
+		request.setIn(Utility.getMessage());
+		return request;
+	}
+
+	private static TriggerActionSampleServiceStub getTriggerActionSampleServiceStub()
+			throws AxisFault {
+		return new TriggerActionSampleServiceStub(
+				Service.TriggerActionSampleService.getServiceUri());
+	}
+
+	private void showMessageBox(Throwable ex) {
+		JOptionPane.showMessageDialog(this, ex);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		try {
+			TriggerActionRequest request = getTriggerActionRequest();
+			this.triggerActionSampleServiceStub.triggerAction(request);
+		} catch (Throwable ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	public static void main(String... args) {
+		new MainTriggerActionGui();
+	}
+}
+</pre>
+
+<hr />
+<a name="WS-03-Bardziej-Zlozone-Scenariusze-Komunikacji.3"></a><h2>Schemat Robust Trigger Action</h2>
+
+<p>Przedstawiona w poprzednim punkcie implementacja wyzwalacza akcji
+nie by³a niestety pozbawiona wad. Najwa¿niejsz¹ bol¹czk¹ by³ ca³kowity
+brak informacji o b³êdnym wykonaniu akcji zleconej przez klienta. Z tego
+wzglêdu specyfikacja WSDL 2.0 wprowadzi³a schemat komunikacji
+umo¿liwiaj¹cy przekazywanie b³êdów nawet w przypadku komunikacji typu
+In-Out. Poni¿ej przedstawiamy przyk³adowy opis takiej us³ugi zapisany w
+WSDL 2.0. Warto zwróciæ uwagê na wartoœæ atrybutu pattern w elemencie
+operation – czyli identyfikator wzorca komunikacji. W tym przypadku jest
+to standardowy wzorzec zdefiniowany w dokumencie [<a href="#references">3</a>].</p>
+
+<pre>
+&lt;description xmlns="http://www.w3.org/ns/wsdl"
+	targetNamespace="http://edek.info/tpr/RobustTriggerActionSampleService/"
+	xmlns:wsoap="http://www.w3.org/ns/wsdl/soap" xmlns:tns="http://edek.info/tpr/RobustTriggerActionSampleService/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tpr="http://edek.info/tpr/RobustTriggerActionSampleService/"
+	xmlns:wsdlx="http://www.w3.org/ns/wsdl-extensions"&gt;
+	&lt;types&gt;
+		&lt;xsd:schema targetNamespace="http://edek.info/tpr/RobustTriggerActionSampleService/"&gt;
+			&lt;xsd:element name="RobustTriggerActionRequest"&gt;
+				&lt;xsd:complexType&gt;
+					&lt;xsd:sequence&gt;
+						&lt;xsd:element name="in" type="xsd:string" /&gt;
+					&lt;/xsd:sequence&gt;
+				&lt;/xsd:complexType&gt;
+			&lt;/xsd:element&gt;
+		&lt;/xsd:schema&gt;
+	&lt;/types&gt;
+	&lt;interface name="RobustTriggerActionSampleService"&gt;
+		&lt;operation name="RobustTriggerAction" pattern="http://www.w3.org/ns/wsdl/robust-in-only"
+			wsdlx:safe="true"&gt;
+			&lt;input messageLabel="In" element="tns:RobustTriggerActionRequest" /&gt;
+		&lt;/operation&gt;
+	&lt;/interface&gt;
+	&lt;binding name="RobustTriggerActionSampleService" interface="tns:RobustTriggerActionSampleService"
+		type="http://www.w3.org/ns/wsdl/soap" wsoap:version="1.1"
+		wsoap:protocol="http://www.w3.org/2006/01/soap11/bindings/HTTP"&gt;
+		&lt;operation ref="tns:RobustTriggerAction"
+			wsoap:action="http://edek.info/tpr/RobustTriggerActionSampleService/RobustTriggerAction" /&gt;
+	&lt;/binding&gt;
+	&lt;service name="RobustTriggerActionSampleService" interface="tns:RobustTriggerActionSampleService"&gt;
+		&lt;endpoint name="RobustTriggerActionSampleServiceSOAP"
+			binding="tns:RobustTriggerActionSampleService" address="http://edek.info/"&gt;
+		&lt;/endpoint&gt;
+	&lt;/service&gt;
+&lt;/description&gt;
+</pre>
+
+<p>Po wygenerowaniu szkieletu i proxy mo¿emy przyst¹piæ do
+implementacji. Tradycyjnie przyjrzyjmy siê zatem przyk³adowej
+implementacji czêœci serwerowej.</p>
+
+<pre>
+package info.edek.tpr.sample.service.robustTriggerAction;
+
+public class RobustTriggerActionSampleServiceSkeletonImpl implements
+		RobustTriggerActionSampleServiceSkeletonInterface {
+
+	public void robustTriggerAction(RobustTriggerActionRequest request)
+			throws RobustTriggerActionException {
+		throw new RobustTriggerActionException("REQUEST PROCESSING FAILED: "
+				+ request.getIn());
+	}
+}
+</pre>
+
+<p>Jeœli pomyœlnie wygenerowaliœmy archiwum aar, wdro¿yliœmy nasz¹
+us³ugê, a ponownie j¹ przetestowaliœmy mo¿emy przyst¹piæ do tworzenia
+czêœci klienckiej, która mog³aby wygl¹daæ jak poni¿ej.</p>
+
+<pre>
+package info.edek.tpr.sample.client.main;
+
+import info.edek.tpr.sample.client.robustTriggerAction.RobustTriggerActionSampleServiceStub;
+import info.edek.tpr.sample.client.robustTriggerAction.RobustTriggerActionSampleServiceStub.RobustTriggerActionRequest;
+import info.edek.tpr.sample.client.util.Service;
+import info.edek.tpr.sample.client.util.Utility;
+
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SpringLayout;
+
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.client.ServiceClient;
+
+public class MainRobustTriggerActionGui extends JFrame implements
+		ActionListener {
+
+	private static final long serialVersionUID = 465320630720463494L;
+
+	private RobustTriggerActionSampleServiceStub triggerActionSampleServiceStub;
+
+	private ServiceClient serviceClient;
+
+	private JButton btnTriggerAction;
+
+	private MainRobustTriggerActionGui() {
+		try {
+			this.triggerActionSampleServiceStub = getRobustTriggerActionSampleServiceStub();
+			this.serviceClient = this.triggerActionSampleServiceStub
+					._getServiceClient();
+			this.btnTriggerAction = new JButton("RobustTriggerAction");
+			this.btnTriggerAction.addActionListener(this);
+			Container content = this.getContentPane();
+			SpringLayout layout = new SpringLayout();
+			content.setLayout(layout);
+			content.add(this.btnTriggerAction);
+			final int DEFAULT_PADDING = 5;
+			final int DEFAULT_WIDTH = 300;
+			final int DEFAULT_HEIGHT = 200;
+			layout.putConstraint(SpringLayout.WEST, this.btnTriggerAction,
+					DEFAULT_PADDING, SpringLayout.WEST, content);
+			layout.putConstraint(SpringLayout.NORTH, this.btnTriggerAction,
+					DEFAULT_PADDING, SpringLayout.NORTH, content);
+			layout.putConstraint(SpringLayout.SOUTH, this.btnTriggerAction,
+					-DEFAULT_PADDING, SpringLayout.SOUTH, content);
+			layout.putConstraint(SpringLayout.EAST, this.btnTriggerAction,
+					-DEFAULT_PADDING, SpringLayout.EAST, content);
+			this.pack();
+			this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+			this.setVisible(true);
+		} catch (AxisFault ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	private static RobustTriggerActionRequest getRobustTriggerActionRequest() {
+		RobustTriggerActionRequest request = new RobustTriggerActionRequest();
+		request.setIn(Utility.getMessage());
+		return request;
+	}
+
+	private static RobustTriggerActionSampleServiceStub getRobustTriggerActionSampleServiceStub()
+			throws AxisFault {
+		return new RobustTriggerActionSampleServiceStub(
+				Service.RobustTriggerActionSampleService.getServiceUri());
+	}
+
+	private void showMessageBox(Throwable ex) {
+		JOptionPane.showMessageDialog(this, ex);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		try {
+			RobustTriggerActionRequest request = getRobustTriggerActionRequest();
+			this.triggerActionSampleServiceStub.robustTriggerAction(request);
+		} catch (Throwable ex) {
+			this.showMessageBox(ex);
+		}
+	}
+
+	public static void main(String... args) {
+		new MainRobustTriggerActionGui();
+	}
+}
+</pre>
+
+<hr />
+<a name="WS-03-Bardziej-Zlozone-Scenariusze-Komunikacji.4"></a><h2>WS-Addressing – adresacja niezale¿na od transportu</h2>
+
+<p>Web Services Interoperability Organization (WS-I) to konsorcjum
+powo³ane przez przedstawicieli przemys³u, któremu postawiono za cel
+wypracowywanie najlepszych praktyk i wytycznych dotycz¹cych w³aœciwego i
+spójnego wykorzystania ró¿nych standardów, które ³¹cznie sk³adaj¹ siê na
+technologiê WS. Efekty swojej pracy WS-I udostêpnia w postaci tzw.
+profili interoperacyjnoœci, z których ka¿dy jest poœwiêcony w³aœciwemu
+u¿yciu ró¿nych grup specyfikacji. Najwa¿niejszym profilem publikowanym
+przez WS-I jest tzw. profil podstawowy – WS-I Basic Profile dotycz¹cy
+u¿ycia najwa¿niejszych specyfikacji WS – czyli przede wszystkim SOAP i
+WSDL. Jednym z najwa¿niejszych rozszerzeñ wprowadzonych w najnowszej
+wersji tego profilu – czyli 2.0 – by³o dokooptowanie do specyfikacji
+podstawowych WS standardu WS-Addressing [<a href="#references">4</a>].</p>
+
+<p>Co zatem jest przedmiotem WS-Addressing, skoro dokument ten sta³
+siê czêœci¹ „rdzenia” technologii WS? Mo¿na œmia³o stwierdziæ, ¿e
+specyfikacja ta stanowi pewien prze³om w myœleniu o roli WS w budowie
+rozwi¹zañ rozproszonych. WS-Addressing wprowadza bowiem do œwiata WS
+dwie podstawowe konstrukcje, które uniezale¿niaj¹ t¹ technologiê od
+mechanizmów transportu:</p>
+
+<ul>
+	<li>referencjê punktu koñcowego (endpoint reference – EPR) – czyli
+	niezale¿n¹ od u¿ywanego protoko³u transportu adresacjê uczestników
+	komunikacji, których w specyfikacjach WS okreœla siê jako punkty
+	koñcowe;</li>
+	<li>bloki nag³ówka identyfikuj¹ce strony uczestnicz¹ce w
+	komunikacji, ale tak¿e poszczególne komunikaty, dziêki którym EPR mog¹
+	byæ stosowane równie¿ w odniesieniu do pojedynczych wiadomoœci.</li>
+</ul>
+
+<p>By lepiej zrozumieæ zasadê dzia³ania WS-Addressing, przyjrzyjmy
+siê poni¿szemu przyk³adowi zaczerpniêtego z dokumentu [<a
+	href="#references">3</a>].</p>
+
+<pre>
+(001) &lt;S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope"
+xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"&gt;
+(002) &lt;S:Header&gt;
+(003) &lt;wsa:MessageID&gt;
+(004)     uuid:6B29FC40-CA47-1067-B31D-00DD010662DA
+(005) &lt;/wsa:MessageID&gt;
+(006) &lt;wsa:ReplyTo&gt;
+(007) &lt;wsa:Address&gt;http://business456.example/client1&lt;/wsa:Address&gt;
+(008) &lt;/wsa:ReplyTo&gt;
+(009) &lt;wsa:To&gt;http://fabrikam123.example/Purchasing&lt;/wsa:To&gt;
+(010) &lt;wsa:Action&gt;http://fabrikam123.example/SubmitPO&lt;/wsa:Action&gt;
+(011) &lt;/S:Header&gt;
+(012) &lt;S:Body&gt;
+(013) ...
+(014) &lt;/S:Body&gt;
+(015) &lt;/S:Envelope&gt;
+</pre>
+
+<p>Zawartoœæ linii (001)-(015) to przyk³adowa koperta(envelope) –
+czyli komunikat – SOAP. Linie (002)-(011) to przyk³adowy nag³ówek
+rozszerzaj¹cy semantykê cia³a – czyli w³aœciwego wywo³ania SOAP. Linie
+od (003) do (010) to przyk³adowe bloki informacyjne nag³ówka
+(information header blocks). Linie (003)-(005) to identyfikator
+komunikatu, (006)-(008) definiuj¹ adres, pod który powinny byæ kierowane
+odpowiedzi na niniejszy komunikat, a (009) zawiera URI koñcowego
+odbiorcy. Nieco d³u¿szego komentarza wymaga linia (010), która okreœla
+akcjê (action) akcjê skojarzon¹ z komunikatem – czyli innymi s³owy jego
+semantykê, tj. unikalny identyfikator. WS-Addressing przewiduje 3 ró¿ne
+sposoby definicji akcji w opisie WSDL.</p>
+
+<p>Pierwszy z nich to jawne u¿ycie klauzuli Action zdefiniowanej w
+schemacie WS-Addressing umieszczonej w specyfikacji komunikatu
+wejœciowego, b¹dŸ wyjœciowego.</p>
+
+<pre>
+&lt;definitions targetNamespace="http://example.com/stockquote" ...&gt;
+   ...
+   &lt;portType name="StockQuotePortType"&gt;
+      &lt;operation name="GetLastTradePrice"&gt;
+         &lt;input message="tns:GetTradePricesInput"
+                   wsa:Action="http://example.com/GetQuote"/&gt;
+         &lt;output message="tns:GetTradePricesOutput"
+                   wsa:Action="http://example.com/Quote"/&gt;
+      &lt;/operation&gt;
+   &lt;/portType&gt;
+   ...
+&lt;/definitions&gt;
+</pre>
+
+<p>Kolejny sposób to domyœlne okreœlenie akcji na podstawie
+zdefiniowanej nazwy komunikatu.</p>
+
+<pre>
+&lt;definitions targetNamespace="http://example.com/stockquote" ...&gt;
+   ...
+   &lt;portType name="StockQuotePortType"&gt;
+      &lt;operation name="GetLastTradePrice"&gt;
+         &lt;input message="tns:GetTradePricesInput" name="GetQuote"/&gt;
+         &lt;output message="tns:GetTradePricesOutput" name="Quote"/&gt;
+      &lt;/operation&gt;
+   &lt;/portType&gt;
+   ...
+&lt;/definitions&gt;
+</pre>
+
+<p>Ostatnim sposobem jest definicja akcji w oparciu o typ
+komunikatu.</p>
+
+<pre>
+&lt;definitions targetNamespace="http://example.com/stockquote" ...&gt;
+   ...
+   &lt;portType name="StockQuotePortType"&gt;
+      &lt;operation name="GetLastTradePrice"&gt;
+         &lt;input message="tns:GetTradePricesInput"/&gt;
+         &lt;output message="tns:GetTradePricesOutput"/&gt;
+      &lt;/operation&gt;
+   &lt;/portType&gt;
+   ...
+&lt;/definitions&gt;
+</pre>
+
+<hr />
+<a name="WS-03-Bardziej-Zlozone-Scenariusze-Komunikacji.5"></a><h2>Schemat Publisher-Subscriber</h2>
+
+<p>Przeanalizujmy zatem scenariusz wykorzystuj¹cy mechanizmy
+wprowadzone przez specyfikacjê WS-Addressing wzorowanemu na schemacie
+komunikacji opisanym w artykule [<a href="#references">2</a>]. Za³ó¿my,
+¿e architektura naszego rozwi¹zania obejmuje trzy ró¿ne wêz³y:</p>
+
+<ul>
+	<li>us³ugê Publisher publikuj¹c¹ zdarzenia;</li>
+	<li>us³ugê Subscriber konsumuj¹c¹ zdarzenia wygenerowane przez
+	us³ugê Publisher;</li>
+	<li>aplikacjê klienck¹ umieszczaj¹c¹ us³ugê Subscriber w rejestrze
+	konsumentów zdarzeñ generowanych przez us³ugê Publisher.</li>
+</ul>
+
+<p>W pierwszej kolejnoœci spróbujmy zdefiniowaæ i zaimplementowaæ
+interfejs us³ugi Subscriber. Zgodnie z powy¿szymi za³o¿eniami ca³kowicie
+wystarczy, jeœli bêdzie to us³uga powielaj¹ca schemat komunikacji
+In-Only podobna do omawianej powy¿ej. WSDL us³ugi móg³by wygl¹daæ
+nastêpuj¹co.</p>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
+&lt;wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:tpr="http://edek.info/tpr/ConsumeEventSampleService/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	targetNamespace="http://edek.info/tpr/ConsumeEventSampleService/"
+	xmlns:axis="http://ws.apache.org/axis2/xsd"&gt;
+
+	&lt;wsdl:types&gt;
+		&lt;xs:schema attributeFormDefault="qualified"
+			elementFormDefault="qualified" targetNamespace="http://edek.info/tpr/ConsumeEventSampleService/"&gt;
+			&lt;xs:element name="NotifyEventRequest"&gt;
+				&lt;xs:complexType&gt;
+					&lt;xs:sequence&gt;
+						&lt;xs:element minOccurs="0" name="in" nillable="true"
+							type="xs:string" /&gt;
+					&lt;/xs:sequence&gt;
+				&lt;/xs:complexType&gt;
+			&lt;/xs:element&gt;
+		&lt;/xs:schema&gt;
+	&lt;/wsdl:types&gt;
+
+	&lt;wsdl:message name="NotifyEventRequest"&gt;
+		&lt;wsdl:part name="parameters" element="tpr:NotifyEventRequest" /&gt;
+	&lt;/wsdl:message&gt;
+
+	&lt;wsdl:portType name="ConsumeEventSampleService"&gt;
+		&lt;wsdl:operation name="NotifyEvent"&gt;
+			&lt;wsdl:input message="tpr:NotifyEventRequest" wsaw:Action="urn:NotifyEvent" /&gt;
+		&lt;/wsdl:operation&gt;
+	&lt;/wsdl:portType&gt;
+
+	&lt;wsdl:binding name="ConsumeEventSampleService" type="tpr:ConsumeEventSampleService"&gt;
+		&lt;soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" /&gt;
+		&lt;wsdl:operation name="NotifyEvent"&gt;
+			&lt;soap:operation soapAction="urn:NotifyEvent" style="document" /&gt;
+			&lt;wsdl:input&gt;
+				&lt;soap:body use="literal" /&gt;
+			&lt;/wsdl:input&gt;
+		&lt;/wsdl:operation&gt;
+	&lt;/wsdl:binding&gt;
+
+	&lt;wsdl:service name="ConsumeEventSampleService"&gt;
+		&lt;wsdl:port binding="tpr:ConsumeEventSampleService" name="ns:ConsumeEventSampleService"&gt;
+			&lt;soap:address location="http://edek.info/" /&gt;
+		&lt;/wsdl:port&gt;
+	&lt;/wsdl:service&gt;
+&lt;/wsdl:definitions&gt;
+</pre>
+
+<p>Poni¿ej przedstawiamy te¿ przyk³adow¹ implementacjê odpowiadaj¹c¹
+powy¿szemu interfejsowi.</p>
+
+<pre>
+package info.edek.tpr.sample.service.consumeEvent;
+
+import info.edek.tpr.sample.service.util.Utility;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.impl.Log4JLogger;
+
+public class ConsumeEventSampleServiceSkeletonImpl implements
+		ConsumeEventSampleServiceSkeletonInterface {
+
+	private static final Log logger;
+
+	static {
+		logger = new Log4JLogger(Utility
+				.getLoggerName(ConsumeEventSampleServiceSkeletonImpl.class));
+	}
+
+	public void notifyEvent(NotifyEventRequest request) {
+		String message = request.getIn();
+		logger.info(Utility.getRequestReceivedLog(
+				ConsumeEventSampleServiceSkeletonImpl.class, message));
+	}
+}
+</pre>
+
+<p>Us³uga publikuj¹ca zdarzenia posiada nieco bardziej z³o¿on¹
+funkcjonalnoœæ ni¿ omówiona wy¿ej us³uga Subscriber. Publisher poza
+prost¹ operacj¹ umo¿liwiaj¹c¹ rejestracjê konsumentów, musi przede
+wszystkim okresowo generowaæ zdarzenia – czyli innymi s³owy wywo³ywaæ
+odpowiednie metody us³ug, które wczeœniej zosta³y umieszczone na liœcie
+konsumentów. Interfejs us³ugi Publisher nie ró¿ni siê niczym istotnym od
+innych przyk³adów powielaj¹cych schemat In-Only. Z tego wzglêdu nie
+bêdziemy go tu przytaczaæ. Ten, jak i pozosta³e przyk³ady stanowi¹ czêœæ
+materia³ów umo¿liwiaj¹cych praktyczne przeæwiczenie zagadnieñ omówionych
+w ramach cyklu wyk³adów poœwiêconych WS.</p>
+
+<p>W zamian skupmy siê na funkcjonalnoœci odpowiadaj¹cej za
+generowanie zdarzeñ. Ró¿ni siê ona bowiem od ogólnej zasady dzia³ania WS
+– czyli reakcji na ¿¹danie ze strony klienta. Musimy bowiem zarz¹dzaæ
+cyklem ¿ycia serwisu, który jako archiwum aar jest wdra¿ane na instancjê
+Axis2. Nasz mechanizm obs³ugi cyklu ¿ycia bêdzie oparty o w¹tek, który
+okresowo bêdzie wywo³ywa³ odpowiedni¹ metodê us³ugi zarejestrowanej jako
+konsument. Poni¿ej przedstawiamy przyk³adow¹ implementacjê tej
+funkcjonalnoœci. Dla wyjaœnienia nale¿y dodaæ, ¿e metoda
+createMessagePayload jest odpowiedzialna za tworzenie komunikatu
+wysy³anego do konsumenta za pomoc¹ API Apache Axiom – implementacjê XML
+Infoset zrealizowan¹ z myœl¹ o Axis2.</p>
+
+<pre>
+package info.edek.tpr.sample.service.publishEvent.lifeCycle;
+
+import info.edek.tpr.sample.service.publishEvent.PublishEventSampleServiceCommons;
+import info.edek.tpr.sample.service.util.Service;
+import info.edek.tpr.sample.service.util.Utility;
+
+import java.util.List;
+import java.util.Random;
+
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.description.AxisService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.impl.Log4JLogger;
+
+public class PublishEventSampleServiceThread extends Thread {
+
+	private static final long SLEEP_TIME_MILLIS = 10000;
+
+	private static final Log logger;
+
+	static {
+		logger = new Log4JLogger(Utility
+				.getLoggerName(PublishEventSampleServiceThread.class));
+	}
+
+	private final AxisService service;
+
+	private final ServiceClient serviceClient;
+
+	private final Random random;
+
+	public PublishEventSampleServiceThread(AxisService service)
+			throws AxisFault {
+		this.service = service;
+		this.serviceClient = this.getServiceClient();
+		this.random = new Random();
+	}
+
+	private ServiceClient getServiceClient() throws AxisFault {
+		ServiceClient serviceClient = new ServiceClient();
+		serviceClient.getOptions().setAction(
+				PublishEventSampleServiceCommons.NOTIFY_EVENT_ACTION_ID);
+		return serviceClient;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void run() {
+		logger.info(PublishEventSampleServiceThread.class + " IS RUNNING");
+		while (true) {
+			List&lt;String&gt; consumerList = (List&lt;String&gt;) service
+					.getParameterValue(PublishEventSampleServiceCommons.CONSUMER_LIST);
+			for (String consumer : consumerList) {
+				notifyClient(consumer);
+				try {
+					Thread.sleep(SLEEP_TIME_MILLIS);
+				} catch (InterruptedException ex) {
+					logger.error("Exception occurred while thread sleep", ex);
+				}
+			}
+		}
+	}
+
+	private void notifyClient(String endPointReference) {
+		try {
+			this.serviceClient.getOptions().setTo(
+					new EndpointReference(endPointReference));
+			this.serviceClient.sendRobust(createMessagePayLoad());
+		} catch (AxisFault axisFault) {
+		}
+	}
+
+	private OMElement createMessagePayLoad() {
+		long randomValue = this.random.nextLong();
+		OMFactory factory = OMAbstractFactory.getOMFactory();
+		OMNamespace namespace = factory.createOMNamespace(
+				Service.ConsumeEventSampleService.getNamespaceUri(),
+				Service.NAMESPACE_ALIAS);
+		OMElement method = factory.createOMElement(
+				PublishEventSampleServiceCommons.NOTIFY_EVENT_REQUEST,
+				namespace);
+		OMElement value = factory.createOMElement(Service.INPUT_PARAMETER,
+				namespace);
+		value.setText(Long.toString(randomValue));
+		method.addChild(value);
+		return method;
+	}
+}
+</pre>
+
+<p>Jak mo¿emy przypuszczaæ sama implementacja w¹tku generuj¹cego
+zdarzenia nie wystarczy – musimy bowiem poinformowaæ o niej
+infrastrukturê Axis2. W tym celu pos³u¿ymy siê w³asn¹ implementacj¹
+interfejsu org.apache.axis2.engine.ServiceLifeCycle, któr¹ podamy w
+deskryptorze wdro¿eniowym naszej us³ugi services.xml stanowi¹cego
+integraln¹ czêœæ archiwum aar. Kontener Axis2 uruchomi nasz w¹tek
+generuj¹cy zdarzenia w chwili wdro¿enia naszej us³ugi – b¹dŸ ka¿dorazowo
+przy starcie serwletu Axis2.</p>
+
+<pre>
+package info.edek.tpr.sample.service.publishEvent.lifeCycle;
+
+import info.edek.tpr.sample.service.publishEvent.PublishEventSampleServiceCommons;
+import info.edek.tpr.sample.service.util.Utility;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.Parameter;
+import org.apache.axis2.engine.ServiceLifeCycle;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.impl.Log4JLogger;
+
+public class PublishEventSampleServiceLifeCycle implements ServiceLifeCycle {
+
+	private static final Log logger;
+
+	static {
+		logger = new Log4JLogger(Utility
+				.getLoggerName(PublishEventSampleServiceLifeCycle.class));
+	}
+
+	private PublishEventSampleServiceThread serviceThread;
+
+	public void startUp(ConfigurationContext config, AxisService service) {
+		try {
+			this.createConsumerListParameter(service);
+			this.serviceThread = new PublishEventSampleServiceThread(service);
+			this.serviceThread.start();
+			logger.info(PublishEventSampleServiceLifeCycle.class
+					+ " HAS BEEN STARTED SUCCESSFULLY");
+		} catch (AxisFault ex) {
+			logger.error("Exception occurred while starting up "
+					+ PublishEventSampleServiceLifeCycle.class, ex);
+		}
+	}
+
+	private void createConsumerListParameter(AxisService service) {
+		List&lt;String&gt; consumerList = new ArrayList&lt;String&gt;();
+		Parameter userParameter = new Parameter();
+		userParameter.setName(PublishEventSampleServiceCommons.CONSUMER_LIST);
+		userParameter.setValue(consumerList);
+		try {
+			service.addParameter(userParameter);
+		} catch (AxisFault ex) {
+			logger.error("Exception occurred while creating "
+					+ PublishEventSampleServiceCommons.CONSUMER_LIST
+					+ " service parameter", ex);
+		}
+	}
+
+	public void shutDown(ConfigurationContext configctx, AxisService service) {
+		logger.info(PublishEventSampleServiceLifeCycle.class
+				+ " HAS BEEN SHUT DOWN SUCCESSFULLY");
+	}
+}
+</pre>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!-- This file was auto-generated from WSDL --&gt;
+&lt;!--
+		by the Apache Axis2 version: 1.5.1 Built on : Oct 19, 2009 (10:59:00
+		EDT)
+	--&gt;
+&lt;serviceGroup&gt;
+    &lt;service name="PublishEventSampleService"
+                class="info.edek.tpr.sample.service.publishEvent.lifeCycle.PublishEventSampleServiceLifeCycle"
+                scope="application"&gt;
+        &lt;messageReceivers&gt;
+            &lt;messageReceiver mep="http://www.w3.org/ns/wsdl/in-only"
+                                class="info.edek.tpr.sample.service.publishEvent.PublishEventSampleServiceMessageReceiverInOnly"/&gt;
+        &lt;/messageReceivers&gt;
+        &lt;parameter name="ServiceClass"&gt;
+           info.edek.tpr.sample.service.publishEvent.PublishEventSampleServiceSkeletonImpl
+		&lt;/parameter&gt;
+        &lt;parameter name="useOriginalwsdl"&gt;false&lt;/parameter&gt;
+        &lt;parameter name="modifyUserWSDLPortAddress"&gt;true&lt;/parameter&gt;
+        &lt;operation name="SubscribeEvent" mep="http://www.w3.org/ns/wsdl/in-only"
+                      namespace="http://edek.info/tpr/PublishEventSampleService/"&gt;
+            &lt;actionMapping&gt;urn:SubscribeEvent&lt;/actionMapping&gt;
+        &lt;/operation&gt;
+    &lt;/service&gt;
+&lt;/serviceGroup&gt;
+</pre>
+
+<hr />
+<a name="WS-03-Bardziej-Zlozone-Scenariusze-Komunikacji.6"></a><h2>Æwiczenia</h2>
+
+<p>Zadania praktyczne maj¹ce na celu utrwalenie wiedzy zdobytej w
+trakcie lektury wyk³adu zosta³y omówione w jego treœci. Do ca³ego cyklu
+wyk³adów poœwiêconego technologii WS jest do³¹czone archiwum <a
+	href="../WS-01-Wprowadzenie/samples/samples.zip">samples.zip</a>
+zawieraj¹ce zestaw projektów Eclipse IDE umo¿liwiaj¹ce przeæwiczenie
+omówionych zagadnieñ.</p>
+
+<p>Szczegó³owe wymagania na œrodowisko rozwoju oprogramowania
+umo¿liwiaj¹ce uruchomienie przyk³adów towarzysz¹cych wyk³adowi zosta³y
+przedstawione <a
+	href="../WS-01-Wprowadzenie/WS-01-Wprowadzenie.html#development-environment">tutaj</a>
+</p>
+
+<p>Sposób importu projektów zawieraj¹cymi przyk³ady do æwiczeñ
+zosta³ zarejestrowany w postaci <a
+	href="../WS-01-Wprowadzenie/import-samples.html">screencast</a>.</p>
+
+<hr />
+<a name="WS-03-Bardziej-Zlozone-Scenariusze-Komunikacji.7"></a><h2><a name="references">Bibliografia</a></h2>
+
+<ol>
+	<li><a
+		href="http://www.w3.org/TR/2007/REC-wsdl20-adjuncts-20070626/#fault-trigger">http://www.w3.org/TR/2007/REC-wsdl20-adjuncts-20070626/#fault-trigger</a></li>
+	<li><a href="http://wso2.org/library/406">http://wso2.org/library/406</a></li>
+	<li><a href="http://www.w3.org/TR/wsdl20-bindings/">http://www.w3.org/TR/wsdl20-bindings/</a></li>
+	<li><a href="http://www.w3.org/Submission/ws-addressing/">http://www.w3.org/Submission/ws-addressing/</a></li>
+</ol>
+</body>
+</html>

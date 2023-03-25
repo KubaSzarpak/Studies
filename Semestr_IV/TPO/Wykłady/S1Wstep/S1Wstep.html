@@ -1,0 +1,1918 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+		<meta name="author" content="Artur Stanek">
+		<meta name="description" content="Scala - techniki rozproszone">
+		<meta name="copyright" content="(c) autor PJWSTK 2010">
+		<link rel="stylesheet" type="text/css" href="../STYLE/common.css">
+		
+		<title>Scala - techniki rozproszone - WYKŁAD 1</title>
+		
+	</head>
+
+	<body>
+
+		<div align="center">
+			<a name="S1Wstep"></a><h1>Scala - techniki rozproszone - WYKŁAD 1</h1>
+		</div>
+		
+		<hr><br>
+		
+		<i>
+			Ciąg wykładów dotyczący technik rozproszonych realizowanych za pomocą Scali poprzedzony zdobyciem wiedzy o tym języku programowania. 
+			
+			<br><br>
+			
+			Wykład 1 : podstawowe informacje o języku
+		</i>
+		
+		<br><hr>
+		
+		<a name="S1Wstep.1"></a><h2>1. Wstęp</h2>
+		
+		<a name="S1Wstep.2"></a><h2>1.1. Wykłady</h2>
+		
+		<font class="chapter">
+			
+			Niniejsze wykłady przeznaczone są dla osób znających język programowania Java. Częste odniesienia i porównania do Javy pozwalają szybciej zrozumieć Scale, która wg. autora tych wykładów, może pretendować do miana następcy Javy.
+			
+			<br><br>
+			
+			Z uwagi na to, że wciąż jest dosyć mało książek na temat Scali (w tym nie ma żadnej w języku polskim)  w pierwszych dwóch wykładach opisane zostały podstawy języka, które pozwalają swobodnie rozumieć treść ostatniego wykładu - traktującego o technikach rozproszonych.
+			
+			<br><br>
+			
+			Struktura podziału wykładów wygląda następująco :
+			<br>
+			- <b>wykład 1</b> - wstępne informacje o Scali, niezbyt daleko odbiegające od Javy
+			<br>
+			- <b>wykład 2</b> - zaawansowane świat Scali, techniki niemające odpowiednika w Javie
+			<br>
+			- <b>wykład 3</b> - techniki rozproszone
+			<br>
+			
+			<br>
+			
+			W treści wykładów pojęcie metody i funkcji jest stosowane zamiennie i oznacza dokładnie to samo. Metoda nie zwracająca nic (w Javie <font class="code">void</font>) w Scali zwraca <font class="code">Unit</font>. Sam autor Scali (Pan Martin Odersky) określa je jako funkcje, zaś bardzo zasłużona i zaawansowana w Scali postać - Pan David Pollak - często nazywa je metodami.
+			
+			<br><br>
+			
+			Poprzez częste podobieństwo kodu Javy i Scali - ten pierwszy zawsze jest oznaczony specjalnym komentarzem <font class="code">//kod Java</font.
+			
+		</font>	
+
+		<br>
+
+		<a name="S1Wstep.3"></a><h2>1.2. Scala</h2>
+		
+		<font class="chapter">
+		
+			www.scala-lang.org
+			
+			<br><br>
+			
+			Scala, z powodu jej twórcy, jest bardzo podobna do Javy. Wiele rzeczy nieporuszonych w tych wykładach można uznać za takie same jak w Javie. Ułatwia to poznawanie tego języka, gdyż można eksperymentować i znaleźć rozwiązanie, jak coś wykonać i zapisać, poprzez analogię do Javy.
+			
+			<br><br>
+			
+			Nazwa języka wywodzi się od skalowalności, a więc możliwości budowania prostego programu, który będzie tak samo dobrze działał z małą ilością klientów (użytkowników) jak i dużą. Jedyne co będzie wymagane z naszej strony to dostarczenie odpowiednich zasobów (jak pamięć, procesory/rdzenie).				
+							
+		</font>
+				
+		<br>
+		
+		<a name="S1Wstep.4"></a><h2>1.2.1. Historia</h2>
+		
+		<font class="chapter">
+		
+			Około roku 2003 Pan Martin Odersky zakończył współpracę z Sun Microsystems, gdzie był odpowiedzialny za prace nad kompilatorem Javy 1.5, a w szczególności wprowadzeniem parametryzowania klas (generics). Mając tak dużą wiedzę o pracy Javy oraz zdolności w postaci pisania kompilatorów postanowił napisać swój własny język zawierający na starcie funkcjonalności (np. domknięcia), na które jeszcze długo przyszłoby czekać w Javie (styczeń 2010 - ciągle czekamy na JDK7, w którym być może znajdą się wspomniane domknięcia). Pan Martin stwierdził, że może powstać nowy język, który będzie się rozwijał znacznie szybciej niż 'olbrzymia Java' (tak naprawdę prace nad Scala rozpoczął około 2001 roku, zaś w 2003 wydano pierwszą dystrybucję). I tak - od wersji do wersji - Scala nabiera rozpędu (17 tysięcy ściągnięć miesięcznie w 2009 roku) i przekonują się co do niej coraz większe światowe firmy (jak np. Twitter, Xerox, Sony, LinkedIn, Siemens, EDFT, Reaktor, Gridgain, Foursquare).
+			
+			<br><br>
+			
+			Ponieważ Twórca języka jest ścisłym umysłem to całość powstaje jako matematyczne wzory definiujące wszystkie operacje i przekształcenia do kodu Java. Na stronach można znaleźć dokumenty SID (Scala Improvement Documents) gdzie są one spisane.
+			
+			<br><br>
+			
+			Nazwa języka wywodzi się od skalowalności, a więc możliwości budowania prostego programu, który będzie tak samo dobrze działał z małą ilością klientów (użytkowników) jak i dużą. Jedyne co będzie wymagane z naszej strony to dostarczenie odpowiednich zasobów (jak pamięć, procesory/rdzenie).				
+							
+		</font>
+				
+		<br>
+		
+		<a name="S1Wstep.5"></a><h2>1.2.2. Informacje ogólne</h2>
+		
+		<font class="chapter">
+		
+			Scala jest językiem o statycznym typowaniu, tak więc wszystkie problemy dotyczące niezgodności typów wyłapywane są podczas kompilacji. Pomimo to patrząc w kod można się nabrać i powiedzieć, iż jest to dynamiczny, skryptowy język. Dzieje się tak, gdyż dzięki rozwiniętemu kompilatorowi wielokrotnie możemy pomijać definiowanie typów zmiennych lub stałych - kompilator zrobi to za nas. Ma to oczywiście swoje zalety (przejrzysty kod), jak i wady (gdy kompilator ustali bardzo dobrze typ - może to nie być typ, którego się spodziewaliśmy).
+			
+			<br><br>
+			
+			Scala jest także językiem obiektowo-funkcyjnym. Na obiektowości nie będziemy się skupiać, gdyż znamy ją z Javy. Dzięki funkcjom/metodom jako typ (np. closures) można do metod przekazywać kawałek luźno napisanego kodu jako argument. Można także przekazywać inne metody. Tracimy tutaj może trochę na czytelności, jednak okazuje się, iż tego kodu jest mniej - a mniej kodu to mniejsze koszty związane z analizowaniem i utrzymaniem. Podwyższony poziom abstrakcji pozwala nam robić rzeczy, które w Javie niedostępne będą jeszcze przez długie lata.
+			
+			<br><br>
+			
+			Kompilując kod napisany w Scali produkowane są w pełni zgodne z JVM pliki <font class="code">.class</font>, tak więc kompatybilność zachowana jest na poziomie byte code. Z programów pisanych w Scali bez problemu można używać całego API i wszystkich innych kodów napisanych w Javie. Znając drobne reguły generacji nazw klas i metod w Scali możemy także używać jej kodów (skompilowanych kodów) z poziomu Javy.
+			
+			<br><br>
+			
+			Ponieważ można uznać, że Scala jest pewnego rodzaju przed-językiem (przed/ponad Javą) to daje nam możliwość kompilowania nie tylko pod Jave ale i pod inne platformy. Obecnie istnieje możliwość kompilowania Scali do .Net jednak jest to ciągle w tyle w porównaniu do platformy JVM.
+						
+		</font>				
+				
+		<br>
+		
+		<a name="S1Wstep.6"></a><h2>1.2.3. IDE (Integrated Development Environment)</h2>
+		
+		<font class="chapter">
+		
+			Pracę w Scali można rozpocząć od ściągnięcia pluginu do najbardziej popularnych IDE czyli do Eclipse oraz NetBeans. Musimy jednak pamiętać, iż Scala nie jest tak dobrze przez nie wspierana jak to znamy w przypadku Javy. Scala jest stosunkowo młoda w odróżnieniu od Javy, dla której zostały opracowane już dziesiątki podpowiedzi i pomocy dla tworzącego projekt programisty. Niektóre z nich traktujemy już jako podstawę dlatego możemy się zdziwić jeśli nie odnajdziemy ich dla Scali.
+			
+			<br><br>
+			
+			Kodując w Scali i pracując w jej projekcie (w IDE) tworzymy pliki <font class="code">.scala</font>. Jeśli jednak zajdzie taka potrzeba to bez większych przeszkód możemy stworzyć w tym samym projekcie pliki <font class="code">.java</font> i napisać je w czystej Javie.
+			
+			<br><br>
+			
+			Podczas prac w IDE (ale i nie tylko) z pewnością możecie Państwo napotkać na bardzo popularny błąd mówiący o tym, że kod nie ma metody <font class="code">main()</font> (od której program mógłby zacząć się wykonywać). Z pewnością jest to bardzo dziwne kiedy właśnie patrzy się na jeszcze co przed chwilą działającą metodę <font class="code">main()</font> - w której w dodatku nic nie zostało zmienione! Otóż warto na wstępie poznać przyczynę tego i uodpornić się na całą, rozpoczynającą się przygodę z tym językiem programowania.
+			<br>
+			W miarę poznawania Scali zauważycie Państwo, jak wiele robi ona operacji na kodzie przygotowując finalny kod Javy. Jest to dobre dla nas - programistów - iż tak wiele rzeczy dzieje się za nas, a my czerpiemy z tego korzyści w postaci przyjemnego, wysokopoziomowego programowania. Jednak tak trudne przekształcenia odbywające się na kodzie w wypadku zaistnienia w nim małego błędu mogą doprowadzić do tego, że kompilator nie może wygenerować nawet metody <font class="code">main()</font> - i stąd ten komunikat o błędzie.
+					
+		</font>	
+				
+		<br>
+		
+		<a name="S1Wstep.7"></a><h2>1.2.4. Słodycze (syntactic sugar)</h2>
+		
+		<font class="chapter">
+		
+			Rozpoczynając przygodę ze Scalą warto zapoznać się z prostymi i miłymi różnicami w porównaniu do Javy.
+			
+			<br><br>
+			
+			<b>1)</b> Otóż w Scali możemy (ale nie musimy!) pominąć :
+			<br>
+			- średniki na końcu każdej linii kodu, jeśli jest ona sama w jednym wierszu (w przypadku wielu linii kodu w jednym wierszu średnik można pominąć tylko na samym końcu)
+			<br>
+			- kropki pomiędzy nazwą obiektu, a nazwą metody wykonywanej na tym obiekcie
+			<br>
+			- wszystkie puste nawiasy półokrągłe oznaczające wywołanie metody nie posiadającej argumentów
+			<br>
+			- nie we wszystkich przypadkach, ale można także pominąć nawiasy półokrągłe kiedy wykonujemy metodę z jednym argumentem
+			
+			<br><br>
+			
+			Jak zostało wyżej napisane, te elementy można ale nie trzeba pomijać. Wszystko zależy od tego do czego jesteśmy przyzwyczajeni oraz od ogólnych ustaleń notacji przyjętej przez zespół, w którym pracujemy.
+			
+			<br><br>
+			
+			Jak to wygląda w praktyce ?
+			
+			<br><br>
+			
+			<font class="code">Thread sleep 20*2000 // pominieta kropka oraz nawiasy ()</font>
+			
+			<br><br>
+			
+			Przykład bardziej zaawansowany, dodanie <font class="code">ActionListener</font> do instancji <font class="code">JButton</font> :
+			
+			<br>
+			
+			<font class="code">
+// kod Java
+jButton.addActionListener(
+    new ActionListener()
+    {
+        @Override
+        public void actionPerformed( ActionEvent e )
+        {
+            ...
+        }
+    }
+);
+			</font>
+			
+			<br>
+			
+			Pomijamy kropki i nawiasy :
+			
+			<br>
+			
+			<font class="code">
+// kod Scala
+jButton addActionListener new ActionListener
+{
+    override def actionPerformed( e : ActionEvent )
+    {
+        ...
+    }
+}
+			</font>
+			
+			<br>
+			
+			Kod wydaje się być przyjemniejszy.
+			
+			<br><br>
+			
+			Możemy iść dalej (tutaj jednak już zadziałają ukryte konwersje - <i>implicit conversions</i>) :
+			
+			<br>
+			
+			<font class="code">
+jButton addActionListener( ( e:ActionEvent ) => ... )
+			</font>
+			
+			<br>
+			
+			<b>2)</b> Pracę ze Scalą umilają także komentarze wieloliniowe (<font class="code">/* ... */</font>), które - w odróżnieniu od Javy - mogą zawierać w środku inne komentarze wieloliniowe :
+			
+			<br>
+
+			<font class="code">					
+/*
+    komentarz zewnetrzny - linia 1
+
+    /*
+        komentarz wewnetrzny - linia 1
+        komentarz wewnetrzny - linia 2
+    */
+
+    komentarz zewnetrzny - linia 2
+*/
+			</font>
+			
+			<br>
+			
+			Komentarze jednoliniowe są realizowane tak samo jak w Javie :
+			
+			<br>
+			
+			<font class="code">
+println( "hej" ) // komentarz jednoliniowy
+			</font>
+			
+			<br><br>
+			
+			<b>3)</b> W jednym pliku <font class="code">.scala</font> może znajdować się wiele klas publicznych. Nie ma żadnego obostrzenia co do ich ilości (jak javowy limit tylko jednej klasy publicznej per plik).
+			
+			<br><br>
+			
+			<b>4)</b> Pliki <font class="code">.scala</font> mogą być logicznie przypisane do różnych paczek (<font class="code">package</font>), jednak niekoniecznie musi się to wiązać z umiejscowieniem pliku w danym katalogu na dysku - tak jak jest to w Javie.
+					
+		</font>	
+								
+		<br>
+		
+		<a name="S1Wstep.8"></a><h2>1.2.5. scala.Predef</h2>
+		
+		<font class="chapter">
+		
+			Wielokrotnie podczas przeglądania przykładów użytych podczas tych wykładów spotkamy na przykład wywołanie metody <font class="code">println()</font>. Skąd ona się bierze, kto ją dostarcza ?
+			<br>
+			Otóż warto wiedzieć, że do każdego pliku <font class="code">.scala</font> mamy automatycznie zaimportowaną całą zawartość pliku <font class="code">scala.Predef</font> (<font class="code">import scala.Predef._</font>). W jego środku znajduje się wiele pomocnych i użytecznych metod, właśnie takich jak <font class="code">println()</font> czy <font class="code">require()</font>.
+				
+		</font>	
+								
+		<br><hr>
+		
+		<a name="S1Wstep.9"></a><h2>2. Importy</h2>
+		
+		<font class="chapter">
+		
+			Importowanie - wskazywanie kompilatorowi gdzie poszukiwać używanych klas, obiektów - zostało rozwinięte w porównaniu do tego co znamy z Javy.
+				
+		</font>	
+				
+		<br>
+		
+		<a name="S1Wstep.10"></a><h2>2.1. Importy domyślne</h2>
+	
+		<font class="chapter">
+		
+			 Oto paczki i obiekty importowane domyślnie do każdeog pliku :
+			
+			<br><br>
+			
+			- paczka <font class="code">java.lang._</font>
+			<br>
+			- paczka <font class="code">scala._</font>
+			<br>
+			- obiekt <font class="code">scala.Predef._</font> zawierający dużo użytecznych metod 'statycznych' (w Scali nie ma kontentu statycznego, w zamian za niego występują singletony zwane obiektami)
+			
+			<br><br>
+			
+			Użyty znaczek podkreślenia '<font class="code">_</font>' ma w Scali specjalne znaczenie i oznacza 'wszystko' albo 'dowolny', w tym przypadku oznacza oczywiście całą zawartość danej paczki.
+			
+			<br><br>
+			
+			W paczce <font class="code">scala._</font> znajdują się podstawowe typy danych jak <font class="code">Byte</font>, <font class="code">Int</font>, <font class="code">Long</font>, ..., użyteczne konstrukcje jak <font class="code">Option</font>, <font class="code">Either</font> lub <font class="code">Tuple</font>. 
+
+		</font>	
+				
+		<br>
+		
+		<a name="S1Wstep.11"></a><h2>2.2. Umiejscawianie</h2>
+
+		<font class="chapter">
+		
+			 Przyjrzyjmy się dostępnym dla nas możliwościom umiejscowienia.
+			 
+		</font>					
+								
+		<br>
+		
+		<a name="S1Wstep.12"></a><h2>2.2.1. W nagłówku pliku</h2>
+		
+		<font class="chapter">
+		
+			Znane z Javy.
+			
+			<br>
+			
+			<font class="code">
+import java.util.Vector
+
+class VectorTest
+{
+    def test
+    {
+        val v = new Vector[ String ]
+        v.add( "a1" )
+        v.add( "a2" )
+
+        println( "rozmiar vektora to " + v.size )
+    }
+}
+		</font>
+
+			<br>
+
+			Zamiast użytej linii <font class="code">import java.util.Vector</font> można napisać <font class="code">import java.util._</font> importując wszystko z package java.util .
+			<br>
+			Naszą uwagę przykuwa oczywiście znaczek '<font class="code">_</font>' oznaczający w tym przypadku 'wszystko' - czyli znaną z Javy '*'. Z powodu możliwości wykorzystania znaczka gwiazdki '*' jako nazwy metody jej rolę znaną z Javy przejmuje podkreślenie '<font class="code">_</font>'.
+
+		</font>									
+										
+		<br>
+		
+		<a name="S1Wstep.13"></a><h2>2.2.2. W klasie</h2>
+		
+		<font class="chapter">
+		
+			<font class="code">
+class VectorTest
+{
+    import java.util.Vector
+
+    def test
+    {
+        val v = new Vector[ String ]
+        v.add( "a1" )
+        v.add( "a2" )
+
+        println( "rozmiar vektora to " + v.size )
+    }
+}
+			</font>	
+						
+			<br>
+			
+			Ponieważ Scala daje nam możliwości umiejscawiania wielu klas publicznych w jednym, sekcja nagłówkowa mogłaby urosnąć do niebotycznych rozmiarów. To z pewnością zmniejszyło by jej czytelność i zwiększyło nasz - programistów - czas na jej przeanalizowanie.
+			
+			<br><br>
+			
+			Elastyczność Scali pozwala nam na umiejscawianie importów bezpośrednio w ciele klasy, jego zasięg ograniczony jest do zasięgu klasy - tak samo jak to ma miejsce w przypadku zmiennych klasowych.				
+				
+				
+		</font>									
+										
+		<br>	
+				
+		<a name="S1Wstep.14"></a><h2>2.2.3. W metodzie</h2>
+		
+		<font class="chapter">
+		
+			<font class="code">
+class VectorTest
+{
+    def test
+    {
+        import java.util.Vector
+
+        val v = new Vector[ String ]
+        v.add( "a1" )
+        v.add( "a2" )
+
+        println( "rozmiar vektora to " + v.size )
+    }
+}
+			</font>	
+						
+			<br>
+			
+			W przypadku, jeśli chcielibyśmy użyć jakiejś klasy jednorazowo być może obierzemy drogę nie 'zaśmiecania' importów klasowych bądź plikowych. Import umiejscowiony w metodzie ma taki sam zasięg jak zainicjowane w niej zmienne.
+				
+		</font>									
+										
+		<br>				
+			
+		<a name="S1Wstep.15"></a><h2>2.2.4. W dowolnym bloku kodu</h2>
+		
+		<font class="chapter">
+		
+			<font class="code">
+def test
+{
+    while( true )
+    {
+        import java.util.Vector
+
+        val v = new Vector[ String ]
+        v.add( "a1" )
+        v.add( "a2" )
+
+        println( "rozmiar vektora to " + v.size )
+    }
+}
+			</font>	
+							
+		</font>									
+										
+		<br>				
+			
+		<a name="S1Wstep.16"></a><h2>2.3. Możliwości importu</h2>				
+			
+		<a name="S1Wstep.17"></a><h2>2.3.1. Import wielu klas z tego samego package</h2>				
+			
+		<font class="chapter">
+		
+			<font class="code">import top.{ A , B , C , D }</font>	
+			
+			<br><br>
+			
+			Ta konstrukcja chyba nie wymaga ani słowa komentarza :).
+							
+		</font>							
+			
+		<a name="S1Wstep.18"></a><h2>2.3.2. Import 'statyczny'</h2>				
+			
+		<font class="chapter">
+		
+			<font class="code">import java.lang.System._</font>	
+				
+			<br><br>
+						
+			W tym przypadku zostaną zaimportowane wszystkie statyczne pola oraz metody obiektu <font class="code">java.lang.System</font>. W porównaniu do Java brak jest słówka <i>static</i> - które w Scali nie występuje.
+			
+			<br><br>
+						
+			Ciekawostka : <font class="code">import java.lang.System.{ _ }</font> oznacza dokładnie to samo co <font class="code">import java.lang.System._</font> .
+						
+		</font>				
+			
+		<br>				
+			
+		<a name="S1Wstep.19"></a><h2>2.3.3. Import ze zmianą nazwy klasy, metody, pola</h2>				
+			
+		<font class="chapter">
+		
+			<font class="code">import top2.{ A => OtherA }</font>	
+				
+			<br><br>	
+					
+			Przydatny w sytuacji kiedy do naszej przestrzeni nazewniczej mamy już obecnie sprowadzoną jakąś inna klasę A (np. <font class="code">top1.A</font>). W tym wypadku podczas używania A kompilator nie byłby do końca pewien o które A nam chodzi - w związku z czym zmusiłby nas do pisania pełnych, kwalifikowanych nazw <font class="code">top1.A</font>  oraz <font class="code">top2.A</font> . To z kolei nie byłoby miłe dla nas.
+			
+			<br><br>
+			
+			Sytuacja, w której przyda się przemianowanie nazwy klasy :
+			
+			<br>
+			
+			<font class="code">			
+import top1.A
+import top2.{ A => OtherA }
+			</font>
+			
+			<br>
+			
+			Podobnie możemy przemianować nazwę metody oraz pola :
+			
+			<br>
+			
+			<font class="code">
+import java.lang.System.out.{ println => pln }
+import java.lang.System.{ out => o }
+			</font>
+			
+			<br>
+			
+			Przykład użycia :
+			
+			<br>
+			
+			<font class="code">
+class ImportTest
+{
+    def test()
+    {
+        o.println( "przemianowany output" )
+        pln( "przemianowana metoda println()" )
+    }
+}
+			</font>
+			
+			<br>
+			Importowanie całości z jednoczesną zmianą nazwy :
+			
+			<br><br>
+			
+			<font class="code">import java.lang.System.{ out => o , _ }</font>
+			
+			<br><br>
+			
+			Widzimy tutaj zmianę <font class="code">out</font> na <font class="code">o</font> z jednoczesnym zaimportowaniem wszystkich innych pól (znak '<font class="code">_</font>').
+				
+		</font>				
+			
+		<br>				
+			
+		<a name="S1Wstep.20"></a><h2>2.3.4. Importowanie z wyłączeniem</h2>				
+			
+		<font class="chapter">
+		
+			Zaimporotwanie wszystkiego oprócz jednego pola (klasy, paczki) wygląda następująco :
+			
+			<br><br>
+			
+			<font class="code">import java.lang.System.{ out => _ , _ }</font>
+			
+			<br><br>
+			
+			(<font class="code">out</font> jest wyłączony z importwania).
+		
+		</font>	
+			
+		<br>				
+			
+		<a name="S1Wstep.21"></a><h2>2.3.5. Hierarchiczność</h2>				
+			
+		<font class="chapter">
+		
+			Importowanie jest hierarchiczne, tak więc jeśli już mamy zaimportowane do naszej przestrzeni <font class="code">scala.actors._</font> wystarczy napisać <font class="code">import remote._</font> aby zaimportować <font class="code">scala.actors.remote</font> :
+			
+			<br><br>
+			
+			<font class="code">
+import scala.actors._
+
+class A
+{
+    import remote._
+}
+			</font>
+
+		</font>	
+		
+		<br><hr>				
+			
+		<a name="S1Wstep.22"></a><h2>3. Paczki</h2>				
+			
+		<font class="chapter">
+		
+				Definiowanie paczki może odbywać się na drodze podobnej jak w Javie, czyli w nagłówku pliku :
+
+				<br>
+				
+				<font class="code">
+package sklep.produkty
+
+class Ksiazka
+				</font>
+
+				<br>
+				
+				Jeśli przyjmiemy, że w powyższym przykładzie zostały upuszczone nawiasy klamrowe <font class="code">{}</font> to :
+
+				<br>
+				
+				<font class="code">
+package sklep.produkty
+{
+    class Ksiazka
+}
+				</font>
+
+				<br>
+
+				package pozwala nam także na :
+
+				<br>
+				
+				<font class="code">
+package sklep
+{
+    package produkty
+    {
+        class Ksiazka
+    }
+}
+				</font>
+
+				<br>
+
+				a opuszczając nawiasy klamrowe :
+
+				<br>
+
+				<font class="code">
+package sklep
+package produkty
+   
+class Ksiazka
+				</font>
+
+			</font>
+
+		</font>			
+						
+		<br>				
+			
+		<a name="S1Wstep.23"></a><h2>3.1. Paczka _root_</h2>				
+			
+		<font class="chapter">
+		
+			Przyjrzyjmy się następującemu przykładowi :
+
+			<br>
+			
+			<font class="code">
+// ---- umieszczone w Pliku1
+
+package sklep
+{
+    class BazaDanych
+}
+
+// ---- umieszczone w Pliku2
+
+package skleptesty
+{
+    class TestujCalosc
+
+    package sklep
+    {
+        class TestujSklep
+    }
+
+    class TestujSklep
+    {
+        // jak tutaj odwolac sie do sklep.BazaDanych
+        // kiedy powyzej mamy paczke sklep z klasa TestujSklep ???
+        
+        val bazaDanych = new sklep.BazaDanych // ??? !!!
+    }
+}
+			</font>
+			
+			<br>
+
+			Uwidoczniony tutaj problem polega na tym, iż paczka <font class="code">sklep</font> z paczki <font class="code">skleptesty</font> (Plik2) przykrywa paczke <font class="code">sklep</font> z Plik1. Dostać się do niej możemy poprzez odwołanie się do nad-paczki wszystkich paczek, a więc <font class="code">_root_</font> :
+
+			<br>
+			
+			<font class="code">
+class TestujSklep
+{
+    val bazaDanych = new _root_.sklep.BazaDanych
+}
+			</font>
+
+			<br>
+			
+			Używając <font class="code">_root_</font> możemy więc ponownie, idąc od początku hierarchii, określić każdą paczkę.
+
+		</font>	
+			
+		<br><hr>				
+			
+		<a name="S1Wstep.24"></a><h2>4. Klasy</h2>				
+						
+		<a name="S1Wstep.25"></a><h2>4.1. Konstruktory</h2>		
+			
+		<a name="S1Wstep.26"></a><h2>4.1.1. Definiowanie</h2>					
+		
+		<font class="chapter">	
+		
+			<font class="code">
+class Samochod( var kolor : Color , var rokProdukcji : Int )
+			</font>
+
+			<br>
+
+			Linia kodu zaprezentowana powyżej przedstawia klasę <font class="code">Samochod</font> z jej konstruktorem podstawowym, do którego przekazujemy dwie zmienne: kolor oraz rok produkcji. Właśnie tak niewiele potrzeba do zadeklarowania klasy, a zmienne przekazane przez konstruktor stają się od razu zmiennymi klasowymi.
+		
+			<br><br>
+			
+			W Scali generalnie wszystko ma modyfikator dostępu publicznego, tak więc chcąc ukryć pola przed światem zewnętrznym, musimy dodać <font class="code">private</font> lub <font class="code">protected</font> :
+			
+			<br>
+			
+			<font class="code">
+class Samochod( private var kolor : Color , protected var rokProdukcji : Int )
+			</font>	
+			
+			<br>
+			
+			(Przekazane przez nas zmienne możemy zamienić na stałe zamieniając słówko kluczowe <font class="code">var</font> na <font class="code">val</font>.)
+			
+			<br><br>
+			
+			Jak stworzyć instancję klasy <font class="code">Samochod</font> ?
+			
+			<br>
+			
+			<font class="code">
+val samochod = new Samochod( Color.RED , 1999 )
+			</font>
+			
+			<br>
+			
+			Istnieje także możliwość dodawania modyfikatorów dostępu do konstruktora podstawowego :
+			
+			<br>
+			
+			<font class="code">
+class Samochod private ( var kolor : Color , var rokProdukcji : Int )
+			</font>
+			
+			<br>
+			
+			Jak zostało wspomniane powyżej argumenty przekazane do konstruktora podstawowego stają się od razu polami klasowymi. Wynika to z pewnej obserwacji życia codziennego programisty, gdzie w większości przypadków definiowanie nowej klasy wygląda dosyć boleśnie :
+			
+			<br>
+			
+			<font class="code">
+// kod Java
+class Samochod
+{
+    private Color kolor;
+    private Int rokProdukcji;
+
+    public Samochod( Color kolor , Int rokProdukcji )
+    {
+        this.kolor = kolor;
+        this.rokProdukcji = rokProdukcji;
+    }
+}
+			</font>
+			
+			<br>
+			
+			Warto zauważyć jak wiele linii kodu możemy pominąć w Scali oraz jak dużo bardziej przejrzysty staje się kod.
+			
+			<br><br>
+			
+			Ważną zmianą w tej sytuacji (argumenty konstruktora stają się polami klasowymi) jest przeniesienie obciążenia gdzie zostają przygotowane i stworzone argumenty dla klasy.
+			
+			<br>
+			
+			W Javowym modelu do konstruktora można było przekazać dowolnie wszystko, najróżniejsze półfabrykaty i inne dane niedocelowe. To zadaniem konstruktora było je przetworzyć i przygotować, a następnie zapamiętać na zmiennych klasowych. To wymusza umieszczenie czasem całkiem pokaźnej logiki w ciele konstruktora.
+			
+			<br>
+			
+			W Scali widzimy odejście od tego na rzecz przetworzenia danych wcześniej, a wywołanie samego konstruktora argumentami docelowymi.
+
+		</font>	
+			
+		<br>
+		
+		<a name="S1Wstep.27"></a><h2>4.1.2. Ciało konstruktora</h2>					
+		
+		<font class="chapter">
+
+			Skoro wiemy już prawie wszytko o definiowaniu konstruktora to przyjrzyjmy się gdzie umieścić jego ciało.
+
+			<br>
+			
+			<font class="code">
+class Samochod( var kolor : Color , var rokProdukcji : Int )
+{
+    if( rokProdukcji < 1980 )
+    	throw new IllegalArgumentException( "rok produkcji nie moze byc mniejszy niz 1980" )
+}
+			</font>
+
+			<br>
+			
+			Ewentualnie możemy posłużyć się ogólnie dostępną metodą <font class="code">require()</font> :
+
+			<br>
+			
+			<font class="code">
+class Samochod( var kolor : Color , var rokProdukcji : Int )
+{
+    require( rokProdukcji > 1980 )
+
+    // lub
+    // require( rokProdukcji > 1980 , "rok produkcji nie moze byc mniejszy niz 1980" )
+}
+			</font>
+
+			<br>
+						
+			Każdy kod wstawiony 'luźno' w ciało klasy zostanie zebrany i potraktowany jako konstruktor podstawowy.
+
+		</font>	
+			
+		<br>
+		
+		<a name="S1Wstep.28"></a><h2>4.1.3. Przeciążanie konstruktora podstawowego</h2>					
+		
+		<font class="chapter">
+		
+			W Scali zostało przyjęte pojęcie konstruktora podstawowego oraz konstruktorów go przeciążających.
+
+			<br><br>
+			
+			Podobnie jak w metodach, jest tylko jedno miejsce za pomocą, którego możemy wejść do metody, tak samo jest tylko jedno miejsce, które umożliwia stworzenie instancji klasy za pomocą operatora <font class="code">new</font>. Konstruktory przeciążające podstawowy muszą w swoim ciele wywołać go lub inny konstruktor przeciążony.
+
+			<br>
+			
+			<font class="code">
+class Osoba( imie : String , wiek : Int , czyMaRodzenstwo : Boolean )
+{
+    def this( imie : String , wiek : Int ) = this( imie , wiek , false )
+}
+			</font>
+			
+			<br>
+			
+			Wynika to z dobrej praktyki, ale także i poczynionych obserwacji typowych zachowań programistów.
+			
+			<br>
+			
+			Kiedy pierwszy programista tworzy klasę ogarnia myślami wszystko co się w niej dzieje. Dba i dokładnie inicjuje wszystkie pola klasowe w konstruktorze. Kiedy następnie klasa ta trafi do drugiego programisty, którego zadaniem będzie lekkie jej rozwiniecie, doda on kilka nowych konstruktorów. Jeśli każdy konstruktor jest równoważny sobie to każdy może prowadzić do stworzenia instancji klasy. Jednak dodane na prędko kolejne konstruktory wcale nie muszą już być tak dokładne, mogą pomijać inicjacje pewnych zmiennych. Doprowadza to w łatwy sposób do powstawania pół-zainicjowanych, błędnych instancji.
+
+			<br><br>
+			
+			Powyżej został poruszony temat prywatnego konstruktora podstawowego. Jak zatem pozwolić światu zewnętrznemu na stworzenie instancji klasy ? Otóż trzeba dodać koniecznie dodatkowy konstruktor :
+
+			<br>
+			
+			<font class="code">
+class Samochod private ( var kolor : Color , var rokProdukcji : Int )
+{
+    def this( kolor : Color , rokProdukcji : String ) =
+    {
+    	this( kolor , Integer.parseInt( rokProdukcji ) )
+    }
+}
+			</font>
+
+			<br>
+			
+			(Uwaga : znak równości w powyższym przykładzie ma znaczenie !)
+
+		</font>
+			
+		<br>
+		
+		<a name="S1Wstep.29"></a><h2>4.1.4. Wywołanie konstruktora superklasy</h2>					
+		
+		<font class="chapter">	
+		
+ 			W przypadku tak odmiennej składni z konstruktorami warto zobaczyć jak wywołać konstruktor klasy, z której dziedziczymy.
+			
+			<br><br>
+			
+			Zdefiniujmy klasę <font class="code">Zwierze</font> :
+
+			<br>
+			
+			<font class="code">
+class Zwierze( nazwa: String , wiek : Int )
+			</font>
+			
+			<br>
+			
+			Dla klasy <font class="code">Pies</font> dziedziczącej ze <font class="code">Zwierze</font> wywołanie superkonstruktora odbywa się w tej samej, jednej linii kodu :
+
+			<br>
+			
+			<font class="code">
+class Pies( nazwa : String , wiek : Int , dlugoscOgona : Int ) extends Zwierze( nazwa , wiek )
+			</font>
+					
+		</font>		
+			
+		<br>
+		
+		<a name="S1Wstep.30"></a><h2>4.2. Umiejscawianie</h2>					
+		
+		<font class="chapter">	
+		
+ 			W przeciwieństwie do Javy, w Scali w jednym pliku możemy mieć dowolną ilość klas publicznych.
+			
+		</font>					
+			
+		<br><hr>
+		
+		<a name="S1Wstep.31"></a><h2>5. Obiekty</h2>					
+		
+		<font class="chapter">	
+		
+		Czyli inaczej singletony.
+		
+		<br><br>
+		
+		Zobaczmy jak w Javie wygląda zadeklarowanie singletonu :
+		
+		<br>
+		
+		<font class="code">
+// kod Java
+class DatabaseManager
+{
+    private static DatabaseManager me;
+
+    private DatabaseManager() {}
+
+    public static final synchronized getInstance()
+    {
+        if( me == null ) me = new DatabaseManager();
+        return me;
+    }
+
+    public void polacz() { ... }
+}
+		</font>
+		
+		<br>
+		
+		Zobaczmy jak ten sam kod wygląda w Scali :
+		
+		<br>
+		
+		<font class="code">
+object DatabaseManager
+{
+    def polacz { ... }
+}
+		</font>
+		
+		<br>
+		
+		Kluczową rolę odgrywa tutaj słówko object w miejsce spodziewanego <font class="code">class</font>. Dzięki niemu nie musimy tworzyć prywatnego konstruktora oraz metody fabrycznej.
+		
+		<br><br>
+		
+		Instancja takiej klasy powstanie automatycznie przy pierwszej próbie jej użycia:
+		
+		<br><br>
+		
+		<font class="code">DatabaseManager.polacz</font>
+		
+		<br><br>
+		
+		Singletony w Scali nie mogą posiadać konstruktora.
+
+		</font>				
+			
+		<br>
+		
+		<a name="S1Wstep.32"></a><h2>5.1. Statyczne klasy, metody, pola</h2>					
+		
+		<font class="chapter">	
+		
+			W Scali wyeliminowane zostało słówko <i>static</i>, tak więc nie ma, znanych nam z Javy, statycznych klas, metod oraz pól.
+			
+			<br><br>
+			
+			W zamian za to to czemu w Javie dodawaliśmy słówko static umieszczamy w obiektach (w signletonach).
+			
+			<br><br>
+			
+			Tak więc :
+			
+			<br>
+			
+			<font class="code">
+object Zwierze
+{
+    val MAX_AGE : Int = 100
+
+    def getWiek( wiekWStringu : String ) : Int = Integer.parseInt( wiekWStringu )
+}
+			</font>	
+			
+			<br>
+			
+			Powoduje to 'wysprzątanie' wszelakiego kodu i kontekstu statycznego, dzisiaj umieszczanego pomiędzy kodem niestatycznym, do specjalnie wydzielonego miejsca.
+			
+			<br><br>
+			
+			Zaprezentowany powyżej obiekt <font class="code">Zwierze</font>	może mieć także klasę o takiej samej nazwie :
+			
+			<br>
+			
+			<font class="code">
+object Zwierze
+{
+    val MAX_AGE : Int = 100
+
+    def getWiek( wiekWStringu : String ) : Int = Integer.parseInt( wiekWStringu )
+}
+
+class Zwierze( age : Int )
+{
+    requre( age <= Zwierze.MAX_AGE , "wiek nie moze byc wiekszy niz " + Zwierze.MAX_AGE )
+}
+			</font>	
+			
+			<br>
+			
+			W tym wypadku mówimy o <font class="code">class Zwierze</font> i <font class="code">object Zwierze</font>, że są <i>companion objects</i>.
+			
+			<br><br>
+			
+			Jak widać z poziomu klasy <font class="code">Zwierze</font>	 dostajemy się do pól obiektu <font class="code">Zwierze</font> tak samo jak w Javie do pól statycznych - a więc podając nazwę klasy oraz kropkę <font class="code">Zwierze.</font> .		
+		
+		</font>			
+		
+		<br><hr>
+		
+		<a name="S1Wstep.33"></a><h2>6. Pola</h2>					
+		
+		<font class="chapter">	
+		
+		W tym rozdziale przyjrzymy się jak definiować zmienne oraz stałe.
+			
+		</font>
+			
+		<br>
+		
+		<a name="S1Wstep.34"></a><h2>6.1. Zmienne</h2>					
+		
+		<font class="chapter">	
+		
+			Każda nowa zmienna jest poprzedzana słówkiem kluczowym <font class="code">var</font> (variable) :
+			
+			<br>
+			
+			<font class="code">
+var i : Int = 0
+var i = 0
+var ht : Hashmap[ String , Int ] = new Hashmap[ String , Int ]()
+var ht = new Hashmap[ String , Int ]
+			</font>
+			
+			<br>
+			
+			To co od razu możemy zauważyć to odwrócona notacja w porównaniu do Javy. Po słówku kluczowym <font class="code">var</font> następuje nazwa zmiennej. Następnie może (ale nie musi) nastąpić jej typ. Potem znak równości i wartość zmiennej.
+			
+			<br><br>
+			
+			Jak widać Scala pozwala nam na pomijanie deklaracji typu w miejscach gdzie jest on możliwy do wywnioskowania przez kompilator. Pierwsze dwie linie przykładu powyżej oraz dwie następne są równoznaczne.
+				
+		</font>
+			
+		<br>
+		
+		<a name="S1Wstep.35"></a><h2>6.2. Stałe</h2>					
+		
+		<font class="chapter">	
+		
+			Każda stała powinna być poprzedzona słówkiem kluczowym <font class="code">val</font> (jak value) :
+
+			<br>
+			
+			<font class="code">
+val i : Int = 0
+val i = 0
+			</font>
+			
+			<br>
+			
+			W odróżnieniu od Javy nie jesteśmy zmuszeni aby pisać długie, dodatkowe słówko <i>final</i>. Jak wiadomo programiści należą do osób leniwych - stąd nie należy wymagać, że za każdym razem kiedy będzie to konieczne będą pisali jakieś dodatkowe słówko 'skoro bez niego i tak wszystko działa'. Otóż tutaj znajduje się ukryty problem. Czasem to co powinno być stałą będzie stałą, a czasem - poprzez pominięcie dodatkowego słówka - będzie zmienną. Wbrew pozorom to jest diametralna różnica wpływająca na jakość i niezawodność kodu.
+			
+			<br><br>
+			
+			Na szczęście twórcy Scali wiedzieli o tym bardzo dobrze i jedyny wybór przed którym stoją programiści Scala to <font class="code">-r</font> czy <font class="code">-l</font> na końcu krótkiego, 3 literowego , obowiązkowego wyrazu.
+			
+			<br><br>
+			
+			Dobrą praktyką przekazywaną przez autorów Scali w wielu publikacjach jest zawsze stawianie słówka <font class="code">val</font> w momencie jeśli chcemy stworzyć nową zmienną bądź stałą. Twórcy pragną doprowadzić, aby powstał w programistach taki właśnie nawyk: nie wiesz co napisać, napisz <font class="code">val</font>, jedynie potem, kiedy kompilator cię upomni, zmień niektóre <font class="code">val</font> na <font class="code">var</font>. W ten sposób powstaje dużo bezpieczniejszy kod, zwłaszcza w czasach procesorów wielordzeniowych i wielowątkowości w tworzonych programach.
+
+		</font>
+			
+		<br>
+		
+		<a name="S1Wstep.36"></a><h2>6.2.1. Stałe leniwe</h2>					
+		
+		<font class="chapter">	
+		
+			W przypadku stałych możemy dodać słówko kluczowe <font class="code">lazy</font> w celu opóźnienia czasu ich inicjacji.
+
+			<br>
+
+			<font class="code">
+object Storage
+{
+    val MAX_SIZE = 100
+    lazy val ht = new Hashmap[ String , Int ]
+}
+			</font>
+
+			<br>
+			
+			Tak zdefiniowana stała nie zostanie zainicjowana, aż do pierwszego odwołania się do niej :
+
+			<br>
+			
+			<font class="code">
+val i = Storage.MAX_SIZE
+	// <- w tym momencie został zainicjowany singleton 'Storage'
+	// (jesli wczesniej nie bylo do niego zadnego odwolania)
+
+val ht = Storage.ht
+	// <- dopiero w tym momencie zostala zainicjowana stala 'ht',
+	// przez to ze jest lazy nie jest inicjowana w momencie inicjacji singletonu
+			</font>
+
+		</font>
+			
+		<br>
+		
+		<a name="S1Wstep.37"></a><h2>6.3. Zasięg zmiennych i stałych (scope)</h2>					
+		
+		<font class="chapter">
+				
+			Jest nieomal identyczny jak w Javie z tą drobną różnicą, iż w Scali w bloku zagnieżdżonym możemy zdefiniować zmienną/stałą o tej samej nazwie jak zmienna/stała, która już istnieje.
+
+			<br>
+
+			<font class="code">
+val i = 0
+
+{
+    var i = 7
+    
+    println( i ) // 7
+    
+    i = 6 // wszystko dziala, w koncu i to zmienna
+    
+    println( i ) // 6
+    
+}
+
+println( i ) // 0
+
+i = 1 // blad kompilacji, proba zmiany stalej
+				
+			</font>
+				
+		</font>	
+			
+		<br><hr>
+		
+		<a name="S1Wstep.38"></a><h2>7. Metody</h2>					
+		
+		<a name="S1Wstep.39"></a><h2>7.1. Definiowanie</h2>					
+		
+		<font class="chapter">
+			
+			Metody tworzymy za pomocą słówka kluczowego def :
+
+			<br>
+
+			<font class="code">
+def drukujRaport() { System.out.println( "raport" ) }
+def drukujRaport { System.out.println( "raport" ) } // <- pomiete puste nawiasy argumentow
+			</font>		
+			
+		</font>			
+			
+		<br>
+		
+		<a name="S1Wstep.40"></a><h2>7.2. Nazewnictwo</h2>	
+			
+		<font class="chapter">	
+			
+			Kolejną ciekawą rzecz na temat Scali odkryjemy poznając jakie mogą być nazwy metod.
+			
+			<br><br>
+			
+			Otóż nazwy metod mogą być ... dowolne*, a skoro tak jest to znaczy, że ... w Scali nie ma operatorów ! Każde wywołanie *, +, -, += itp. jest wywołaniem metody :).
+			
+			<br>
+			
+			Można definiować metody wyglądające jak operatory z Javy, ale ciągle będą to metody. Skoro są to metody, to można je przeciążać oraz przesłaniać.
+			
+			<br><br>
+			
+			*- poza zastrzeżonym znakiem '<font class="code">_</font>' oznaczającym 'wszystko' lub 'dowolny'.
+			
+			<br><br>
+			
+			Połączmy tą wiedzę z informacją, iż wszystko w Scali jest obiektem i zobaczmy przykład:
+
+			<br>
+			
+			<font class="code">
+1 + 2 // <- ale 1 jest przeciez obiektem
+(1) + 2 // <- chyba brak tutaj kropki
+(1).+ 2 // <- tutaj brak nawiasow z argumentami metody '+'
+(1).+(2) // <- teraz wyglada to jak wywolane metody znane nam z Javy
+			</font>	
+			
+			<br>
+			
+			Teraz jasno widać jak na obiekcie <font class="code">Int(1)</font> wywołujemy metodę <font class="code">.+()</font> z argumentem '<font class="code">2</font>'.
+			
+		</font>			
+			
+		<br>
+		
+		<a name="S1Wstep.41"></a><h2>7.3. Zwracanie wartości</h2>	
+			
+		<font class="chapter">	
+			
+			Jeśli chcemy, aby metoda coś zwracała, musimy dodać znak równości oraz możemy (ale nie musimy) określić typ zwracanych danych :
+
+			<br>
+			
+			<font class="code">
+def getAge() : Int = { age }
+def getAge = { age } // <- pomijamy typ zwracanych danych, pominiete puste nawiasy
+def getAge = age // <- skoro to jest tylko jedna instrukcja to pomijamy nawiasy klamrowe
+			</font>
+			
+			<br>
+			
+			Występuje brak słówka <i>return</i>. Zasada jest bardzo prosta - każde ostatnie wyrażenie w metodzie jest traktowane zwracane jako wartość tejże metody. Warunkiem wymaganym jest postawienie znaku równości przed blokiem kodu.
+			
+			<br><br>
+			
+			(Jeśli by nie było znaku <font class="code">=</font> to metoda ta by nic nie zwracała - tak naprawdę będzie zwracać <font class="code">Unit</font>.)
+			
+		</font>	
+			
+		<br>
+		
+		<a name="S1Wstep.42"></a><h2>7.4. Przekazywanie argumentów</h2>	
+			
+		<font class="chapter">	
+			
+			Definiowanie :
+
+			<br><br>
+			
+			<font class="code">def polacz( ip : String , port : Int ) { ... }</font>
+
+			<br><br>
+			
+			i przekazywanie argumentów do metody (wywołanie metody) :
+
+			<br><br>
+			
+			<font class="code">polacz( "127.0.0.1" , 80 )</font>
+			
+		</font>		
+				
+		<br>
+		
+		<a name="S1Wstep.43"></a><h2>7.4.1. Zmienna ilość argumentów (varargs)</h2>	
+			
+		<font class="chapter">	
+			
+			Definicję :
+
+			<br><br>
+
+			<font class="code">def sumuj( i1 : Int , i2 : Int , i3 : Int , i4 : Int ) = { ... }</font>
+
+			<br><br>
+
+			można zamienić na :
+
+			<br><br>
+
+			<font class="code">def sumuj( i : Int* ) = { ... }</font>
+
+			<br><br>
+
+			W tym wypadku mechanizm jest podobny jak w Javie, a więc do metody zostanie przekazana tablica Int'ów (<font class="code">scala.Array[ Int ]</font>). Jeśli nic nie zostanie przekazane to taka tablica będzie zainicjowana, a jej rozmiar równy będzie 0.
+
+			<br><br>
+
+			Dla metody :
+
+			<br>
+
+			<font class="code">
+def sumuj( i : Int* ) =
+{
+	println( "ilosc przekazanych argumentow " + i.length )
+	var wynik = 0
+	i.foreach( i => { println( "dosumowuje " + i ); wynik += i } )
+	println( "zwracam wynik " + wynik )
+	wynik
+}
+			</font>
+			
+			<br>
+			
+			Wywołania :
+
+			<br>
+
+			<font class="code">
+val result = sumuj( 1 , 2 , 3 )
+val result = sumuj( 1 )
+val result = sumuj()
+			</font>
+			
+			<br>
+			
+			dadzą :
+			
+			<br>
+			
+			<font class="code">
+ilosc przekazanych argumentow 3
+dosumowuje 1
+dosumowuje 2
+dosumowuje 3
+zwracam wynik 6
+
+ilosc przekazanych argumentow 1
+dosumowuje 1
+zwracam wynik 1
+
+ilosc przekazanych argumentow 0
+zwracam wynik 0
+			</font>
+			
+		</font>
+		
+		<br>
+		
+		<a name="S1Wstep.44"></a><h2>7.5. Umiejscawianie</h2>	
+			
+		<font class="chapter">
+		
+			Najbardziej naturalnym miejscem dla metod jest klasa (ewentualnie obiekt) ... ale okazuje się, że mogą one występować jeszcze w jednym miejscu.
+			
+			<br><br>
+			
+			Rozważmy następujący przykład z Javy.
+			
+			<br><br>
+			
+			Jest sobie klasa <font class="code">C</font>, która posiada metody <font class="code">m1()</font>, <font class="code">m2()</font> oraz <font class="code">m3()</font> :
+			
+			<br>
+			
+			<font class="code">
+// uwaga, przyklad 'z Javy' - czyli tak jak to by bylo w Javie
+// ale zapisany w Scali
+
+class C
+{
+    def m1() = { ... }
+    def m2() = { ... }
+    def m3() = { ... }
+}
+			</font>
+			
+			<br>
+			
+			Metoda <font class="code">m2()</font> jest zdefiniowana następująco :
+			
+			<br>
+			
+			<font class="code">
+def m2 =
+{
+    val kolejka = new scala.collection.mutable.Queue[ Int ]()
+    var i = 0
+
+    println( ”Podaj dane...” )
+    while( i >=0 )
+    {
+        i = new java.util.Scanner( System.in ).nextInt()
+        if( i >=0 ) kolejka += i
+    }
+
+    var wynik = 0
+    kolejka.foreach( ii => wynik += ii )
+    println( ”Suma liczb to : ” + wynik )
+    wynik
+}
+			</font>
+			
+			<br>
+			
+			Po pewnym czasie się ona rozrasta. W wyniku nowych wymagań przydałoby się, aby w swoim ciele dwukrotnie wczytywała dane od użytkownika :
+			
+			<br>
+			
+			<font class="code">
+def m2 =
+{
+    val kolejka = new scala.collection.mutable.Queue[ Int ]()
+
+    var i = 0
+    println( ”Podaj dane...” )
+    <font color="blue">
+    while( i >=0 )
+    {
+        i = new java.util.Scanner( System.in ).nextInt()
+        if( i >=0 ) kolejka += i
+    }
+    </font>
+    var wynik1 = 0
+    kolejka.foreach( ii => wynik1 += ii )
+    println( ”Suma liczb to : ” + wynik1 + ”, podaj kolejne dane...” )
+	<font color="blue">
+    while( i >=0 )
+    {
+        i = new java.util.Scanner( System.in ).nextInt()
+        if( i >=0 ) kolejka += i
+    }
+    </font>
+    var wynik2 = 1
+    kolejka.foreach( ii => wynik2 *= ii )
+    println( ”Iloczyn to : ” + wynik2 )
+
+    ( wynik1 , wynik2 )
+}
+			</font>
+			
+			<br>
+			
+			Podczas procesu rozwojowego powstało nam powtórzenie kodu (i to nie jedno), które powinno zostać wyłączone przed nawias :
+			
+			<br>
+			
+			<font class="code">
+class C
+{
+    def m1 = { … }
+    private def wczytajKolejkeIntowOdUzytkownika = { … }
+    def m2 = { … }
+    def m3 = { … }
+}
+			</font>
+			
+			<br>
+			
+			Okazuje się, że nie ma nic za darmo. W wyniku 'oczyszczenia' kodu powstaje ... zanieczyszczenie klasy.
+			
+			<br><br>
+			
+			Od tej pory metoda <font class="code">wczytajKolejkeIntowOdUzytkownika()</font>, nawet jeśli z modyfikatorem dostępu <font class="code">private</font>, przewija się nam przed oczami. Musimy ją analizować, przeglądać, a czasem nawet zastanawiać się, przez które z metod (<font class="code">m1</font>, <font class="code">m2</font>, <font class="code">m3</font>) jest ona wywoływana. To marnuje nasz czas i naszą energię.
+			
+			<br><br>
+			
+			Sytuacja łatwo może ulec pogorszeniu :
+			
+			<br>
+			
+			<font class="code">
+class C
+{
+    def pomocniczaMetoda1dlaM1 = {}
+    def pomocniczaMetoda2dlaM1 = {}
+    def m1 = { … }
+
+    private def wczytajKolejkeIntowOdUzytkownika = { … }
+    def pomocniczaMetoda1dlaM2 = {}
+    def pomocniczaMetoda2dlaM2 = {}
+    def m2 = { … }
+
+    def pomocniczaMetoda1dlaM3 = {}
+    def pomocniczaMetoda2dlaM3 = {}
+    def m3 = { … }
+}
+			</font>
+			
+			<br>
+			
+			Nasza klasa wygląda fatalnie, a wszystko przez to, że - rozumując tokiem Javowym - musieliśmy do jej przestrzeni włożyć 'prywatne metody pomocnicze' kilku głównych metod publicznych.
+			
+			<br><br>
+			
+			Na szczęście w Scali możemy dowolnie umieszczać metody w jeszcze jednym miejscu, a mianowicie w metodach :
+			
+			<br>
+			
+			<font class="code">
+def m2 =
+{
+    val kolejka = new scala.collection.mutable.Queue[ Int ]()
+
+	<font color="blue"><b>
+    def wczytaJKolejkeIntowOdUzytkownika()
+    {
+        var i = 0
+        println( ”Podaj dane...” )
+        while( i >=0 )
+        {
+            i = new java.util.Scanner( System.in ).nextInt()
+            if( i >=0 ) kolejka += i
+        }
+    }</b></font>
+
+	<br>
+    <font color="blue">wczytaJKolejkeIntowOdUzytkownika()</font>
+
+    var wynik1 = 0
+    kolejka.foreach( ii => wynik1 += ii )
+    println( ”Suma liczb to : ” + wynik1 )
+    
+    <font color="blue">wczytaJKolejkeIntowOdUzytkownika()</font>
+
+    var wynik2 = 1
+    kolejka.foreach( ii => wynik2 *= ii )
+    println( ”Iloczyn to : ” + wynik2 )
+
+    ( wynik1 , wynik2 )
+}
+			</font>
+			
+			<br>
+			
+			Skoro metoda <font class="code">wczytajKolejkeIntowOdUzytkownika()</font> jest tylko na użytek metody <font class="code">m2()</font> to nie potrzeby, aby wyszła ona poza nią.
+			
+			<br><br>
+			
+			Nie ma żadnych ograniczeń, aby umieszczać metody w metodach w metodach... - jednak zbyt głęboka hierarchia prawdopodobnie będzie wynikiem złego zaprojektowania i rozwiązywania danego problemu.
+		
+		</font>		
+		
+		<br><hr>
+		
+		<a name="S1Wstep.45"></a><h2>8. Typy danych</h2>	
+			
+		<font class="chapter">	
+			
+			Podstawowe typy danych znajdziemy w paczce <font class="code">scala._</font> i są to : <font class="code">Byte</font>, <font class="code">Short</font>, <font class="code">Int</font>, <font class="code">Long</font>, <font class="code">Char</font>, <font class="code">Float</font>, <font class="code">Double</font>, <font class="code">Boolean</font>. Typy te w niczym nie odbiegają zakresami od typów przyjętych w Javie co pozwala kompilatorowi na tłumaczenie ich w stosunku 1:1. Dla łańcuchów tekstowych używana jest klasa <font class="code">String</font> z dobrze nam znanej paczki <font class="code">java.lang</font>.
+
+			<br><br>
+			
+			Warto zauważyć iż są pisane z dużej litery. Wynika to z ogólnie przyjetej notacji w Scali, aby nazwy klasy i obiektów pisać z dużej litery - bez tworzenia pewnych wyjątków jakimi w świecie Javy są prymitywy. To na co jest to tłumaczone po skompilowaniu nie powinno nas interesować. Wiadomo natomiast, że kompilator dokłada wszelkich starań aby było to rozwiązanie najwydajniejsze i nie jest wykluczone, że wielokrotnie będą to javowe prymitywy.
+
+			<br><br>
+			
+			Klasy z paczki <font class="code">scala._</font> wzbogacone są o wiele użytecznych metod, a także w pakiet standartowych metod jak <font class="code">+</font>, <font class="code">-</font> czy <font class="code">*</font> (wato pamiętać, że w Scali nie ma operatorów, w zamian za to wszystko są to metody).
+			
+		</font>	
+					
+		<br>
+		
+		<a name="S1Wstep.46"></a><h2>8.1. Ogólna hierarchia typów</h2>	
+					
+		<font class="chapter">	
+			
+			Informacje o całej zaawansowanej hierarchi typów w Scali pominiemy w treści tego wykładu przedstawiając tylko kilka najważniejszych informacji w skrócie.
+
+			<br><br>
+			
+			Wszystkie klasy w Scali dziedziczą z <font class="code">Any</font>. Ma ona tylko dwie klasy pochodne : <font class="code">AnyVal</font> oraz <font class="code">AnyRef</font>.
+			
+			<br><br>
+			
+			<font class="code">AnyVal</font> przedstawiają wszystkie typy wbudowane w Scale przetrzymujące wartość : <font class="code">Byte</font>, <font class="code">Short</font>, <font class="code">Int</font>, <font class="code">Long</font>, <font class="code">Char</font>, <font class="code">Float</font>, <font class="code">Double</font>, <font class="code">Boolean</font>.
+			
+			<br><br>
+			
+			<font class="code">AnyRef</font> przedstawiają wszystkie typy referencyjne (a więc wszystkie normalne klasy jak <font class="code">java.lang.String</font>, <font class="code">scala.Iterable</font>, ...) i w rzeczywistości jest to tylko alias na <font class="code">java.lang.Object</font>. Takie podejście pozostawia jednak furtkę na rozszerzenie funkcjonalności w przyszłości.
+			
+		</font>	
+		
+		<br>
+		
+		<a name="S1Wstep.47"></a><h2>8.2. Tablice</h2>	
+					
+		<font class="chapter">	
+			
+			Do obsługi tablic została wprowadzona klasa parametryzowalna <font class="code">scala.Array[ T ]</font>  (uwaga : nawiasy [] nie są nawiasami znanymi z Javy, gdzie oznaczają tworzenie nomen omen tablicy, tutaj oznaczają one parametryzacje klasy).
+			
+			<br><br>
+			
+			Tak więc nie jest to jak w Javie, gdzie każdy typ może być tablicą* sam przez się. Została stworzona dedykowana klasa do tego celu. Dostarcza ona wiele przydatnych metod m.in. konwersji do kolekcji <font class="code">toList()</font>.
+			
+			<br><br>
+			
+			Zdefiniujmy tablicę :
+			
+			<br><br>
+			
+			<font class="code">val tablica = new Array( 1 , 2 , 3 )</font>
+			
+			<br><br>
+			
+			lub
+			
+			<br><br>
+			
+			<font class="code">val tablica : = new Array[ Int ]( 3 )</font>
+			
+			<br><br>
+			
+			Pobranie elementu z tablicy :
+			
+			<br><br>
+			
+			<font class="code">val pierwszyElement = tablica( 0 )</font>
+			
+			<br><br>
+			
+			Ustawienie (drugiego) elementu tablicy :
+			
+			<br><br>
+			
+			<font class="code">tablica( 1 ) = 10</font>
+			
+			<br><br>
+			
+			(W innych rozdziałach tego wykładu opisane zostały metody <font class="code">apply()</font> oraz <font class="code">update()</font> które odgrywają tutaj ważną rolę.).
+			
+			<br><br>
+			
+			* - pierwsze wersje Javy (do wersji 1.5) nie posiadały możliwości parametryzowania klas, ale od samego początku posiadały tablice, stąd rozwiązanie, aby definiować tablicę dodając do typu nawiasy kwadratowe '<font class="code">[]</font>'
+
+		</font>	
+		
+		<br>
+		
+		<a name="S1Wstep.48"></a><h2>8.3. Niezmienne (immutable)</h2>	
+					
+		<font class="chapter">	
+					
+			Scala jako nowoczesny język nastawiony na skalowalność oraz pracę w nowo rozpoczynającej się erze komputerów wielo-procesorowo-wielo-rdzeniowych (różne typy procesorów, każdy z nich posiada wiele rdzeni) promuje dwie techniki pozwalające odnaleźć się w tym świecie pisząc poprawnie działające programy.
+			
+			<br><br>
+			
+			Pierwsza z nich to (wspomniane wcześniej) odruchowe pisanie <font class="code">val</font> w momencie, jeśli chcemy stworzyć jakaś nową stałą (bądź zmienną !). Jeśli miała być to rzeczywiście zmienna to kompilator na pewno nam o tym przypomni, wtedy odnajdziemy <font class="code">val</font> i zamienimy je na <font class="code">var</font>.
+			
+			<br><br>
+			
+			Drugą techniką jest używanie niezmiennych struktur danych. Niezmiennych, czyli nieposiadających efektów ubocznych (side effect) podczas wywoływania metod.
+			
+			<br><br>
+			
+			Jak rozpoznać, że obiekt może mieć efekt uboczny? Otóż jeśli wywołujemy jego metodę dwa raz z tymi samymi argumentami, a ona zwóci nam dwa różne wyniki to istnieje duże prawdopodobieństwo, iż obiekt przechowuje wewnątrz jakiś stan, który został zmodyfikowany podczas pierwszego wywołania metody. To spowodowało zmianę w zwróconych wynikach podczas drugiego wywołania metody.
+			
+			<br><br>
+			
+			W zamian za brak stanu, każde wywołanie metody powoduje stworzenie nowego obiektu i zwórcenie go. Najłatwiej zobrazować to na klasie <font class="code">java.lang.String</font>, która jest immutable. Wywołanie metody <font class="code">replace( "a" , "b" )</font> nie powoduje zmodyfikowania obecnego łancucha z zamienionymi wszystkimi 'a' na 'b'. W zamian za to jest zwracana nowa instancja, która posiada odpowiednią zamianę. W tym momencie istnieją dwa obiekty, poprzedni (źródłowy łańcuch dla zmian) oraz nowy (z dokonanymi zmianami).
+			
+			<br><br>
+			
+			Scala posiada bardzo dobrze rozbudowaną bibliotekę kolekcji. W paczce <font class="code">scala.collection.immutable._</font> znajdziemy tylko i wyłącznie struktury niemodyfikowalne.
+					
+		</font>		
+		
+		<br>
+		
+		<a name="S1Wstep.49"></a><h2>8.4. Zmienne (mutable)</h2>	
+					
+		<font class="chapter">	
+		
+			W przeciwieństwie do struktur niezmiennych, struktury mutable nie tworzą nowej isntacji, a jedynie modyfikują swój wewnętrzny stan.
+			
+			<br><br>
+			
+			Dobrym przykładem może być znany z Javy <font class="code">java.util.Vector</font>, który pozwala na takie operacje jak dodawanie <font class="code">add()</font>, usuwanie <font class="code">remove()</font> czy zamienianie <font class="code">set()</font>, a wszystko to na tej samej istancji.
+			
+			<br><br>
+			
+			W czasach programów wielowątkowych powoduje to pewne komplikacje, które zostaną omówione w innym rozdziale tej serii wykładów.
+			
+			<br><br>
+			
+			Kolekcje mutable znajdują się w <font class="code">scala.collection.mutable._</font>.
+					
+		</font>		
+		
+		<br>
+		
+		<a name="S1Wstep.50"></a><h2>8.5. Generics</h2>	
+					
+		<font class="chapter">
+						
+			Jak każdy nowoczesny język Scala posiada możliwość parametryzowania klas i robi z tego bardzo dobry użytek. Przeglądając API możemy być aż zaskoczeni ilością klas sparametryzowanych.
+			
+			<br><br>
+			
+			Definiujemy bardzo podobnie (często wręcz tak samo) jak w Javie :
+			
+			<br>
+			
+			<font class="code">
+class Worek[ T ]
+{
+    def dodajDoWorka( t : T ) { ... }
+    def usunZWorka( t : T ) { ... }
+}
+			</font>	
+			
+			<br>
+			
+			Parametryzacja w Scali funkcjonalnie nie odbiega od Javy (a być może nawet ją przewyższa) chociaż nie będzie tutaj omawiana tak szczegółowo.			
+						
+		</font>	
+		
+		<br><hr>
+		
+		<a name="S1Wstep.51"></a><h2>9. Punkt startowy programu</h2>	
+		
+		<a name="S1Wstep.52"></a><h2>9.1. Metoda main()</h2>	
+					
+		<font class="chapter">	
+			
+			Podobnie jak w Javie program rozpoczynamy od metody main() pobierającej jako argument tablicę String (parametry przekazane do programu poprzez linię poleceń).
+			
+			<br>
+			
+			Ponieważ w Scali nie ma słówka static, jego rolę przejmuje umieszczanie statycznego kontentu w obiektach (singletonach).
+	
+			<br>
+	
+			<font class="code">
+object WitajSwiecie
+{
+    def main( args : Array[ String ] )
+    {
+        println( "Witaj swiecie !" )
+    }
+}
+			</font>
+
+		</font>	
+		
+		<a name="S1Wstep.53"></a><h2>9.2. Trait scala.Application</h2>	
+					
+		<font class="chapter">	
+		
+			Istnieje także klasa (a dokładniej trait) <font class="code">scala.Application</font>. Ponieważ ma on w sobie metodę startową (opisaną powyżej) to dziedzicząc z niego możemy jeszcze szybciej napisać działającą aplikację :
+
+			<br>
+
+			<font class="code">
+object WitajSwiecie extends Application
+{
+    println( "Witaj swiecie !" )
+}
+			</font>
+
+			<br>
+
+			Zyskujemy na czasie, jednak tracimy możliwość dostępu do parametrów przekazanych programowi z linii poleceń.
+
+			<br><br>
+
+			Linie kodu wpisane bezpośrednio 'w ciało klasy' zbierane są i umieszczane w konstruktorze podstawowym. Stąd linia <font class="code">println()</font> zostanie wykonana w momencie wykonania wykonywania się konstruktora (a ten zostanie wykonany, ponieważ Scala będzie tworzyć instancję tegoż obiektu, gdyż zawiera on metodę <font class="code">main()</font>).
+		
+		</font>	
+		
+		<br><hr>
+		
+		<a name="S1Wstep.54"></a><h2>10. Dziedziczenie</h2>	
+		
+		<font class="chapter">	
+		
+			W Scali (tak jak w Javie) nie ma wielodziedziczenia i odbywa się podobnie, jak to znamy do tej pory :
+			
+			<br><br>
+			
+			<font class="code">class Pies extends Zwierze</font>
+			
+			<br><br>
+			
+			Ewentualnie dla klas z konstruktorami :
+
+			<br><br>
+			
+			<font class="code">class Pies( nazwa : String , wiek : Int , dlugoscOgona : Int ) extends Zwierze( nazwa , wiek )</font>
+
+			<br><br>
+
+			Więcej o konstruktorach podstawowych można znaleźć w dziale Klasy/Konstruktory.
+		
+		</font>
+		
+		<br>
+		
+		<a name="S1Wstep.55"></a><h2>10.1. Przesłanianie metod</h2>	
+		
+		<font class="chapter">	
+		
+			Inaczej jak w Javie, przesłanianie metod w Scali wymaga obowiązkowego słówka <font class="code">override</font>. Eliminuje ona pewne nieścisłości projektowe, jakie mogą powstać kiedy w Javie programista czasem doda adnotacje <font class="code">@Override</font>, a czasem nie.
+
+			<br>
+			
+			<font class="code">
+class Pies( nazwa : String , wiek : Int , dlugoscOgona : Int ) extends Zwierze( nazwa , wiek )
+{
+    override def toString =
+    {
+        super.toString + ", dlugosc ogona = " + dlugoscOgona
+    }
+}
+			</font>
+		
+		</font>
+		
+		<br><hr>
+		
+		<a name="S1Wstep.56"></a><h2>11. Wyjątki</h2>	
+			
+		<font class="chapter">	
+			
+			Wyjątki w Scali to bardzo przyjemna sprawa ... prawdopodobnie przez to, że są totalnie przeźroczyste.
+			
+			<br><br>
+			
+			Nie ma wyjątków weryfikowalnych i nieweryfikowalnych, przez co już w momencie pisania metody nie jesteśmy zmuszani do umiejscowienia słówka <font class="code">throws</font>. Ogólna praktyka pokazuje, że przez to, iż tak bardzo w Javie się nam 'narzucają' w trakcie pisania, to są najprostszą techniką unicestwiane otrzymując status 'do zrobienia na potem'. Często jednak to potem nie następuje, a sprawa kończy się kilkoma wielkimi sekcjami <font class="code">try-catch</font> przełapującymi <font class="code">Exception</font> (lub wręcz <font class="code">Throwable</font>).
+			
+			<br><br>
+			
+			Poza nie zmuszaniem nas do myślenia o wyjątkach już od wczesnych momentów tworzenia każdej metody działają one dokładnie tak samo jak w Javie. Tak więc wyrzucamy je słówkiem throw oraz łapiemy w sekcjach <font class="code">try-catch</font>.			
+						
+		</font>	
+		
+		<br>
+		
+		<a name="S1Wstep.57"></a><h2>11.1. Przełapywanie wyjątkow</h2>	
+		
+		<font class="chapter">	
+
+			Jedyną różnicą w porównaniu do Javy jest lekka modyfikacja sekcji catch (ponadto sekcja <font class="code">try-cach</font> potrafi zwracać wartość).
+
+			<br>
+
+			<font class="code">
+try
+{
+    ...
+}
+catch
+{
+    case ioe : IOException =>
+    {
+        println( ioe )
+    }
+
+    case e : Excetpion =>
+    {
+        println( e )
+    }
+}
+finally
+{
+    ...
+}
+			</font>
+
+
+			<br>
+			
+			W sekcji <font class="code">try-catch</font> kolejność przełapywanych wyjątków liczy się tak samo jak w Javie. Zbudowana jest ona z bloku <i>pattern maching</i>. Zdobycie informacji o nim powoduje automatyczne zrozumienie składni (która w gruncie rzeczy nie jest aż tak skomplikowana).
+
+		</font>
+		
+		<br><hr>
+		
+		<a name="S1Wstep.58"></a><h2>12. Modyfikatory dostępu</h2>	
+			
+		<font class="chapter">	
+		
+			W Scali wszystko jest domyślnie publiczne, tak więc modyfikator <i>public</i> został wycofany. Dostępne są tylko <font class="code">protected</font> oraz <font class="code">private</font>.
+
+			<br><br>
+			
+			Dostęp 'paczkowy' zapewniamy przez :
+
+			<br><br>
+			
+			<font class="code">protected[ nazwaPaczki ] def metoda() ...</font>
+
+			<br><br>
+			
+			lub
+
+			<br><br>
+			
+			<font class="code">private[ nazwaPaczki ] def metoda() ...</font>
+		
+		</font>
+		
+		<br><hr>
+				
+	</body>
+
+</html>

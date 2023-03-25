@@ -1,0 +1,2491 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+		<meta name="author" content="Artur Stanek">
+		<meta name="description" content="Scala - techniki rozproszone">
+		<meta name="copyright" content="(c) autor PJWSTK 2010">
+		<link rel="stylesheet" type="text/css" href="../STYLE/common.css">
+		
+		<title>Scala - techniki rozproszone - WYKŁAD 2</title>
+		
+	</head>
+
+	<body>
+
+		<div align="center">
+			<a name="S2Rozwin"></a><h1>Scala - techniki rozproszone - WYKŁAD 2</h1>
+		</div>
+		
+		<hr><br>
+		
+		<i>
+			Ciąg wykładów dotyczący technik rozproszonych realizowanych za pomocą Scali poprzedzony zdobyciem wiedzy o tym języku programowania. 
+			
+			<br><br>
+			
+			Wykład 2 : informacje zaawansowane o języku			
+		</i>
+		
+		<br><hr>
+		
+		<a name="S2Rozwin.1"></a><h2>1. Symbole</h2>
+		
+		<font class="chapter">
+		
+			Symbole są bardzo prostym i przyjemnym tematem.
+			
+			<br><br>
+			
+			Budujemy je używając specjalnej składni :
+			
+			<br><br>
+			
+			<font class="code">val symbol : scala.Symbol = 'mojSymbol</font>
+			
+			<br><br>
+			
+			lub wykorzystując metodę faktoryzacyjną <font class="code">apply()</font> w obiekcie <font class="code">scala.Symbol</font> :
+			
+			<br><br>
+			
+			<font class="code">val symbol = scala.Symbol( "mojSymbol" )</font>	
+			
+			<br><br>
+			
+			Symbole zapewniają możliwość otrzymania takich samych obiektów dla tych samych łańcuchów tekstowych, co umożliwia porównywanie referencyjne <font class="code">== </font> :
+			
+			<br>
+			
+			<font class="code">
+val symbol1 : scala.Symbol = 'jakisTekst           
+val symbol2 = scala.Symbol( "jakisTekst" )
+val symbol3 = 'jakisTekst
+        
+println( symbol1 == symbol2 )
+println( symbol2 == symbol3 )
+println( symbol1 == symbol3 )
+			</font>	
+			
+			<br>
+			
+			da :
+			
+			<br>
+			
+			<font class="code">
+true
+true
+true
+			</font>	
+			
+		</font>	
+
+		<br><hr>
+		
+		<a name="S2Rozwin.2"></a><h2>2. Wyrażenia zwracające wartość</h2>
+		
+		<font class="chapter">
+
+			Istnieje w Javie pewna zmiennogenna sprawa: nic (oprócz operatora <font class="code">?:</font>) nie zwraca wartości! My jako programiści jesteśmy zmuszeni więc przed każdym <font class="code">if</font> czy <font class="code">for</font> tworzyć zmienne, na których zapamiętamy interesujące nas, zwrócone wyniki.
+
+			<br><br>
+			
+			Zostało to dostrzeżone przez twórców Scali i usprawnione (za wyjątkiem pętli while oraz <font class="code">do-while</font>). Z pewnością nie bez znaczenia jest także funkcyjność Scali - wszystko jest funkcją i może zwracać wartość. Nie jest to może strategicznie ważną funkcjonalnością, jednak takie podejście wpływaja na całkowity odbiór Scali, przyczyniają się także do ogólnej przejrzystości kodu i przyjemności wynikającej z programowania.
+
+			<br><br>
+			
+			[Pętle <font class="code">while</font> oraz <font class="code">do-while</font>, nie zwracają nic co mogłoby nas interesować (zwracanym typem jest dokładnie <font class="code">Unit</font>, czyli javowy <i>void</i>). Można uznać, że nie są wyrażeniami - zapewne twórcom Scali przyświecała idea prostej, nieskomplikowanej pętli.]
+
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.3"></a><h2>2.1. Blok kodu</h2>
+		
+		<font class="chapter">
+		
+			Każdy blok kodu zwraca wartość. Zwracaną wartością jest wartość ostatniego wyrażenia :
+
+			<br>
+			
+			<font class="code">
+val czasJakoTekst =
+{
+    var s = "";
+    s = "" + System.currentTimeMillis
+    s
+}
+			</font>
+			
+			<br>
+			
+			a także :
+
+			<br>
+			
+			<font class="code">
+val czasJakoTekst =
+{
+    var czas = System.currentTimeMillis
+
+    {
+        var s = "";
+        s = "" + czas
+        s
+    }
+}
+			</font>
+			
+			<br>
+			
+			W przypadku drugiego przykładu wartością zwróconą będzie wartość ostatniego wyrażenia. Ostatnim wyrażeniem jest jednak blok kodu, który zostanie potraktowany jako całość. To co on zwróci zostanie zwrócone i zapamiętane na zmiennej <font class="code">czasJakoTekst</font>.		
+		
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.4"></a><h2>2.2. if</h2>
+		
+		<font class="chapter">
+		
+			Każda instrukcja <font class="code">if</font> zwraca wartość :
+
+			<br><br>
+
+			<font class="code">val wynik = if( jakasWartosc > 10 ) jakasWartosc / 2 else jakasWartosc % 2</font>
+			
+			<br><br>
+			
+			Jeśli rozpiszemy się w Scali zapewne często będziemy pomijać deklarowanie typów, tak jak w tym przykładzie pominięto typ stałej <font class="code">wynik</font>. Kryje się tutaj ukryta pułapka, gdyż drogi rozwiązania instrukcji <font class="code">if</font> są dwie, rozważmy kolejny przykład :
+			
+			<br><br>
+			
+			<font class="code">val wynik = if( jakasWartosc > 10 ) jakasWartosc / 2 else "" + jakasWartosc % 2</font>
+			
+			<br><br>
+			
+			Skoro sami nie zadeklarowaliśmy typu <font class="code">wynik</font> to kompilator zajmie się tym za nas. Jak widać zwrotem z <font class="code">if</font> może być wartość liczbowa lub <font class="code">String</font>. Kompilator poszukując wspólnego mianownika zapewne obierze <font class="code">AnyRef</font> (czyli odpowiednik <font class="code">java.lang.Object</font>). To może jednak nie być to czego się spodziewamy.
+			
+			<br><br>
+			
+			Warto więc napisać to, czego się spodziewamy :
+			
+			<br>
+			
+			<font class="code">
+val wynik : Int = if( jakasWartosc > 10 ) jakasWartosc / 2 else "" + jakasWartosc % 2
+	// <- blad kompilacji, sekcja else zwraca String, spodziewany jest Int
+			</font>
+					
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.5"></a><h2>2.3. for</h2>
+		
+		<font class="chapter">
+
+			Instrukcja <font class="code">for</font> już nie jest tak trywialna jak <font class="code">if</font> - jak wiemy może mieć wiele iteracji lub bardzo mało. Jest to nieprzewidywalne, ale na szczęście jest struktura danych, która rozwiązuje nasze problemy - kolekcja.
+			
+			<br><br>
+			
+			<font class="code">val kolekcja = for( val i <- 1 to 10 ) yield i</font>
+			
+			<br><br>
+			
+			Powyższa linia powoduje odkładanie (za pomocą słówka <font class="code">yield</font>) do zainicjowanej za nas kolekcji kolejnych wartości <font class="code">i</font> (w tym wypadku od 1 do 10). Kiedy pętla <font class="code">for</font> się skończy kolekcja jest zwracana - czyli zapamiętana na stałej <font class="code">kolekcja</font>.
+			
+			<br><br>
+			
+			Warto wspomnieć, iż jeśli nie chcemy niczego zwraca z <font class="code">for</font> (nie chcemy niczego odkładać do kolekcji) to nie musimy używać <font class="code">yield</font>. Jednak w przeciwnym przypadku to właśnie po słówku <font class="code">yield</font> powinien stać cały blok kodu, którego wartość zwróconą <font class="code">yield</font> umieści w kolekcji.
+			
+			<br><br>
+			
+			Poprawnie :
+			
+			<br><br>
+			
+			<font class="code">val kolekcja = for( val i <- 1 to 10 ) yield { val c = i * 2; c }</font>
+			
+			<br><br>
+			
+			Niepoprawnie :
+			
+			<br>
+			
+			<font class="code">
+val kolekcja = for( val i <- 1 to 10 ) { val c = i * 2; yield c }
+	// <- blad kompilacji !! Nieprawidlowe uzycie yield.
+			</font>
+			
+			<br>
+			
+			Możnaby powiedzieć, że nie jest to do końca to czego poszukujemy, gdyż każda iteracja pętli zmusza nas do odłożenia czegoś do kolekcji. Rozwiązaniem tego jest skorzystanie z nowych możliwości składniowych pętli <font class="code">for</font> i odpowiednie jej zaprojektowanie.
+
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.6"></a><h2>2.4. try-catch-finally</h2>
+		
+		<font class="chapter">
+
+			<font class="code">
+val wynik = try
+{
+    instr1
+    instr2
+    ”ok”
+}
+catch
+{
+    case ioe : IOException =>
+    {
+        instr2
+        new Integer( 0 )
+    }
+
+    case e : Exception =>
+    {
+        instr3
+        ”err”
+    }
+}
+finally
+{
+    instr5
+}
+			</font>
+			
+			<br>
+			
+			Ponieważ wynik nie ma określonego typu kompilator przypisze go za nas, znajdując wspólny mianownik dla <font class="code">String</font> (zwracany z sekcji <font class="code">try</font>), <font class="code">Integer</font> (zwracany z sekcji <font class="code">catch</font>, <font class="code">IOException</font>) oraz dla <font class="code">String</font> (zwracany z sekcji <font class="code">catch</font>, <font class="code">Exception</font>). Aby nie popełnić w takich przypadkach błędu warto od razu napisać przy zmiennej wynik jaki typ oczekujemy (<font class="code">val wynik : String = try...</font>).
+			
+			<br><br>
+			
+			Ważna uwaga dla sekcji <font class="code">finally</font>. Wykona się ona tak samo jak w Javie (czyli w momencie kiedy był i kiedy nie było wyjątku), jednak jej zwrot nie jest brany pod uwagę (liczy się tylko zwrot z sekcji <font class="code">try</font> i/lub <font class="code">catch</font>). 
+
+		</font>
+
+		<br><hr>
+		
+		<a name="S2Rozwin.7"></a><h2>3. Interfejsy ... czyli traits</h2>
+		
+		<font class="chapter">
+
+			W Scali rozszerzono możliwości interfejsów i nazwano je cechami (traits).
+			
+			<br><br>
+			
+			Ilekroć w Javie widzimy konstrukcje klas abstrakcyjnych wybudowane po to by ominąć problem braku wielodziedziczenia. Raz napisana implementacja interfejsu umieszczana jest w klasie abstrakcyjnej jakby 'na siłę' włożoną w hierarchię klas. Niestety, nie ma łatwej możliwości na wielokrotne wykorzystanie raz poświęconego czasu i poczynionej implementacji. Najgorszym z możliwych rozwiązań jest użycie copy & paste, co prowadzi do dublowania kodu. Więcej kodu to dłuższy czas analizy (dłuższy czas analizy to większe koszty...). Poprawka lub rozszerzenia ponownie wprowadzone do jednej implementacji muszą być replikowane na inne kopie.
+			
+			<br><br>
+			
+			Traits przychodzą nam z pomocą. W odróżnieniu od swoich Javowych odpowiedników pozwalają one (dodatkowo) na umieszczanie pól oraz zaimplementowanych metod. Dzięki temu trait może przechowywać stan i operować na nim. Tak jak w Javie, jedna klasa może 'implementować' wiele traitsów. Powstają dzięki temu możliwości 'wielodziedziczenia' - czyli tworzenia miksów. Ograniczeniem nałożonym na traitsy jest niemożliwość posiadania przez nich konstruktorów.
+
+			<br>
+			
+			<font class="code">
+trait CechaWiek
+{
+    private var wiek = 0
+
+    def getWiek = wiek
+    def setWiek( nowyWiek : Int ) { wiek = nowyWiek }
+}
+
+trait CechaImie
+{
+    private val imie = ""
+    def getImie = imie
+    def setImie( noweImie : String ) { imie = noweImie }
+}
+
+
+class KlasaFinalna extends CechaWiek with CechaImie
+			</font>
+			
+			<br>
+			
+			(lub <font class="code">class KlasaFinalna extends JakasSuperklasa with CechaWiek with CechaImie</font>)
+
+			<br><br>
+			
+			<font class="code">val kf = new KlasaFinalna</font>
+
+			<br><br>
+
+			Dzięki swym właściwościom traitsy są fundamentem odzyskiwania kodu w Scali. Wystarczy przyjrzeć się kolekcjom, aby zobaczyć jak duży użytek robią one z dobrze przemyślanych i raz zaimplementowanych tratisów.
+			
+			<br><br>
+			
+			Od teraz znając traitsy możecie zmienić Państwo swoje myślenie o powstawaniu i projektowaniu klas. Tworząc klasę rozbijajcie ją na szereg cech, które ma ona posiadać. Cechy implementujcie w oddzielnych traitsach, a samą klasę finalną twórzcie jako miks pewnych cech. Rozwijając się dalej kładźcie nacisk na jak najmniejsze tworzenie klas, a jak największe tworzenie cech - cech, które będąc uniwersalne zaprojektowane okażą się wielokrotnie przydatne w różnych klasach i projektach.
+			
+			<br><br>
+			
+			Ciekawostka : co oznacza słowo '<font class="code">trait</font>' w języku polskim ??? :)
+
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.8"></a><h2>3.1. Miksy (mixins)</h2>
+		
+		<font class="chapter">
+
+			Używając cech z powyższego przykładu tworzyliśmy klasę <font class="code">KlasaFinalna</font>. Można się do niej odwoływać jako do typu, można swobodnie tworzyć wiele jej instancji. Jeśli jednak poszukiwalibyśmy czegoś szybszego, to możemy stworzyć mixin :
+
+			<br><br>
+			
+			<font class="code">val kf1 = new CechaWiek with CechaImie</font>
+
+			<br><br>
+			
+			(lub <font class="code">val kf1 = new JakasSuperklasa with CechaWiek with CechaImie</font>)
+
+			<br><br>
+			
+			W tym momencie instancja obiektu zapamiętana na stałej <font class="code">kf1</font> może być rzutowana na <font class="code">CechaWiek</font> oraz na <font class="code">CechaImie</font> (oraz na klasę z której dziedziczy - czyli superklasę). Sama jednak jest swoistego rodzaju miksem bowiem trudno jest odpowiedzieć na pytanie (wskazać) jakiego dokładnie typu jest <font class="code">kf1</font>.
+
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.9"></a><h2>3.2. Jak to działa ?</h2>
+		
+		<font class="chapter">
+
+			Otóż jak się dobrze Państwo domyślacie kompilator Scali, dzięki swej pozycji (znajduje się przed kodem docelowym Java i sam go generuje), kod traitów automatycznie umieszcza w generowanych klasach. Działa więc na zasadach copy & paste, wyręczając nas z konieczności zarządzania dużą ilością kopii tego samego kodu.
+
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.10"></a><h2>3.3. super</h2>
+		
+		<font class="chapter">
+
+			Ponieważ w przypadku tratisów mamy znamiona wielodziedziczenia wytłumaczenie reguł używania słówka <font class="code">super</font> nie jest takie proste i wymagałoby zbyt dużo czasu. Przyjrzymy się tylko prostemu przykładowi.
+			
+			<br>
+			
+			<font class="code">
+class Zwierze { def hello { println( "Zwierze" ) } }
+
+trait Siersciowate extends Zwierze
+{
+	override def hello { println( "Siersciowate" ); super.hello }
+}
+
+trait Ogoniaste extends Zwierze
+{
+	override def hello { println( "Ogoniaste" ); super.hello }
+}
+
+trait DlugoOgoniaste extends Ogoniaste
+{
+	override def hello { println( "DlugoOgoniaste" ); super.hello }
+}
+
+class Pies extends Zwierze with Siersciowate with DlugoOgoniaste
+
+val pies = new Pies
+			</font>
+			
+			<br>
+			
+			Wywołanie :
+
+			<br><br>
+			
+			<font class="code">pies.hello</font>
+
+			<br><br>
+			
+			da :
+
+			<br>
+			
+			<font class="code">
+DlugoOgoniaste
+Ogoniaste
+Siersciowate
+Zwierze
+			</font>
+			
+			<br>
+			
+			Tak więc, jak widzimy kolejność idzie 'od prawej' (od najbardziej prawego, domiksowanego traitsu) czyli <font class="code">DlugoOgoniaste</font>. Następnie wywołanie <font class="code">super</font> przechodzi do klasy z której on (<font class="code">DlugoOgoniaste</font>) dziedziczy, a więc <font class="code">Ogoniaste</font>. Ponieważ z ogoniastych doszlibyśmy do <font class="code">Zwierze</font> wykonujemy krok wstecz do siersciowatych. W tym momencie wyczerpane zostały już wszystkie możliwości i wykonywana jest metoda z klasy <font class="code">Zwierze</font>.
+			
+			<br><br>
+			
+			Warto dodać, iż kolejność wywołań <font class="code">super</font> jest ustalana przez kompilator dynamicznie w czasie kompilacji i nigdy nie możemy być do końca pewni jaka klasa będzie się znajdowała 'nad nami' (czyli z jakiej klasy wywołamy metodę którą przesłoniliśmy).
+
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.11"></a><h2>3.4. Typy strukturalne (structural types)</h2>
+		
+		<font class="chapter">
+
+			Pozostając nadal w temacie traitsów/interfejsów czas na małe oderwanie.
+			
+			<br><br>
+			
+			Czy jest możliwy świat bez interfejsów ? Otóż tak, mogą być to albo domknięcia (<i>closures</i>) albo ... <i>structural types</i>.
+
+			<br>
+			
+			<font class="code">
+def prowadz( samochod : { def start() : Unit ; def stop() : Unit } )
+{
+    samochod.start
+    samochod.stop
+}
+			</font>
+			
+			<br>
+
+			Jak widzimy, możemy narzucić pewnego rodzaju filtr na obiekt przekazany jako argument do metody <font class="code">prowadz()</font>. W typ wypadku narzucamy, że może być to dowolna instancja dowolnej klasy/obiektu jednak musi ona posiadać dwie metody:
+			
+			<br>
+			
+			- <font class="code">start()</font> - nieposiadającą żadnych argumentów oraz nic niezwracającą
+			
+			<br>
+			
+			- <font class="code">stop()</font> - porobnie jak <font class="code">start()</font>, nieposiadającą żadnych argumentów oraz nic niezwracającą
+			
+			<br><br>
+			
+			To zadanie Scala realizuje za pomocą refleksji, tak więc jest to rozwiązanie wolniejsze od standardowych interfejsów (trait'sów). To co zyskujemy to na pewno zmniejszona ilość interfejsów w programie.
+
+		</font>
+
+		<br><hr>
+		
+		<a name="S2Rozwin.12"></a><h2>4. Mutable / immutable - dyskusja</h2>
+		
+		<font class="chapter">
+
+			Przeprowadźmy krótką dyskusję za i przeciw na temat struktur danych zmiennych i niezmiennych (mutalbe/immutable).
+			
+			<br><br>
+			
+			Przypomnijmy, w Javie struktura niezmienna to na przykład <font class="code">java.lang.String</font> :
+
+			<br>
+			
+			<font class="code">
+var s = new String( "ala ma kota" )
+s = s.substring( 4 ) // ma kota
+			</font>
+			
+			<br>
+			
+			zaś struktura zmienna to na przykład <font class="code">java.util.Vector</font> :
+
+			<br>
+			
+			<font class="code">
+val v = new java.util.Vector[ Integer ]
+v.add( 1 )
+v.add( 2 )
+			</font>
+			
+			<br>
+			
+			(Wywołania metody <font class="code">add()</font> dokonują zmiany wewnątrz wektora.)
+
+			<br><br>
+			
+			W Scali struktura niezmienna to na przykład <font class="code">scala.collection.immutable.Queue</font> :
+
+			<br>
+			
+			<font class="code">
+var q = scala.collection.immutable.Queue[ String ]()
+q = q + "a"
+q = q + "b"
+			</font>
+			
+			<br>
+			
+			zaś zmienna to na przykład <font class="code">scala.collection.mutable.Set</font>:
+
+			<br>
+			
+			<font class="code">
+val s = scala.collection.mutable.Set[ String ]()
+s += "a"
+s += "b"
+			</font>
+
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.13"></a><h2>4.1. Zmienne (mutable)</h2>
+		
+		<font class="chapter">
+		
+			<b>Zalety</b>
+			
+			<br>
+			
+			- nie powstaje dużo nowych obiektów (GC odciążony)
+			
+			<br>
+			
+			- pola trzymające referencję do struktury danych mogą być stałymi (gdyż zmiany odbywają się w tej jednej instancji)
+			
+			<br><br>
+			
+			<b>Wady</b>
+			
+			<br>
+			- wytworzenie obrony dla danych na ich odczyt, zapis, modyfikacje, ...
+			
+			<br>
+			
+			- wymagana wiedza i doświadczenie z zakresu synchronizacji
+			
+			<br>
+			
+			- długi czas wytworzenia, a potem analizowania
+			
+			<br>
+			
+			- skomplikowanie kodu
+			
+			<br>
+			
+			- częste i tak niedokładne zabezpieczenie wszystkich możliwych sytuacji
+			
+			<br>
+			
+			- utrata wydajności 
+			
+		</font>
+		
+		<br>
+		
+		<a name="S2Rozwin.14"></a><h2>4.2. Niezmienne (immutable)</h2>
+		
+		<font class="chapter">		
+
+			<b>Zalety</b>
+			
+			<br>
+			
+			- prostota tworzenia
+			
+			<br>
+			
+			- niewymagana bogata wiedza i doświadczenie o zabezpieczeniach (synchronizacja)
+			
+			<br>
+			
+			- szybki czas wykonania
+			
+			<br>
+			
+			- łatwa analiza
+			
+			<br><br>
+			
+			<b>Wady</b>
+			
+			<br>
+			
+			- częste przepisywanie dziesiątek/setek/tysięcy referencji
+			
+			<br>
+			
+			- dużo pracy spada na barki GC, gdyż jest to technika obiektogenna
+			
+			<br>
+			
+			- pola trzymające referencję do struktury danych często muszą być zmiennymi, aby móc po dokonanej zmianie zapamiętać ponownie na niej nowy obiekt
+
+		</font>
+
+		<br>
+		
+		<a name="S2Rozwin.15"></a><h2>4.3. Podsumowanie</h2>
+		
+		<font class="chapter">	
+
+			Napisanie struktury zmiennej wymaga od jej twórcy dodatkowo bogatej wiedzy z zakresu synchronizacji i wielowątkowości. Z początku prosty kod zaczynamy otaczać murami (najpierw pierwszym na read, potem drugim na write,...), staje się on coraz bardziej nieprzejrzysty i przez to nieprzyjemny. Coraz więcej czasu upływa nam zanalizowanie go i ponowne rozwijanie.
+			
+			<br><br>
+			
+			Synchronizacja pochłania czas procesora i w zasadzie wszystko byłoby dobrze dla programów o małej ilości wątków (spowodowanych małą ilością dostępnych rdzeni). Jednak musimy wziąć pod uwagę, że nadchodzące czasy będą obfitować w procesory o coraz większej ilości rdzeni. Komputery niedalekiej przyszłości będą także udostępniały nam moc różnych procesorów (główny, graficzny, fizyczny,...), w których będzie wiele rdzeni dedykowanych bądź ogólnego przeznaczenia (czasami nawet setki).
+			
+			<br><br>
+			
+			Należałoby się zastanowić czy przypadkiem nie zbliżamy się do granicy w której utracony czas (takty procesora) podczas operowania wielu wątków na wielu blokach synchronized nie staje się większy, niż pozbycie się wszystkich tego typu bloków na rzecz struktur immutable.
+			
+			<br><br>
+			
+			Ich kosztem jest zwiększona praca odśmiecacza (GC), gdyż podczas próby jakiejkolwiek 'modyfikacji' tworzony jest nowa instancja o zmodyfikowanych danych. Stara zapewne nie jest już potrzebna i podlega odśmieceniu. Można powiedzieć, iż podczas tworzenia nowej instancji - szczególnie w kolekcjach - odbywa się bardzo dużo przepisywań. Dodanie na końcu dużej kolekcji jednego elementu powoduje utworzenie nowej - a więc przepisanie całej starej - powiększonej o ten jeden element na końcu. To także zajmuje czas, a więc jest kosztem - jednak musimy wiedzieć, iż nie są kopiowane olbrzymie ilości danych. Przepisywaniu ulegają tylko referencje. Proces ten z pewnością jest bardzo zoptymalizowany, dodatkowo jest to także coś co zrzucamy z naszych (programistycznych) barków na JVM.
+
+		</font>
+
+		<br><hr>
+		
+		<a name="S2Rozwin.16"></a><h2>5. Metody</h2>
+		
+		<a name="S2Rozwin.17"></a><h2>5.1. Zwracanie wielu wartości z metody</h2>
+				
+		<font class="chapter">		
+
+			Kolejna uciążliwa technika z Javy została bardzo ładnie rozwiązana w Scali. Mianowicie chodzi o zwracanie wielu wartości z metody.
+			
+			<br><br>
+			
+			Każdy z nas często spotyka się z potrzebą zwrócenia z metody więcej niż jednej danej. W takim przypadku istnieją dwie drogi: albo zwrócić tablicę obiektów albo stworzyć dedykowaną klasę w roli pudełka na zwracane dane.
+			
+			<br><br>
+			
+			Ponieważ rozwiązanie pierwsze nie jest takie miłe (utrata typów), często wybierane jest rozwiązanie drugie, a więc tworzenie specjalnej klasy tylko dla tego jednego celu - aby zwrócić dane z jednej metody.
+			
+			<br>
+			
+			Biorąc pod uwagę fakt, że potrzeba zwrócenia wielu danych z wielu metod występuje dosyć często, można się domyślić jak bardzo klasogenna jest to potrzeba.
+			
+			<br><br>
+			
+			W Scali istnieje coś takiego jak <i>Tuple</i> i pozwala nam łatwo zwrócić wiele danych z metody :
+			
+			<br>
+			
+			<font class="code">
+def m2 : Tuple2[ Int , Int] =
+{
+    ...
+    ( wynik1 , wynik2 )
+}
+			</font>
+			
+			<br>
+			
+			Jak widzimy jest to tak proste jak ubranie kilku danych do zwrócenia w nawiasy i postawienie pomiędzy nimi przecinków.
+			
+			<br><br>
+			
+			Oczywiście można pominąć jawne pisanie typu zwracanych danych, gdyż kompilator może je wywnioskować samemu :
+			
+			<br>
+			
+			<font class="code">
+def m2 =
+{
+    ...
+    ( wynik1 , wynik2 )
+}
+			</font>
+			
+			<br>
+			
+			Tak naprawdę istnieje szereg klas <font class="code">Tuple</font> (<font class="code">Tuple1[ T1 ]</font>, <font class="code">Tuple2[ T1 , T2 ]</font>, <font class="code">Tuple3[ T1 , T2 , T3 ]</font>, ...), kompilator wybiera odpowiednią i inicjuje danymi.
+			
+			<br><br>
+			
+			W <i>Tuple</i> nigdy nie tracimy typu zwracanych danych, ale nazwy ulegają anonimizacji (tak, nic nie zastąpi dedykowanej klasy - pudełka na zwracane dane) :
+			
+			<br>
+			
+			<font class="code">
+val zwroconyTuple = m2
+
+val wynik1 = zwroconyTuple._1
+val wynik2 = zwroconyTuple._2
+			</font>
+			
+			<br>
+			
+			Dostęp do poszczególnych danych odbywa się poprzez numer (licząc od 1) poprzedzony podkreśleniem.
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.18"></a><h2>5.2. Zwracanie wielu wartości z metody</h2>
+
+		<font class="chapter">			
+
+			Ciekawych technik w Scali nie brak. Co powiecie Państwo na metodę o dwóch listach argumentów??? Zapytacie zapewne, jak to wygląda oraz gdzie może być przydatne.
+
+		</font>
+		
+		<br>
+
+		<a name="S2Rozwin.19"></a><h2>5.2.1. Definiowanie</h2>
+
+		<font class="chapter">			
+
+			Metoda wygląda niezbyt skomplikowanie, co pokaże następujący przykład.
+			
+			<br><br>
+			
+			Zdefiniujmy sobie metodę :
+			
+			<br><br>
+			
+			<font class="code">def dodajLubOdejmij( a : Int , b : Int , c : Int , czyDodac : Boolean )</font>
+			
+			<br>
+			
+			ewentualnie
+			
+			<br>
+			
+			<font class="code">def dodajLubOdejmij( czyDodac : Boolean , a : Int , b : Int , c : Int )</font>
+			
+			<br><br>
+			
+			Jak widać dokonujemy tutaj pomieszania tego 'co' oraz tego 'co z tym zrobić', posprzątajmy to :
+			
+			<br><br>
+			
+			<font class="code">def dodajLubOdejmij( a : Int , b : Int , c : Int )( czyDodac : Boolean )</font>
+			<br>
+			ewentualnie
+			<br>
+			<font class="code">def dodajLubOdejmij( czyDodac : Boolean )( a : Int , b : Int , c : Int )</font>
+			
+			<br><br>
+			
+			Dzięki możliwości dwóch list argumentów możemy separować sobie czyste dane oraz akcje, które możemy na nich wykonać.
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.20"></a><h2>5.2.2. Wywoływanie</h2>
+
+		<font class="chapter">	
+
+			Wywołanie takiej metody wygląda następująco :
+			
+			<br><br>
+
+			<font class="code">dodajLubOdejmij( 1 , 2 , 3 )( true )</font>
+
+			<br><br>
+			
+			I w tym momencie można by uznać, że to koniec tematu, gdyby nie jeden szczegół  podczas wywoływania takiej metody Scala pozwala nam nawiasy drugiej listy argumentów zamienić na klamrowe w momencie, jeśli jest tam tylko jeden argument :
+			
+			<br><br>
+
+			<font class="code">dodajLubOdejmij( 1 , 2 , 3 ){ true }</font>
+			
+			<br><br>
+			
+			Nie musimy tego pisać w jednej linii :
+			
+			<br>
+
+			<font class="code">
+dodajLubOdejmij( 1 , 2 , 3 )
+{
+    true
+}
+			</font>
+			
+			<br>
+			
+			Możemy wstawić do środka także cały blok kodu, byle by kończył się zwróceniem wartości <font class="code">Boolean</font> :
+			
+			<br>
+
+			<font class="code">
+dodajLubOdejmij( 1 , 2 , 3 )
+{
+    println( "przygotowuje dane do wywolania metody dodajLubOdejmij" )
+    println( "dodawanie przeprowadze jesli reszta z dzielenia obecnego" )
+    println( "czasu w milisekundach jest rowna zero" )
+    
+    System.currentTimeMillis % 2 == 0
+}
+			</font>
+			
+			<br>
+			
+			Co istotne : ten blok kodu wykona się przed wywołaniem metody! Zostanie on przetworzony, a wynik (<font class="code">Boolean</font>) zostanie wstawiony jako drugi argument metody.
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.21"></a><h2>5.2.3. Tworzenie własnych instrukcji językowych</h2>
+
+		<font class="chapter">	
+
+			Co powiecie na możliwość tworzenia własnych 'instrukcji' językowych ? Nie ważne czy jesteście fizykiem jądrowym czy chemikiem molekularnym - być może zetknęliście się z tym, że normalnie dostępne instrukcje są  niezbyt pomocne podczas rozwiązywania postawionego problemu ?
+			
+			<br>
+			
+			Najlepszym rozwiązaniem jest poświęcić trochę czasu najpierw i przygotować sobie zestaw pomocnych instrukcji.
+			
+			<br><br>
+			
+			Zobaczmy jak łatwo wytworzyć swoje własne narzędzia, w tym wypadku własną pętlę :
+
+			<br>
+
+			<font class="code">
+def petla( warunek : => Boolean )( cialoPetli : =>Unit )
+{
+    while( warunek ) cialoPetli
+}
+			</font>
+
+			<br>
+			
+			Co się dzieje w powyższym kawałku kodu ? Ponieważ Scala jest językiem obiektowo-funkcyjnym, zdefiniowaliśmy sobie metodę dwu-argumentową. Jako pierwszy argument przekazujemy metodę, która nie bierze żadnych argumentów, a w wyniku swojej pracy zwraca <font class="code">Boolean</font>. Jako drugi argument przekazujemy metodę, która nie bierze żadnych argumentów oraz nie zwraca nic (<font class="code">Unit</font> w Scali możemy traktować jako <font class="code">void</font> z Javy).
+			
+			<br><br>
+			
+			Tak zdefiniowaną metodę możemy użyć w następujący sposób :
+
+			<br>
+			
+			<font class="code">
+var i = 0
+petla( i < 10 )
+{
+    i += 1
+    println( "i = " + i )
+}
+			</font>
+			
+			<br>
+			
+			entualnie :
+
+			<br>
+
+			<font class="code">
+var i = 0
+petla( { i += 1 ; i<=10 } ) println( "i = " + i )
+	// kod w tym miejscu moze wydawac sie niezrozumialy, jako pierwszy argument metody
+	// przekazujemy metode anonimowa, ktora po wykonaniu sie zwraca wartosc Boolean,
+	// a wiec to czego oczekuje nasza metoda 'petla'
+			</font>
+
+			<br>
+
+			Oczywiście powyższy przykład jest banalny, jednak wszystko zależy od problemu, który został postawiony. Być może stworzona pętla działając w dziedzinie fizyki jądrowej czy chemii molekularnej będzie działać w zupełnie odmienny sposób niż to rozumiemy pod pojęciem 'pętla'.
+			
+			<br><br>
+			
+			Na koniec proszę o refleksję, co czujecie patrząc na następujący kawałek kodu :
+
+			<br>
+			
+			<font class="code">
+var i = 0
+while( i < 10 )
+{
+    i += 1
+    println( "i = " + i )
+}
+			</font>
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.22"></a><h2>5.3. Metody domyślne</h2>
+
+		<font class="chapter">	
+
+			W Scali zostały wprowadzone dwie bardzo pomocne metody, na których opiera się duża ilość innych konstrukcji językowych.
+			
+			<br><br>
+			
+			Metody te można nazwać domyślnymi (automatycznymi), gdyż wywołanie ich nastąpi automatycznie kiedy (po nazwie klasy/obiektu) bez pisania kropki czy nazwy metody użyjemy nawiasów półokrągłych.
+			
+			<br><br>
+			
+			Na początku definicja klasy oraz uzupełnienie jej danymi, aby było wiadomo co robimy :
+			
+			<br>
+
+			<font class="code">
+class WynikiGonitw
+{
+    private var numerGonitwy = 0
+    
+    private val db = new scala.collection.mutable.Hashmap[ Int , Int ]
+    	// numer_gonitwy -> wynik_gonitwy
+
+    def dodajWynik( wynikGonitwy : Int )
+    {
+    	db.put( numerGonitwy , wynikGonitwy )
+    	numerGonitwy += 1
+    }
+}
+
+val wyniki = new WynikiGonitw
+wyniki.dodajWynik( 20 )
+wyniki.dodajWynik( 18 )
+wyniki.dodajWynik( 21 )
+			</font>
+			
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.23"></a><h2>5.3.1. apply()</h2>
+
+		<font class="chapter">	
+
+			Odpytanie o wynik gonitwy 2 :
+			
+			<br><br>
+			
+			<font class="code">val wynikDrugiejGonitwy = wyniki( 2 )</font>
+			
+			<br><br>
+			
+			Tak właśnie odwołujemy się do metody <font class="code">apply()</font>. Kompilator zamieni to wywołanie na <font class="code">wyniki.apply( 2 )</font>, jednak kod się nie skompiluje, dopóki nie dostarczymy jej definicji :
+			
+			<br><br>
+			
+			<font class="code">def apply( numerGonitwy : Int ) = db.get( numerGonitry )</font>
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.24"></a><h2>5.3.2. update()</h2>
+
+		<font class="chapter">	
+		
+			Skoro możemy zapytać się o wyniki gonitwy, to powinniśmy mieć także możliwość ustawienia jej wynku.
+			
+			<br><br>
+			
+			<font class="code">wyniki( 2 ) = 19</font>
+			
+			<br><br>
+			
+			Powyższą linię kompilator zamieni na wywołanie <font class="code">wyniki.update( 2 , 19 )</font>. Tak jak poprzednio, kod się nie skompiluje, dopóki sami nie dostarczymy definicji tejże metody :
+			
+			<br><br>
+			
+			<font class="code">def update( numerGonitwy : Int , wynikGonitwy : Int ) { db.put( numerGonitwy , wynikGonitwy ) }</font>
+			
+			<br><br>
+			
+			Dodatkowo możemy używać tej metody nie podając pierwszego argumentu :
+			
+			<br><br>
+			
+			<font class="code">wyniki() = 20</font>
+			
+			<br><br>
+			
+			dla metody <font class="code">update()</font> :
+			
+			<br><br>
+			
+			<font class="code">def update( wynikGonitwy : Int ) { ... }</font>
+
+
+
+			<br><br><br><br>
+			
+			Na koniec tej części rozdziału pytanie: co powiecie teraz o następującym kawałku kodu ?
+			
+			<br>
+
+			<font class="code">
+var tablica = new Array[ String ]( 1 )
+
+tablica( 0 ) = "a"
+
+val pierwszyString = tablica( 0 )
+			</font>
+			
+			<br>
+			
+			Czyż nie wygląda to znajomo ? :)		
+					
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.25"></a><h2>5.4. Metody poprzednikowe/jednoargumentowe (unary)</h2>
+
+		<font class="chapter">	
+
+			W jednym z poprzednich działów omawialiśmy nazewnictwo metod. Istnieje jednak mała grupa specjalnych 4-ech metod 'poprzednikowych'. Ich nazwa postawiona jest przed instancją klasy (lub obiektem) na rzecz, którego jest wywoływana.
+			
+			<br><br>
+			
+			Następujące cztery wywołania :
+			
+			<br>
+			
+			<font class="code">
+-2.0
+!2.0
++2.0
+~2.0
+			</font>
+			
+			<br>
+			
+			Scala zamieni automatycznie na wywołanie metod :
+			
+			<br>
+			
+			<font class="code">
+(2.0).unary_-
+(2.0).unary_!
+(2.0).unary_+
+(2.0).unary_~
+			</font>
+			
+			<br>
+			
+			(Uwaga : patrząc dokładnie w API Scali widzimy, że w klasie <font class="code">Double</font> występują tylko dwie metody unary : <font class="code">.unary_-</font> oraz <font class="code">.unary_+</font> , dwie kolejne zostały użyte tutaj tylko w ramach przykładu.)
+			
+			<br><br>
+			
+			Obrazuje się to tym, iż jeśli gdziekolwiek w kodzie zawrzemy np. wywołanie :
+			
+			<br>
+			
+			<font class="code">
+val samochod = new Scamochod( Color.RED , 1999 )
+!samochod
+			</font>
+			
+			<br>
+			
+			to Scala nie skompiluje kodu, dopóki w definicji klasy Samochod nie dodamy metody nazwanej <font class="code">.unary_!</font> .
+			
+			<br>
+			
+			<font class="code">
+class Samochod( kolor : Color , rokProdukcji : Int )
+{
+    def unary_! = new Samolot( kolor , rokProdukcji )
+    	// skoro zaprzeczenie ('nie samochod') to z pewnoscia samolot
+}
+			</font>
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.26"></a><h2>5.5. Metoda jako typ danych</h2>
+
+		<font class="chapter">	
+
+			Typ danych 'metoda'/funkcja jest czymś bardzo naturalnym w Scali i często stosowanym.
+			
+			<br><br>
+			
+			Na początku przyjrzyjmy się jak opisać metodę.
+			
+			<br><br>
+			
+			<font class="code">var boolean2String : (Boolean) => String = null</font>
+			
+			<br><br>
+			
+			Jak to w Scali nazwa zmiennej (<font class="code">var</font>) znajduje się po słówku <font class="code">var</font>, a przed znakiem dwukropka. Nasza zmienna nosi nazwę <font class="code">boolean2String</font> i jak się domyślacie jest typu funkcyjnego. Po dwukropku znajduje się miejsce na typ zmiennej. Aby była to metoda powinna ona posiadać następującą konstrukcję :
+			
+			<br><br>
+			
+			( <font class="code">tutaj_argument1</font> , <font class="code">tutaj_argument2</font> , <font class="code">tutaj_argument3</font> ) => <font class="code">tutaj_typ_zwracanych_danych</font>
+			
+			<br><br>
+			
+			W nawiasach półokrągłych znajdują się typy argumentów (bez nazw zmiennych) przedzielone przecinkami. Znaczek '<font class="code">=></font>' możemy tłumaczyć jako 'zamienią się na' (przekazane agumenty w wyniku wywołania funkcji zamienią się na). Następnie następuje znak równości i warość zmiennej - naszym przypadku <font class="code">null.</font>
+			
+			<br><br>
+			
+			Teraz przypiszmy coś do tej zmiennej :
+			
+			<br>
+			
+			<font class="code">
+boolean2String = ( b : Boolean ) =>
+{
+	println( "zmieniam boolean b " + b + " na string" ); "" + b
+}
+			</font>
+			
+			<br>
+			
+			Została stworzona anonimowa metoda. Jako argument typu <font class="code">Boolean</font> bierze zmienną <font class="code">b</font>. Po znaku równości następuje ciało metody. W nim wypisujemy napis na konsole oraz konwertujemy zmienną logiczną na łańcuch tekstowy. Jako, że jest to ostatnia linia w metodzie, jest on zwracany.
+			
+			<br><br>
+			
+			Wywołanie tej metody jest bardzo proste :
+			
+			<br><br>
+			
+			<font class="code">boolean2String( true )</font>
+			
+			<br><br>
+			
+			Co jeszcze możemy przypisać do tej zmiennej? Otóż jeśli posiadalibyśmy inną metodę spełniającą założenia <font class="code">(Boolean)=>String</font> to można by ją przypisać.
+			
+			<br><br>
+			
+			<font class="code">def boolean2StringBis( b : Boolean ) = { "" + b }</font>
+			
+			<br><br>
+			
+			<font class="code">boolean2String = boolean2StringBis</font>
+			
+			<br><br>
+			
+			Metody zadeklarowane w klasach (za pomocą <font class="code">def</font>) oraz te zadeklarowane jako zmienne <font class="code">var</font> (lub stałe <font class="code">val</font>) traktowane są na równi.
+			
+			<br><br>
+			
+			Jeśli uznamy, że metoda <font class="code">boolean2String</font> ma zbyt długą nazwę to możemy ją skrócić używając jej aliasu :
+			
+			<br><br>
+			
+			<font class="code">val b2s = boolean2String // od tej pory oprocz boolean2String mozemy takze uzywac b2s</font>
+			
+			<br><br>
+			
+			Tak zdefiniowaną metodę można także przekazać gdzieś, gdzie jest spodziewana :
+			
+			<br>
+			
+			<font class="code">
+def testerKonwerteraBoolean2String( konwerter : (Boolean) => String )
+{
+    if( !konwerter( true ).equals( "true" ) || !konwerter( false).equals( "false" ) )
+    	throw new Exception( "konwerter nie pracuje poprawnie" )
+}
+
+testerKonwerteraBoolean2String( b2s )
+			</font>
+			
+			<br>
+			
+			Prosze zauważyć, jak do metody <font class="code">testerKonwerteraBoolean2String</font>, przekazywana jest metoda <font class="code">b2s</font>, gdyż spełnia ona warunki argumentu, jakiego się ona (<font class="code">testerKonwerteraBoolean2String</font>) spodziewa (a spodziewa się dowolnej metody, która jako argument pobiera <font class="code">Boolean</font> i zwraca <font class="code">String</font>).
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.27"></a><h2>5.6. Funkcje wyższego poziomu (higher order functions)</h2>
+
+		<font class="chapter">	
+
+			Ponieważ Scala jest językiem funkcyjnym (dla ścisłości oczywiście obiektowo-funkcyjnym) istnieją w niej bardzo dobrze rozwinięte metody, które aby wykonać swoje działanie muszą otrzymać jako argument inną metodę.
+			
+			<br><br>
+			
+			Ponieważ dla javowca trudno na pierwszy rzut zorientować się o co chodzi to rozpatrzmy następujący przykład.
+			
+			<br><br>
+			
+			Interfejs (a dokładniej <font class="code">trait</font>) <font class="code">scala.Iterable</font> jest implementowany przez wiele kolekcji (m.in. przez <font class="code">scala.collection.mutable.Queue</font>). Posiada on w sobie wiele funkcji wyższego poziomu, a my przyjrzymy się metodzie <font class="code">foreach()</font>. Jej definicja to :
+
+			<br><br>
+			
+			<font class="code">def foreach( f : ( A ) = > Unit ) : Unit</font>
+
+			<br><br>
+			
+			i oznacza, że ta metoda bierze jako agument metodę (która jako swój jedyny argument bierze typ generyczny A oraz nic nie zwraca), sama zaś nic nie zwraca.
+			
+			<br><br>
+			
+			Wywołanie :
+
+			<br>
+			
+			<font class="code">
+val q = new scala.collection.mutable.Queue[ String ]
+q += "a"
+q += "b"
+
+q.foreach( ( s ) => println( s ) )
+			</font>
+			
+			<br>
+			
+			da na konsoli :
+			
+			<br>
+			
+			<font class="code">
+a
+b
+			</font>
+			
+			<br>
+			
+			Przyjrzyjmy się temu, co przekazujemy do metody <font class="code">foreach()</font>, czyli <font class="code">( s ) => println( s )</font>. Jest to anonimowa metoda, która bierze jeden argument (zmienna <font class="code">s</font>). Jako swoje ciało wywołuje metodę <font class="code">println()</font> i za jej pomocą wypisuje na konsoli każdy zgromadzony element kolejki.
+			
+			<br><br>
+			
+			Nie musimy definiować naszej anonimowej metody w środku wywołania <font class="code">foreach()</font>. Możemy przygotować sobie metodę i zapamiętać na stałej lub użyć metody aktualnie zdefiniowanej w klasie :
+
+			<br>
+			
+			<font class="code">
+def foreachWypisywacz1( s : String ) { println( s ) } // metoda z klasy
+
+val foreachWypisywacz2 = ( s : String ) => { println( s ) }
+
+q.foreach( foreachWypisywacz1 )
+q.foreach( foreachWypisywacz2 )
+			</font>
+
+			<br>
+			
+			Obie te funkcje robią to samo i to samo wypiszą na konsoli.
+			
+			<br><br>
+			
+			W przypadku wypisywania na konsoli tego, co mamy w kolekcji możemy zrezygnować z powyższych funkcji i użyć <font class="code">println()</font> :
+			
+			<br>
+			
+			<font class="code">
+q.foreach( println )
+	// metoda println() pobiera jako argument String i zwraca Unit, a wiec idealnie tutaj pasuje
+			</font>
+			
+			<br>
+			
+			Jak widać jako argumenty metody wyższego poziomu możemy w pełni definiować metody 'z ręki' bądź przekazywać inne metody pod jednym warunkiem: muszą one brać odpowiednią listę argumentów oraz zwracać odpowiedni typ danych.
+			
+			<br><br>
+			
+			W Scali jest bardzo dużo metod <i>higher order functions</i> i opis ich nie zmieściłby się tutaj. Mam jednak nadzieję, że przenikając ze świata obiektowego Javy po pewnym czasie zaczniecie Państwo czerpać dużo przyjemności z funkcyjnego programowania.
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.28"></a><h2>6. Pętla FOR</h2>
+
+		<font class="chapter">
+
+			Specjalny rozdział dla 'specjalnej' pętli : <font class="code">for</font> . W porównaniu do Javy została ona znacznie rozwinięta dając programistom więcej możliwości.
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.29"></a><h2>6.1. Definicja</h2>
+
+		<font class="chapter">
+
+			Ogólny wygląd pętli :
+			
+			<br><br>
+			
+			<font class="code">for( sekwencja ) yield wyrażenie</font>
+			
+			<br><br>
+			
+			( Dla przypomnienia : słówko <font class="code">yield</font> umieszcza każdy wynik wyrażenia w niejawnie zadeklarowanej liście, która będzie zwrócona jako wynik pętli :
+			
+			<br><br>
+			
+			<font class="code">val listaParzystychIntow = for( ... ) yield { if( i%2 == 0 ) i else i+1 }</font> )
+			
+			<br><br>
+			
+			W sekcji 'sekwencja' powinien znajdować się <i>generator</i> oraz mogą znajdować się <i>definicje</i> i <i>filtry</i> - sekcje są przedzielone średnikami. Zobaczmy jak to wygląda :
+			
+			<br>
+			
+			<font class="code">
+val listaCzerwonychOwocow = for( owoc <- listaOwocow ; kolor = owoc.getKolor ;
+			if( kolor == Color.RED ) ) yield owoc
+			</font>
+			
+			<br>
+			
+			Kawałek <font class="code">owoc <- listaOwocow</font> jest tzw. generatorem i tworzy on nam pozycje do przejrzenia. Symbol <font class="code"><-</font> reaguje z każdym typem, który ma odpowiednie metody, w tym przypadku jest to <font class="code">foreach()</font>.
+			
+			<br>
+			
+			Każda pozycja <font class="code">listyOwocow</font> jest zapamiętywana w stałej (<font class="code">val</font>) <font class="code">owoc</font>. Po średniku znajduje się sekcja definicji, gdzie zdefiniowana została stała <font class="code"></font>kolor. Dzięki temu w ciele pętli możemy uniknąć zaciemniających kod definicji. Po kolejnym średniku znajduje się sekcja filtru, która ogranicza ilość wywołań ciała tylko do owoców o kolorze czerwonym.
+			
+			<br>
+			
+			Tak zbudowana pętla pokazuje, że ciało pętli nie zwróci dokładnie każdego owoca z listy owoców, a jedynie te, które przeszły przez sekcję z filtrami.
+
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.30"></a><h2>6.2. Generator</h2>
+
+		<font class="chapter">
+
+			Sekcja generatora daje nam kilka użytecznych poleceń.
+			
+			<br><br>
+			
+			Jeśli chcemy przejść przez całą kolekcję lub tablicę :
+			
+			<br><br>
+			
+			<font class="code">for( element <- kolekcjaLubTablicaElementow ) ...</font>
+			
+			<br><br>
+			
+			Jeśli chcielibyśmy wygernerować liczby od 1 do 5 włącznie (inclusive) :
+			
+			<br><br>
+			
+			<font class="code">for( i <- 1 to 5 ) println( i ) // 1, 2, 3, 4, 5</font>
+
+			<br><br>
+						
+			Zaś jeśli chcielibyśmy wygernerować liczby od 1 do 5 wyłącznie (exclusive) :
+			
+			<br>
+			
+			<font class="code">
+for( i <- 1 to 5 ) println( i ) // 1, 2, 3, 4
+for( index <- 0 until tablicaStringow.length ) tablicaStringow( index ) ...
+			</font>
+			
+			<br>
+			
+			Można także zagnieżdżać generator w generatorze :
+			
+			<br><br>
+			
+			<font class="code">for( x <- 1 to 1024 ; y <- 1 to 768 ) ...</font>
+			
+			<br><br>
+			
+			Odpowiednikiem tego kodu jest Javowy :
+			
+			<br>
+			
+			<font class="code">
+// kod Java
+for( int x = 1 ; x <= 1024 ; x++ )
+{
+    for( int y = 1 ; y <= 768 ; y++ )
+    {
+        ...
+    }
+}
+			</font>
+			
+			<br>
+			
+			Powróćmy jeszcze do przykładu z początku tej sekcji :
+			
+			<br>
+			
+			<font class="code">for( element <- kolekcjaLubTablicaElementow ) ...</font>
+			
+			<br><br>
+			
+			Utorzona stała <font class="code">element</font> nie może być zmienną, tak więc nie można jej poprzedzić słówkiem <font class="code">var</font> (zaś słówko <font class="code">val</font> możemy pominąć).
+			
+			<br><br>
+			
+			Oczywiście, jeśli chcemy to możemy określić typ dla <font class="code">element</font>, aby wszystko było jasne :
+			
+			<br>
+			
+			<font class="code">for( element : Owoc <- kolekcjaLubTablicaElementow ) ...</font>
+
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.31"></a><h2>6.3. Definicje</h2>
+
+		<font class="chapter">
+
+			W tej sekcji możemy tworzyć dowolne stałe (słówko <font class="code">val</font> można pominąć).
+			
+			<br>
+			
+			<font class="code">
+for( samochod <- listaSamochodow ; rokProdukcji = samochod.getRokProdukcji ;
+	kolor = samochod.getKolor ) ...
+	
+	// zdefinowane zostaly stale rokProdukcji oraz kolor
+			</font>
+			
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.32"></a><h2>6.4. Filtry</h2>
+
+		<font class="chapter">
+		
+			Każdy filtr zaczyna się od słówka <font class="code">if</font>, jego zadaniem jest zwrócenie wartości <font class="code">Boolean</font>. W przypadku spełnienia warunku (<font class="code">true</font>) wykonane zostanie ciało pętli.
+			
+			<br>
+			
+			Można umieścić wiele filtrów przedzielając je średnikami i za każdym razem od nowa używając słówka <font class="code">if</font>. Są one traktowane jako iloczyn logiczny (koniunkcja - aby wykonało się ciało pętli wszystkie muszą zwrócić <font class="code">true</font>).
+			
+			<br>
+			
+			<font class="code">
+for( samochod <- listaSamochodow ; rokProdukcji = samochod.getRokProdukcji ;
+	kolor = samochod.getKolor ; if rokProdukcji >= 1999 ; if color != Color.RED ) ...
+	
+	// dla wszystkich samodchodów wyprodukowanych od 1999 roku innych niz czerwone
+			</font>
+			
+			<br>
+			
+			Ponieważ zapisanie tego w jednej linii kodu staje się mało czytelne to można to podzielić :
+
+			<br>
+			
+			<font class="code">
+for
+(
+    samochod <- listaSamochodow ;
+    rokProdukcji = samochod.getRokProdukcji ;
+    kolor = samochod.getKolor ;
+    if rokProdukcji >= 1999 ;
+    if color != Color.RED
+) ...		
+			</font>
+		
+		</font>
+
+		<br>
+
+		<a name="S2Rozwin.33"></a><h2>6.5. break i continue</h2>
+
+		<font class="chapter">
+
+			W Sclali porzucono break*  i continue ponieważ źle się to komponowało z funkcyjnością języka. O ile jeszcze można powiedzieć jaką rolę ma continue w pętli, tak trudno jest powiedzieć co robiłoby w funkcji (w Scali możemy pisać zarówno imperatywnie jak i funkcjonalnie).
+			
+			<br>
+			
+			Jako zamiennik break i continue twórca Scali poleca dobre ułożenie warunków (filtrów) w pętli <font class="code">for</font> - dzięki temu nie mamy tak nienaturalnych konstrukcji jak kontynuuj i przerwij - wszystko wykonuje się naturalnie. Pętla kończy się, kiedy generator się wyczerpie lub kiedy warunek (dla pętli <font class="code">while</font>) nie zostanie spełniony.
+			
+			<br><br>
+			
+			Inne możliwe rozwiązania :
+			
+			<br>
+			
+			- break można zastąpić rozbijając kod na mniejsze metody i używajać <font class="code">return</font> do szybszego zakonczenia metody (metody, która 'nic nie zwraca' - a więc <font class="code">Unit</font>);
+			
+			<br>
+			
+			- continue można zastąpić upakowując kawałki kodu w <font class="code">if</font> .
+			
+			<br><br>
+			
+			Jeszcze inne rozwiązanie to napisać własny odpowiednik pętli <font class="code">while</font> do której będzie przekazywany warunek (pierwszy argument) oraz funkcja z 'ciałem pętli do wykonania' (drugi argument). Wnętrze pętli opakowujemy w <font class="code">try-catch</font> i wywołując 'nasze continue' wyrzucamy wyjątek, który przełapujemy. Zewnętrze pętli opakowujemy także w try-catch, gdzie wyłapujemy nasz wyjątek wyrzucany w momencie wykonania 'naszego break'. Przykładowa implementacja :
+
+			<br>
+
+			<font class="code">
+object BreakLoop
+{
+    object Break extends RuntimeException
+    object Continue extends Exception
+
+    def break { throw Break }
+
+    def continue { throw Continue }
+
+    def whileTrue( condition : => Boolean ) ( block : => Unit )
+    {
+        try
+        {
+            while( condition ) try { block } catch { case Continue => }
+        }
+        catch
+        {
+            case Break =>
+        }
+    }
+
+}
+			</font>
+			
+			<br>
+			
+			Oraz zastosowanie :
+
+			<br>
+			
+			<font class="code">
+import BreakLoop._
+
+var i = 0
+whileTrue
+{
+    i += 1
+    if (i < 3) continue
+    if (i >= 5) break
+}
+			</font>
+			
+			<br>
+			
+			* - na stronach Scali (www.scala-lang.org) można znaleźć informację, że break będzie wprowadzone do Scali v2.8
+
+		</font>
+
+		<br><hr>
+
+		<a name="S2Rozwin.34"></a><h2>7. Case class</h2>
+
+		<font class="chapter">
+
+			Krążą pogłoski, iż prawdziwy javowiec będzię miał duże problemy ze zrozumieniem czym są <i>case class</i>.
+			
+			<br><br>
+			
+			Postarajmy się to zmienić !!
+			
+			<br><br>
+			
+			<font class="code">case class Owoc( nazwa : String , waga : Int )</font>
+			
+			<br><br>
+			
+			Za pomocą dodatkowego słówka case zyskaliśmy :
+			
+			<br>
+			
+			- przesłoniętą metodę <font class="code">toString()</font>, która od tej pory skupia się na przekazanych przez nas argumentach do konstruktora dając następujący, czytelny output : <font class="code">Owoc(jablko,12);</font>
+			
+			<br>
+			
+			- brak konieczności pisania operatora <font class="code">new</font>* podczas tworzenia instancji tejże klasy, wystarczy tylko <font class="code">val owoc = Owoc( "jablko" , 12 );</font>
+			
+			<br>
+			
+			- argumenty <font class="code">nazwa</font> oraz <font class="code">waga</font> są stałymi**, dla każdej z nich zostaje wygenerowany getter w postaci jej nazwy, tak więc można otrzymać wartość poprzez wywołanie <font class="code">val nazwa = owoc.nazwa;</font>
+			
+			<br>
+			
+			- porównywanie referencyjne <font class="code">==</font> zamieniane jest na porównywanie argumentów przekazanych do konstruktora, tak więc wykonane zostanie <font class="code">o1.name.equals( o2.name ) && o1.waga == o2.waga;</font>
+			
+			<br>
+			
+			- zalety związane z <i>pattern maching</i> (o czym mowa będzie później).
+			
+			<br><br>
+			
+			Cóż można zauważyć z powyższych punktów? Otóż: <i>case class</i> jest klasą nastawioną na dane przekazane do konstruktora. W przedstawiony przykładzie najważniejsze stają się <font class="code">nazwa</font> oraz <font class="code">waga</font> - można powiedzieć, iż 'grają pierwsze skrzypce'.
+			
+			<br><br>
+			
+			Poza tym <i>case class</i> nie różnią się niczym od najnormalniejszych klas. Mogą dziedziczyć, mogą być dziedziczone, mogą posiadac pola oraz metody.
+			
+			<br><br><br>
+			
+			* - jak to jest realizowane ? Otóż automatycznie jest generowany companion object w postaci singletonu :
+			
+			<br>
+			
+			<font class="code">
+object Owoc
+{
+    def apply( nazwa : String , waga : Int ) = new Owoc( nazwa , waga )
+}
+			</font>
+			
+			<br>
+			
+			Wywołanie <font class="code">Owoc( "jablko" , 12 )</font> powoduje wywołanie jego metody <font class="code">apply()</font>, która bierze argumenty takie same, jak konstruktor i zwraca instancje nowego obiektu.
+			
+			<br><br><br>
+			
+			** - dodając słówko <font class="code">var</font> przed każdą z nich zamieni je na zmienne i będzie można nadawać im wartość <font class="code">poprzez owoc.nazwa = "truskawka"</font>, chcąc uczynić je prywatnymi można dodać modyfikator <font class="code">private</font> : <font class="code">case class Owoc( private var nazwa : String , waga : Int )</font> - jednak ukrywanie zmiennych nie do końca leży w naturze <i>case class</i>
+
+		</font>
+
+		<br><hr>
+
+		<a name="S2Rozwin.35"></a><h2>8. Porównywanie wzorców (pattern matching)</h2>
+
+		<font class="chapter">
+
+			Istnieje w Scali pewna konstrukcja językowa, którą najprościej porównać do <font class="code">switch</font> (z Javy). Oczywiście nie trzeba dodawać, że ta konstrukcja posiada dużo większe możliwości :).
+			
+			<br><br>
+			
+			Po pewnym czasie od jej poznania, może znacznie zmniejszyć się ilość używanych instrukcji <font class="code">if</font>. Dodatkowo niesie ze sobą ważne dla poprawności i bezpieczeństwa kodu praktyki (klasy <i>sealed</i>, jak <font class="code">Option[T]</font> lub <font class="code">Either[L,R]</font>).
+			
+			<br><br>
+			
+			Postać ogólna to :
+			
+			<br><br>
+			
+			selector <font class="code">match</font> { alternatywy }
+			
+			<br><br>
+			
+			Selektor to nazwa zmiennej lub stałej, którą chcemy rozpatrzyć.
+			
+			<br><br>
+			
+			Alternatywa ma postać :
+			
+			<br><br>
+			
+			<font class="code">case warunek => { blok_kodu }</font>
+			
+			<br><br>
+			
+			Warunki dla przejrzystości opisano poniżej i można je ze sobą mieszać.
+
+		</font>
+
+		<a name="S2Rozwin.36"></a><h2>8.1. Po wartościach</h2>
+
+		<font class="chapter">
+
+			<font class="code">
+zmiennaLubStala match
+{
+    case "Ala" => println( "opcja 1 - string 'Ala'" )
+    case 5 => println( "opcja 2 - integer 5" )
+    case true => println( "opcja 3 - boolean true" )
+    case _ => println( "opcja 4 - cokolwiek niesklasyfikowanego wyzej" )   
+}
+			</font>
+			
+			<br>
+			
+			W przedstawiony powyżej kawałku kodu dokonujemy rozpatrywania po wpisanych na stałe wartościach jak <font class="code">String</font>, <font class="code">Integer</font> i <font class="code">Boolean</font>.
+			
+			<br><br>
+			
+			Ostatnia linia zawiera znaczek '<font class="code">_</font>' oznaczający w tym wypadku 'dowolną inną wartość nie złapaną powyżej' (odpowiednik sekcji <font class="code">default</font> z Javowego switch). Może to być na przykład <font class="code">String</font>, o ile nie będzie miał wartości "Ala". Tą ostatnią linię można zamienić na :
+			
+			<br><br>
+			
+			<font class="code">case wartoscDowolna => println( "opcja 4 - " + wartoscDowolna)</font>
+			
+			<br><br>
+			
+			Teraz '<font class="code">_</font>' zamieniliśmy na <font class="code">wartoscDowolna</font> i pełni ona tą sąmą rolę co powyżej, gdyż nie ogranicza ona wyniku, co do wartości lub typu - jednym słowem 'złapie wszystko'. Co ją  odróżnia od '<font class="code">_</font>' to to, że możemy jej użyć w ciele alteratywy (w tym wypadku w <font class="code">println()</font>).
+
+		</font>
+
+		<a name="S2Rozwin.37"></a><h2>8.2. Po typach danych</h2>
+
+		<font class="chapter">
+
+			<font class="code">
+zmiennaLubStala match
+{
+    case s : String => println( "opcja 1 - " + s )
+    case i : Int => println( "opcja 2 - " + i )
+    case b : Boolean => println( "opcja 3 - " + b )
+    case _ => println( "opcja 4 - cokolwiek niesklasyfikowanego wyzej" )   
+}
+			</font>
+
+			<br>
+
+			W tym przykładzie porównujemy po typach danych, jednocześnie od razu zapamiętując wartość na stałej.
+
+		</font>
+
+		<a name="S2Rozwin.38"></a><h2>8.3. Po case class</h2>
+
+		<font class="chapter">
+
+			Jedną z najciekawszych ról case class jest możliwość rozpatrywania ich w sekcji match otrzymując od razu dostęp do wartości z jakimi zostały stworzone.
+			
+			<br>
+			
+			<font class="code">
+case class OdpowiedzZSerwera( response : String )
+case class ZaptanieDoSerwera( request : String )
+
+val stalaDoRozpatrzenia : Any = new OdpowiedzZSerwera( "hello from server" )
+
+stalaDoRozpatrzenia match
+{
+    case OdpowiedzZSerwera( odpowiedz ) => println( "odpowiedz z serwera : " + odpowiedz )
+    case ZaptanieDoSerwera( zapytanie ) => println( "zapytanie do serwera : " + zapytanie )
+}
+			</font>
+			
+			<br>
+			
+			Powyższy kod przestawia jak zostały zdewiniowane dwie case class: jedna stworzona do wysłania zapytania do serwera i druga z jego odpowiedzią. Następnie tworzmy instancję jednej z nich i rozpatrujemy w sekcji <font class="code">match</font>. Dzięki nacechowaniu case class na dane z konstruktora możemy je od razu poprać.
+			
+			<br><br>
+			
+			Możemy także łatwo przemienić powyższy przykład na porównywanie po typach danych :
+			
+			<br>
+			
+			<font class="code">
+stalaDoRozpatrzenia match
+{
+    case o : OdpowiedzZSerwera => println( "odpowiedz z serwera : " + o.response )
+    case z : ZaptanieDoSerwera => println( "zapytanie do serwera : " + z.request )
+}
+			</font>
+
+		</font>
+
+		<a name="S2Rozwin.39"></a><h2>8.4. Po tuple</h2>
+
+		<font class="code">
+zmiennaLubStala match
+{
+    case ( a , b , c ) => println( "tuple 3, a = " + a + ", b = " b + ", c = " + c )
+    case _ => println( "cala reszta" )
+}		
+		</font>
+		
+		<a name="S2Rozwin.40"></a><h2>8.5. Po sekwencjach</h2>
+
+		<font class="chapter">
+		
+			Można także porównywać sekwencje (jak lista czy tablica) określając czego poszukujemy i na którym miejscu :
+			
+			<br>
+			
+			<font class="code">
+zmiennaLubStala match
+{
+    case List( 0 , _ , _ ) =>
+    {
+    	println("znaleziono liste, ktora na pierwszym miejscu ma integer 0 i posiada")
+    	println("tylko trzy elementy")
+    }
+    
+    case _ =>
+}
+			</font>
+			
+			<br>
+			
+			Można także użyć parametru '<font class="code">_*</font>' dla określenia dowolnej ilości elementów sekwencji (włącznie z ich brakiem, a więc zerowym rozmiarem).
+			
+			<br>
+			
+			<font class="code">
+zmiennaLubStala match
+{
+    case List( 0 , _* ) =>
+    {
+    	println("znaleziono liste, ktora na pierwszym miejscu ma integer 0, a nastepnie")
+    	println("posiada dowolna ilosc elementow")
+    }
+    	
+    case _ =>
+}
+			</font>
+
+		</font>
+		
+		</font>
+		
+		<a name="S2Rozwin.41"></a><h2>8.6. Ograniczanie alternatyw</h2>
+
+		<font class="chapter">
+		
+			Dodatkowo możemy użyć if</font> do ograniczania danej alternatywy :
+
+			<br><br>
+
+			<font class="code">
+zmiennaLubStala match
+{
+    case i : Int if i > 5 => ...
+    case Punkt( x , y ) if x > y => ...
+    case _ => ...
+}
+			</font>
+		
+		</font>
+		
+		</font>
+		
+		<a name="S2Rozwin.42"></a><h2>8.7. Wyłuskanie danych poprzez przypisanie stałej</h2>
+
+		<font class="chapter">
+		
+			Jeśli jesteśmy zainteresowani zainicjowaniem stałej z którejś z wewnętrznych możliwości alternatywy to możemy uczynić to za pomocą znaczka <font class="code">@</font> :
+			
+			<br>
+			
+			<font class="code">
+val lista : Any = List( 0 , 1 , 2 , 3 )
+            
+lista match
+{
+    case List( 0 , drugi @ _ , trzeci @ _* ) =>
+    {
+    	println( "drugi = " + drugi + ", trzeci = " + trzeci )
+    }
+}
+			</font>
+			
+			<br>
+			
+			Powyżej do stałych <font class="code">drugi</font> oraz <font class="code">trzeci</font> przełapujemy wartości drugiego i trzeciego elementu sekwencji.
+			
+			<br><br>
+			
+			Wykonując powyższy kod uzyskamy :
+			
+			<br><br>
+			
+			<font class="code">drugi = 1, trzeci = List(2, 3)</font>
+			
+			<br><br>
+			
+			Oczywiście ten sposób (<font class="code">@</font>) możemy stosować w dowolnym przypadku :
+			
+			<br>
+			
+			<font class="code">
+case class Punkt( x : Int , y : Int )
+        
+val stala : Any  = Punkt( 20 , 10 )
+            
+stala match
+{
+    case i : Int if i > 5 =>
+    
+    case Punkt( x , yBis @ y ) if x > y =>
+    {
+    	println( "x = " + x + ", y = " + y + ", yBis = " + yBis )
+    }
+    
+    case _ =>
+}   
+			</font>
+			
+			<br>
+			
+			da :
+			
+			<br><br>
+			
+			<font class="code">x = 20, y = 10, yBis = 10</font>
+			
+			<br><br>
+			
+			(Ponownie przełapanie <font class="code">y</font> - w postaci <font class="code">yBis</font> - może nie jest tutaj konieczne. Jednak dzięki temu wiemy, iż jeśli mielibyśmy alternatywę rozpatrującą <i>case class</i>,  zaś jej konstruktor brałby kolejną <i>case class</i>, a ta znów ponowną, zaś ta miałaby wiele argumentów to możemy w ten sposób wyłuskać sobie dowolną daną.)		
+					
+		</font>
+		
+		<a name="S2Rozwin.43"></a><h2>8.8. Niedopasowany wzorzec</h2>
+
+		<font class="chapter">
+		
+			W momencie kiedy żadna z alternatyw nie będzie pasować blok <font class="code">match</font> wyrzuci wyjątek <font class="code">scala.MatchError</font>.
+			
+			<br><br>
+			
+			Czasami jest to bardzo ważne aby on zainstniał i powiedział nam dokładnie, że żadna z alternatyw nie pasowała. Jeśl jednak chcemy uniknąć wyjątku można zawsze na końcu dodać alternatywę, która przełapie wszystko :
+			
+			<br>
+			
+			<font class="code">
+a match
+{
+    case 20 => println( "alternatywa 1" )
+    case "Ala" => println( "alternatywa 2" )
+    case _ => println( "alternatywa 3 - przelapujaca wszystko co nie zostalo dopasowane" )
+}
+			</font>
+		
+		</font>
+		
+		<a name="S2Rozwin.44"></a><h2>8.9. Extractors</h2>
+
+		<font class="chapter">
+		
+			Ekstraktory pomagają budować jeszcze bardziej zaawansowane alternatywy. Dzięki nim jesteśmy w stanie używać/rozpatrywać wszystkie zaawansowane przypadki z postawionego przed nami problemu w sekcji <font class="code">match</font>.
+			
+			<br>
+			
+			<font class="code">
+object Email
+{
+    def unapply( s : String ) : Option[ ( String , String ) ] =
+    {
+        val tablica = s.split( "@" )
+
+        if( tablica.length == 2 )
+            Some( ( tablica(0) , tablica(1) ) )
+        else
+            None
+    }
+}
+			</font>
+			
+			<br>
+			
+			Ekstraktor to obiekt posiadający metodę <font class="code">unapply()</font>, która zwraca <font class="code">Option[T]</font>. Jest on sparametryzowany przez <i>Tuple</i> (dokładniej to <font class="code">Tuple2[ String , String]</font>). Zwraca <font class="code">Some( ( nazwaUzytkownika , domena ) )</font>, jeśli przekazany <font class="code">String</font> będzie spełniał założenia (będzie adresem email), oraz <font class="code">None</font> w przeciwnym przypadku.
+			
+			<br><br>
+			
+			Jak rozpatrzyć ten ekstraktor ?
+			
+			<br>
+			
+			<font class="code">
+val adres : String = "as@pjwstk.edu.pl"
+
+adres match
+{
+    case Email( uzytkownik , domena ) =>
+    {
+    	println( "to jest adres email, uzytkownik to " + uzytkownik + ", domena to " + domena )
+    }
+    
+    case _ => println( "to nie jest adres email" )
+}
+			</font>
+		
+		</font>
+		
+		<a name="S2Rozwin.45"></a><h2>8.10. Sealed class</h2>
+
+		<font class="chapter">
+		
+			W zasadzie ten dział powinien znaleźć się w opisującym case classy, jednak ponieważ używany jest tylko w <i>pattern maching</i> to zostanie opisany tutaj.
+			
+			<br><br>
+			
+			Czasem istnieje potrzeba wymuszenia na sprawdzającym (<font class="code">match</font>), aby rozpatrzył wszystkie możliwości, a nie tylko te, które sobie upatrzył (lub których się spodziewa).
+			
+			<br><br>
+			
+			Z pomocą przychodzi tutaj słówko <font class="code">sealed</font>. Wszystkie klasy <i>case class</i>, które będą dziedziczyć z klasy oznaczonej <font class="code">sealed</font> zostaną automatycznie uznane za zbiór niezbędny do rozpatrzenia.
+			
+			<br><br>
+			
+			Zobaczmy to na przykładzie :
+			
+			<br>
+			
+			<font class="code">
+sealed class Owoc
+       
+case class Jablko( waga : Int ) extends Owoc
+case class Pomarancz( waga : Int ) extends Owoc
+
+val j = Jablko( 2 )
+val p = Pomarancz( 1 )
+			</font>
+			
+			<br>
+			
+			I <font class="code">Jablko</font> i <font class="code">Pomarancz</font> dziedziczą z klasy <font class="code">Owoc</font> oznaczonej jako <font class="code">sealed</font>. Rozpatrując teraz :
+			
+			<br>
+			
+			<font class="code">
+val owoc : Owoc = p
+
+owoc match
+{
+    case Jablko( waga ) => ...
+}
+			</font>
+			
+			<br>
+			
+			jeśli zapomnimy rozpatrzyć wszystkie możliwe opcje (w tym wypadku zapomnieliśmy dodać <font class="code">case Pomarancz( waga ) => ...</font> ) to kompilator upomni nas stosownym ostrzeżeniem.
+			
+			<br><br>
+			
+			Ta bardzo przydatna praktyka pozwala pisać jeszcze lepsze programy. Mamy pewność, że w przyszłości, kiedy pula możliwych opcji się nam zwiększy to kompilator podpowie, gdzie trzeba powprowadzać nowe rozpatrzenia.		
+					
+		</font>
+		
+		<a name="S2Rozwin.46"></a><h2>8.11. Option[ T ]</h2>
+
+		<font class="chapter">
+		
+			Idealną sytuacją, kiedy chcemy zwrócić z jakiejś metody coś-albo-nic jest wykorzystanie klasy <font class="code">Some[ T ]</font>. Aby zapewnić sytuacje 'nic' jest jeszcze obiekt <font class="code">None</font>. I <font class="code">case class Some[ T ]</font> i <font class="code">case object None</font> dziedziczą z <font class="code">sealed class Option[ T ]</font> dzięki czemu rozpatrując <font class="code">Some</font> (i chcąc uzyskać to co on przechowuje w sobie) musimy także rozpatrzyć <font class="code">None</font>.
+			
+			<br>
+			
+			<font class="code">
+def pobierzSamochod( typ : Int ) : Some[ Samochod ] =
+{
+    if( typ < 0 )
+        None
+    else
+    if( typ == 1 )
+        Some( new Maluch() )
+    else
+        Some( new Polonez() )
+}
+			</font>
+			
+			<br>
+			
+			W powyższej metodzie w zależności od przekazanego typu zwracamy instancję jakiegoś samochodu (<font class="code">Maluch</font> lub <font class="code">Polonez</font>) opakowane w klasę <font class="code">Some</font>. Jednak, jeśli jest to niepoprawny typ, to zwracamy <font class="code">None</font>. Następnie możemy rozpatrzyć :
+			
+			<br>
+			
+			<font class="code">
+val samochod = pobierzSamochod( 1 )
+
+samochod match
+{
+    case Some( maluch ) => println( maluch )
+    	// jako ze Some jest to case class tak wiec mozemy w ten sposob uzykac obiekt z
+    	// jakim zostala utworzona
+    	
+    case Some( polonez ) => println( polonez )
+    
+    case None => println( "zly typ samochodu" )
+}
+			</font>
+			
+			<br>
+			
+			Jeśli sprawdzając <font class="code">Some</font> pominiemy <font class="code">None</font>, lub jeśli tylko sprawdzimy <font class="code">None</font>, ale bez Some to kompilator na pewno o tym przypomni.
+			
+			<br><br>
+			
+			<font class="code">Option[ T ]</font> jest bardzo często wykorzystywany w kolekcjach Scali - wszędzie tam gdzie w Javie spodziewalibyśmy się otrzymac cos-albo-null. W Scali (dzięki <font class="code">Option[T]</font>) praktycznie został wyeliminowany problem niezainicjowanych obiektów (<font class="code">null</font>) i <font class="code">NullPointerException</font>.
+			
+			<br><br>
+			
+			Wykorzystywanie <font class="code">Option</font> w mapach :
+			
+			<br>
+			
+			<font class="code">
+val valueOption = map.get( key )
+
+valueOption match
+{
+    case Some( value ) => ...
+    case None => ...
+}
+			</font>
+			
+			<br>
+			
+			lub prościej :
+			
+			<br>
+			
+			<font class="code">
+map.get( key ) match
+{
+    case Some( value ) => ...
+    case None => ...
+}
+			</font>
+					
+		</font>
+		
+		<a name="S2Rozwin.47"></a><h2>8.12. Either[ L , R ]</h2>
+
+		<font class="chapter">
+		
+			Uzupełnieniem <font class="code">Option[ T ]</font> jest <font class="code">Either[L,R]</font>, które pozwala na zwrot dwóch wykluczających się wartości : albo lewej albo prawej (można to definować jako dobra/zła wartość, ciepło/zimno, pies/kot, ...). W odróżeniniu do <font class="code">Option[T]</font> możemy zwórcić coś w sytuacji <font class="code">None</font> i zazwyczaj jest to <font class="code">Left</font> (dla powiedzenia lewy w sensie zły, niepoprawny, nieoczekiwany).
+			
+			<br>
+			
+			<font class="code">
+def pobierzSamochodZBazyDanych( id : Int ) : Either[ Exception , Samochod ] =
+{
+    try
+    {
+        ...
+        Right( samochod )
+    }
+    catch
+    {
+        case e : Exception => Left( e )
+    }
+}
+			</font>
+			
+			<br>
+			
+			I wywołanie powyższej metody :
+			
+			<br>
+			
+			<font class="code">
+pobierzSamochodZBazyDanych( 10 ) match
+{
+    case Left( exception ) => println( "blad podczas pobierania z bazdy danych, " + exception )
+    case Right( samochod ) => println( "pobrany samochod to " + samochod )
+}		
+			</font>
+			
+		</font>
+		
+		<br><hr>
+		
+		<a name="S2Rozwin.48"></a><h2>9. Ukryte konwersje (implicit conversions)</h2>
+
+		<font class="chapter">
+				
+			Często żałujemy z powodu tego, iż ktoś uczynił swoją klasę jako <font class="code">final</font> - przez co zablokował możliwość dziedziczenia z niej. Jak wiemy świat się rozwija, pojawiają się nowe możliwości oraz nowe potrzeby. Klasa, kiedyś dobrze napisana i prawidłowo zabezpieczona jako <font class="code">final</font>, po kilku latach staje się niedość dobrze odpowiadać panującym realiom. Dodatkowo jest jeszcze gorzej, jeśli w takiej klasie odkryje się błędy.
+			
+			<br><br>
+			
+			Używając Scali okazuje się, że nie do końca wszystko jest stracone.				
+				
+		</font>
+		
+		<a name="S2Rozwin.49"></a><h2>9.1. Jako metody</h2>
+
+		<a name="S2Rozwin.50"></a><h2>9.1.1. Używanie</h2>
+		
+		<font class="chapter">
+		
+			Przyjrzyjmy się następującej linii :
+			
+			<br><br>
+			
+			<font class="code">val lista = "Czesc".toList</font>
+			
+			<br><br>
+			
+			Wywołujemy metodę <font class="code">toList()</font> na obiekcie klasy <font class="code">String</font>. Jednak sama klasa <font class="code">String</font> nie posiada takowej metody, a dodatkowo uniemożliwia nam dziedziczenie gdyż jest <font class="code">final</font>.
+			
+			<br><br>
+			
+			Technika ukrytych konwersji przychodzi nam z pomocą. Szukając odnajdujemy, iż dla powyższej linii wykonana jest konwersja umieszczona w obiekcie <font class="code">scala.Prefef</font> o nazwie <font class="code">stringWrapper()</font> :
+			
+			<br><br>
+			
+			<font class="code">implicit def stringWrapper( x : String ) = new runtime.RichString( x )</font>
+			
+			<br><br>
+			
+			Jak widać ukryta konwersja ma postać metody oznaczonej dodatkowym słówkiem <font class="code">implicit</font>. To dzięki niemu kompilator dostaje, iż jeśli zajdzie potrzeba zamiany typu A na typ B to może skorzystać z tej metody.
+			
+			<br><br>
+			
+			Przeanalizujmy powyższy przykład.
+			
+			<br><br>
+			
+			W Javie w takim momencie kompilator wyrzuciłby komunikat, iż klasa String nie posiada takowej metody - i było by 'po sprawie'. Jednak Scala daje nam jeszcze jedną szansę. W momencie, kiedy miałby pojawić sie takowy komunikat o błędzie, przeszukuje on wszystkie obecnie dostepne metody <font class="code">implicit</font>, sprawdzając czy konwersja oferowana przez którąś z nich nie zaspokaja tego żądania. W tym wypadku kompilator sprawdza po której zamianie Stringa-na-inny-obiekt będzie możliwe wykonanie metody <font class="code">toList()</font>. Tak samo jak podczas wywoływania metod czy nazewnictwa klas - jeśli sytuacja będzie niederministyczna (dwie konwersje pozwolą uruchomic metodę <font class="code">toList()</font>) kompilator odstąpi od konwersji i nas o tym zawiadomi.
+			
+			<br><br>
+			
+			Skąd kompilator bierze metody <font class="code">implicit</font> ? Otóż możemy myśleć o nich w kategoriach normalnych metod. Tak jak każe inne używane przez nas metody i ta musi się znajdować w zasięgu (<i>scope</i>). Można także uznać, że jest to technika wyręczająca nas z napisania następującej linii :
+			
+			<br><br>
+			
+			<font class="code">stringWrapper( "Czesc" ).toList</font>
+			
+			<br><br>
+			
+			Techniki tej - jak każdej innej - trzeba używać rozsądnie!
+			
+			<br><br>
+			
+			Skończmy analizować powyższy przykład. Wszystkie metody z <font class="code">scala.Predef</font> są zaimportowane do każdego pliku automatycznie. Znajduje się tam szereg użytecznych metod, a także i metody <font class="code">implicit</font>. Wśród nich <font class="code">stringWrapper()</font>, która zamieni <font class="code">String</font> na <font class="code">RichString</font>. ( Nie wgłębiając się w <font class="code">RichString</font> wystarczy nam informacja, że w jej środku znajduje się wywołana metoda <font class="code">toList()</font>. )
+					
+		</font>
+		
+		<a name="S2Rozwin.51"></a><h2>9.1.2. Zastosowania</h2>
+		
+		<font class="chapter">
+		
+			<i>Implicit conversions</i> może nam pomóc podczas operowania na <font class="code">javax.Swing</font> (nie <font class="code">scala.swing</font>).
+			
+			<br><br>
+			
+			Przyjemne i proste wywołanie :
+			
+			<br><br>
+			
+			<font class="code">jButton.addActionListener( (e:ActionEvent) => ... )</font>
+			
+			<br><br>
+			
+			możemy zrealizować z pomocą konwersji :
+			
+			<br>
+			
+			<font class="code">
+implicit def actionPerformedWrapper( func : (ActionEvent) => Unit ) =
+	new ActionListener { def actionPerformed( e : ActionEvent ) = func( e ) }
+			</font>
+			
+			<br>
+			
+			Co się tutaj dzieje? Otóż nic skomplikowanego ! Do metody <font class="code">addActionListener()</font> przekazujemy anonimową funkcję, która jako swój parametr pobiera <font class="code">ActionEvent</font> oraz nic nie zwraca (<font class="code">Unit</font>). Normalnie to doprowadziłoby do błędu, jednak kompilator rozgląda się za taką konwersją, która pobierałaby taką właśnie metodę jako argument i zwróciła porządany <font class="code">ActionListener</font>.
+			
+			<br>
+			
+			W metodzie <font class="code">implicit</font> pobieramy całą przekazaną wcześniej funkcję do <font class="code">addActionListener()</font> i zapamiętujemy ją na zmiennej <font class="code">func</font>. Następnie tworzymy <font class="code">ActionListener</font>, w którego metodzie <font class="code">actionPerformed()</font> wywołujemy <font class="code">func</font>.
+		
+		</font>
+		
+		<a name="S2Rozwin.52"></a><h2>9.2. Jako zmienne/stałe</h2>
+		
+		<font class="chapter">
+		
+			Załóżmy, że mamy następującą metodę pobierającą dwie listy argumentów :
+			
+			<br>
+			
+			<font class="code">
+def metoda( argument1 : String )( implicit argument2 : String )
+{
+    println( "argument1 = " + argument1 + ", argument2 = " + argument2 )
+}
+			</font>
+			
+			<br>
+			
+			Jak widzimy drugi argument oznaczony jest słówkiem <font class="code">implicit</font>, co oznacza, że w przypadku jeśli go nie użyjemy to zostanie dopasowany jakiś z dostępnych. Zdefiniujmy go :
+			
+			<br><br>
+			
+			<font class="code">implicit val drugiArgument = "drugi"</font>
+			
+			<br><br>
+			
+			Stała ta pełni taką samą rolę jak metody oznaczone jako <font class="code">implicit</font> - a podpowiadamy kompilatorowi, iż może jej użyć w pewnych warunkach.
+			
+			<br><br>
+			
+			Od tej pory, jeśli czasami 'zapomnimy' o drugim argumencie, a w naszym zasięgu będzie się znajdowała odpowiednia zmienna (lub stała) oznaczona <font class="code">implicit</font> wywołanie :
+			
+			<br><br>
+			
+			<font class="code">metoda( "pierwszy" )</font>
+			
+			<br><br>
+			
+			da :
+			
+			<br><br>
+			
+			<font class="code">argument1 = pierwszy, argument2 = drugi</font>
+		
+			<br><br>
+		
+			W przypadku jeśli w naszym zasięgu (scope) nie byłoby odpowiedniej zmiennej/stałej to kompilator zgłosi błąd - w końcu nie można wywoływać metody dwu-argumentowej zapominając o jednym z nich. 
+		
+		</font>
+		
+		<br><hr>
+		
+		<a name="S2Rozwin.53"></a><h2>10. Zakończenie </h2>
+		
+		<font class="chapter">
+		
+			To już koniec poznawania podstaw Scali. Dzięki zdobytej wiedzy składnia, informacje przedstawione w następnym rozdziale, nie powinny stwarzać problemu.
+		
+		</font>
+		
+		<a name="S2Rozwin.54"></a><h2>10.1. Scala 2.8</h2>
+		
+		<font class="chapter">
+		
+			Obecnie (styczeń 2010) trwają prace nad wersją 2.8. Zawierać ona będzie szereg kolejnych, ciekawych technik, poprawki (choć te wydawane są dosyć często) oraz udoskonalenia (jak np. przyspieszenie procesu kompilacji).
+		
+		</font>
+		
+		<a name="S2Rozwin.55"></a><h2>10.1.1. Nazwy dla argumentów metod - named parameters</h2>
+		
+		<font class="chapter">
+		
+			W przypadku metod wieloargumentowych, zwłaszcza w momencie kiedy większość z nich jest tego samego typu, łatwo o pomyłkę.
+			
+			<br><br>
+			
+			Z pomocą przychodzą <i>named parameters</i>, czyli nazwy dla parametrów.
+			
+			<br><br>
+			
+			Na przykład, dla metody :
+			
+			<br>
+			
+			<font class="code">
+def polaczZBazaDanych( ip : String , port : Int , databaseName : String ,
+	userName : String , userPassword : String , additionalConnectParameters : String )
+			</font>
+			
+			<br>
+			
+			zmęczony programista, goniony przez terminy (być może pracujący po nocy) może popełnić błąd i pomylić się w przekazywanych stringowych argumentach. Oczywiście kompilator nie wyłapie tego typu błędu więc wszystko wydaje się być w porządku.
+			
+			<br><br>
+			
+			Używanie named parameters w Scali 2.8 będzie bardzo łatwe. Dla zaprezentowanej powyżej metody będzie to :
+			
+			<br>
+			
+			<font class="code">
+val johnsPassword = "mySecretPassword"
+val databasePort = 15123
+polaczZBazaDanych( databaseName = "test" , userName = "john" , userPassword = johnsPassword ,
+	ip = "127.0.0.1" , port = databasePort , additionalConnectParameters = "" )
+			</font>
+			
+			<br>
+			
+			Proszę zauważyć, ze umiejscowienie przekazywanych przez nas argumentów nie gra roli. Najważniejsze są nazwy, które kompilator odpowiednio przypisze.
+
+		</font>
+		
+		<a name="S2Rozwin.56"></a><h2>10.1.2. Argumenty domyślne</h2>
+		
+		<font class="chapter">
+		
+			Kolejną nowością w odróżnieniu do obecnej wersji Scali (v 2.7) będą domyślne wartości dla argumentów (nie) przekazanych metodzie.
+			
+			<br><br>
+			
+			Dla metody :
+			
+			<br>
+			
+			<font class="code">
+def polaczZBazaDanych( ip : String = "127.0.0.1" , port : Int = 115123 , databaseName : String ,
+	userName : String , userPassword : String , additionalConnectParameters : String = "" )
+			</font>
+			
+			<br>
+			
+			jej wywołania mogą wyglądać następująco :
+			
+			<br>
+			
+			<font class="code">
+polaczZBazaDanych( "192.168.1.1" , , "test" , "john" , "mySecretPassword" )
+// pominięto port oraz additionalConnectParameters gdyż będą one miały domyślną wartość
+// przedefiniowano ip, z wartosci domyslnej do nowej
+
+polaczZBazaDanych( userName = "john" , userPassword = "mySecretPassword" , databaseName = "test" )
+// uzywajac named parameters w ogole nie uzywamy parametrow posiadajacych wartosci domyslne
+			</font>
+
+		</font>
+		
+		<a name="S2Rozwin.57"></a><h2>10.1.3. Pozostałe zmiany i nowości</h2>
+		
+		<font class="chapter">
+		
+			Pozostałe zmiany i nowości których możemy spodziewać się w Scali 2.8 :
+			
+			<br>
+			
+			- przedefiniowana struktura kolekcji ,aby były one bardziej regularne i przewidywalne, są to zmiany typowo organizacyjne, a więc większość kodu źródłowego nie zostanie zmieniona;
+			
+			<br>
+			
+			- package objects - do dzisiaj to coś definiowanego jako pogrupowane pliki w pewne logiczne 'paczki', jednak Twórcy Scali myślą aby uwolnić package od plików i wprowadzając słówko kluczowe package na równi z class lub object pozwolić nam je definiować;
+			
+			<br>
+			
+			- nowości i usprawnienia w Scala Swing;
+			
+			<br>
+			
+			- interpreter REPL (w którym można testować i pisać programy 'z ręki') zostanie odświeżona i uzupełniona o nowe możliwości;
+			
+			<br>
+			
+			- kontynuacje - dodane jako moduł rozszerzeń do kompilatora, opisane szerzej w innym dziale.
+			
+			<br><br>
+			
+			Kierunek na przyszłość : uczynić Scalę całkowicie zrównolegloną i konkurencyjną. Dzisiejsza bolączka programistów ma być zmniejszona dzięki temu, że to sama Scala (jej biblioteka standardowa) w miarę dostępnych procesorów/rdzeni będzie przeprowadzać operacje równolegle, a zatem wykorzystywać całą moc drzemiącą w dostępnym sprzęcie.
+		
+		</font>
+		
+		<a name="S2Rozwin.58"></a><h2>10.2. Biblioteki dodatkowe</h2>
+		
+		<font class="chapter">
+		
+			Grupy miłośników Scali zaczęły tworzyć biblioteki dodatkowe, uzupełniające standartowe API o wiele przydatnych funkcjonalności.
+			
+			<br><br>
+			
+			Głównie są to :
+			
+			<br>
+			
+			- Lift Web Framework http://liftweb.net/ - działający w kontenerze Java pozwala pisać w Scali aplikacje sieciowe wielowątkowe, duży projekt, tworzy go wiele znakomitych postaci;
+			
+			<br>
+			
+			- The Scala Community Library (Scalax) http://scalax.scalaforge.org/ - biblioteka ogólnego przeznaczenia uzupełniająca biblioteke standartowa Scali;
+			
+			<br>
+			
+			- Scalaz (Scar-lah-zed) http://code.google.com/p/scalaz/ - biblioteka dostarczająca funcjonalności nie dostępne obecnie w Scali;
+			
+			<br>
+			
+			- Scala/xml http://lamp.epfl.ch/~emir/projects/ - dodatkowe narzędzia dla XMLa;
+			
+			<br>
+			
+			- Scales http://code.google.com/p/scala-scales/ - eksperymentalny DSL pozwalający pisać strony WWW;
+			
+			<br>
+			
+			- Specs http://code.google.com/p/specs/ - pozwala na tworzenie BDD (Behavior-Driven-Design), toworzony jako alternatywa dla JUnit.
+			
+			<br><br>
+			
+			Lista ta cały czas się powiększa i jest dostępna na stronie Contributed Libraries and Tools ( http://www.scala-lang.org/node/1209 ).		
+					
+		</font>
+		
+		<a name="S2Rozwin.59"></a><h2>10.3. O czym nie zostało powiedziane </h2>
+		
+		<font class="chapter">
+		
+			Ponieważ nie da się w tak krótkim czasie przedstawić wszystkich możliwości i zalet Scali warto by wspomnieć o tym co się nie zmieściło :
+			
+			<br><br>
+			
+			- Scala Swing - dzięki swoim możliwościom Scala ułatwia pisanie aplikacji GUI, staje się to możliwe za pomocą dołączonego do języka pakietu scala.swing - wykorzystując zawarte tam wrappery pisanie okienek staje się bardzo przyjemne;
+			
+			<br><br>
+			
+			- Scala w sposób naturalny traktuje XML pozwalając pisać tagi wprost, tak jak każdą inną instrukcję. Podejście to dodatkowo jest uzupełnione o użyteczne klasy i metody z pakietu scala.xml, co czyni pracę nad XMLem bardzo łatwą.
+				
+		</font>
+
+
+		<br><hr>
+				
+	</body>
+
+</html>

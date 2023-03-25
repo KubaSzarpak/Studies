@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+  <meta name="author" content="Krzysztof Barteczko, Edgar Głowacki, Artur Stanek, Bartłomiej Starosta">
+  <meta name="description" content="Technologie programowania rozproszonego (TPR)">
+  <meta name="copyright" content="(c) Krzysztof Barteczko, Edgar Głowacki, Artur Stanek, Bartłomiej Starosta, PJWSTK 2010">
+  <link rel="stylesheet" type="text/css" href="../STYLE/spis.css">   
+  <title>Technologie programowania rozproszonego</title>
+</head>
+<body id="spisbody">
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<div align="Center">
+<h3>12. Scala - techniki rozproszone - WYKŁAD 2</h3>
+</div>
+<div id="spis"> 
+<a href="S2Rozwin.html#S2Rozwin.1" target="right">&nbsp;1. Symbole</a><br>
+<a href="S2Rozwin.html#S2Rozwin.2" target="right">&nbsp;2. Wyrażenia zwracające wartość</a><br>
+<div id="lev2">
+<a href="S2Rozwin.html#S2Rozwin.3" target="right">&nbsp;2.1. Blok kodu</a><br>
+<a href="S2Rozwin.html#S2Rozwin.4" target="right">&nbsp;2.2. if</a><br>
+<a href="S2Rozwin.html#S2Rozwin.5" target="right">&nbsp;2.3. for</a><br>
+<a href="S2Rozwin.html#S2Rozwin.6" target="right">&nbsp;2.4. try-catch-finally</a><br>
+</div>
+<a href="S2Rozwin.html#S2Rozwin.7" target="right">&nbsp;3. Interfejsy ... czyli traits</a><br>
+<div id="lev2">
+<a href="S2Rozwin.html#S2Rozwin.8" target="right">&nbsp;3.1. Miksy (mixins)</a><br>
+<a href="S2Rozwin.html#S2Rozwin.9" target="right">&nbsp;3.2. Jak to działa ?</a><br>
+<a href="S2Rozwin.html#S2Rozwin.10" target="right">&nbsp;3.3. super</a><br>
+<a href="S2Rozwin.html#S2Rozwin.11" target="right">&nbsp;3.4. Typy strukturalne (structural types)</a><br>
+</div>
+<a href="S2Rozwin.html#S2Rozwin.12" target="right">&nbsp;4. Mutable / immutable - dyskusja</a><br>
+<div id="lev2">
+<a href="S2Rozwin.html#S2Rozwin.13" target="right">&nbsp;4.1. Zmienne (mutable)</a><br>
+<a href="S2Rozwin.html#S2Rozwin.14" target="right">&nbsp;4.2. Niezmienne (immutable)</a><br>
+<a href="S2Rozwin.html#S2Rozwin.15" target="right">&nbsp;4.3. Podsumowanie</a><br>
+</div>
+<a href="S2Rozwin.html#S2Rozwin.16" target="right">&nbsp;5. Metody</a><br>
+<div id="lev2">
+<a href="S2Rozwin.html#S2Rozwin.17" target="right">&nbsp;5.1. Zwracanie wielu wartości z metody</a><br>
+<a href="S2Rozwin.html#S2Rozwin.18" target="right">&nbsp;5.2. Zwracanie wielu wartości z metody</a><br>
+<a href="S2Rozwin.html#S2Rozwin.19" target="right">&nbsp;5.2.1. Definiowanie</a><br>
+<a href="S2Rozwin.html#S2Rozwin.20" target="right">&nbsp;5.2.2. Wywoływanie</a><br>
+<a href="S2Rozwin.html#S2Rozwin.21" target="right">&nbsp;5.2.3. Tworzenie własnych instrukcji językowych</a><br>
+<a href="S2Rozwin.html#S2Rozwin.22" target="right">&nbsp;5.3. Metody domyślne</a><br>
+<a href="S2Rozwin.html#S2Rozwin.23" target="right">&nbsp;5.3.1. apply()</a><br>
+<a href="S2Rozwin.html#S2Rozwin.24" target="right">&nbsp;5.3.2. update()</a><br>
+<a href="S2Rozwin.html#S2Rozwin.25" target="right">&nbsp;5.4. Metody poprzednikowe/jednoargumentowe (unary)</a><br>
+<a href="S2Rozwin.html#S2Rozwin.26" target="right">&nbsp;5.5. Metoda jako typ danych</a><br>
+<a href="S2Rozwin.html#S2Rozwin.27" target="right">&nbsp;5.6. Funkcje wyższego poziomu (higher order functions)</a><br>
+</div>
+<a href="S2Rozwin.html#S2Rozwin.28" target="right">&nbsp;6. Pętla FOR</a><br>
+<div id="lev2">
+<a href="S2Rozwin.html#S2Rozwin.29" target="right">&nbsp;6.1. Definicja</a><br>
+<a href="S2Rozwin.html#S2Rozwin.30" target="right">&nbsp;6.2. Generator</a><br>
+<a href="S2Rozwin.html#S2Rozwin.31" target="right">&nbsp;6.3. Definicje</a><br>
+<a href="S2Rozwin.html#S2Rozwin.32" target="right">&nbsp;6.4. Filtry</a><br>
+<a href="S2Rozwin.html#S2Rozwin.33" target="right">&nbsp;6.5. break i continue</a><br>
+</div>
+<a href="S2Rozwin.html#S2Rozwin.34" target="right">&nbsp;7. Case class</a><br>
+<a href="S2Rozwin.html#S2Rozwin.35" target="right">&nbsp;8. Porównywanie wzorców (pattern matching)</a><br>
+<div id="lev2">
+<a href="S2Rozwin.html#S2Rozwin.36" target="right">&nbsp;8.1. Po wartościach</a><br>
+<a href="S2Rozwin.html#S2Rozwin.37" target="right">&nbsp;8.2. Po typach danych</a><br>
+<a href="S2Rozwin.html#S2Rozwin.38" target="right">&nbsp;8.3. Po case class</a><br>
+<a href="S2Rozwin.html#S2Rozwin.39" target="right">&nbsp;8.4. Po tuple</a><br>
+<a href="S2Rozwin.html#S2Rozwin.40" target="right">&nbsp;8.5. Po sekwencjach</a><br>
+<a href="S2Rozwin.html#S2Rozwin.41" target="right">&nbsp;8.6. Ograniczanie alternatyw</a><br>
+<a href="S2Rozwin.html#S2Rozwin.42" target="right">&nbsp;8.7. Wyłuskanie danych poprzez przypisanie stałej</a><br>
+<a href="S2Rozwin.html#S2Rozwin.43" target="right">&nbsp;8.8. Niedopasowany wzorzec</a><br>
+<a href="S2Rozwin.html#S2Rozwin.44" target="right">&nbsp;8.9. Extractors</a><br>
+<a href="S2Rozwin.html#S2Rozwin.45" target="right">&nbsp;8.10. Sealed class</a><br>
+<a href="S2Rozwin.html#S2Rozwin.46" target="right">&nbsp;8.11. Option[ T ]</a><br>
+<a href="S2Rozwin.html#S2Rozwin.47" target="right">&nbsp;8.12. Either[ L , R ]</a><br>
+</div>
+<a href="S2Rozwin.html#S2Rozwin.48" target="right">&nbsp;9. Ukryte konwersje (implicit conversions)</a><br>
+<div id="lev2">
+<a href="S2Rozwin.html#S2Rozwin.49" target="right">&nbsp;9.1. Jako metody</a><br>
+<a href="S2Rozwin.html#S2Rozwin.50" target="right">&nbsp;9.1.1. Używanie</a><br>
+<a href="S2Rozwin.html#S2Rozwin.51" target="right">&nbsp;9.1.2. Zastosowania</a><br>
+<a href="S2Rozwin.html#S2Rozwin.52" target="right">&nbsp;9.2. Jako zmienne/stałe</a><br>
+</div>
+<a href="S2Rozwin.html#S2Rozwin.53" target="right">10. Zakończenie</a><br>
+<div id="lev2">
+<a href="S2Rozwin.html#S2Rozwin.54" target="right">10.1. Scala 2.8</a><br>
+<a href="S2Rozwin.html#S2Rozwin.55" target="right">10.1.1. Nazwy dla argumentów metod - named parameters</a><br>
+<a href="S2Rozwin.html#S2Rozwin.56" target="right">10.1.2. Argumenty domyślne</a><br>
+<a href="S2Rozwin.html#S2Rozwin.57" target="right">10.1.3. Pozostałe zmiany i nowości</a><br>
+<a href="S2Rozwin.html#S2Rozwin.58" target="right">10.2. Biblioteki dodatkowe</a><br>
+<a href="S2Rozwin.html#S2Rozwin.59" target="right">10.3. O czym nie zostało powiedziane</a><br>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+ "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+  <meta name="author" content="Krzysztof Barteczko, Edgar Głowacki, Artur Stanek, Bartłomiej Starosta">
+  <meta name="description" content="Technologie programowania rozproszonego (TPR)">
+  <meta name="copyright" content="(c) Krzysztof Barteczko, Edgar Głowacki, Artur Stanek, Bartłomiej Starosta, PJWSTK 2010">
+  <link rel="stylesheet" type="text/css" href="../STYLE/spis.css">   
+  <title>Technologie programowania rozproszonego</title>
+</head>
+<body id="spisbody">
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<div align="Center">
+<h3>11. Scala - techniki rozproszone - WYKŁAD 1</h3>
+</div>
+<div id="spis"> 
+<a href="S1Wstep.html#S1Wstep.1" target="right">&nbsp;1. Wstęp</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.2" target="right">&nbsp;1.1. Wykłady</a><br>
+<a href="S1Wstep.html#S1Wstep.3" target="right">&nbsp;1.2. Scala</a><br>
+<a href="S1Wstep.html#S1Wstep.4" target="right">&nbsp;1.2.1. Historia</a><br>
+<a href="S1Wstep.html#S1Wstep.5" target="right">&nbsp;1.2.2. Informacje ogólne</a><br>
+<a href="S1Wstep.html#S1Wstep.6" target="right">&nbsp;1.2.3. IDE (Integrated Development Environment)</a><br>
+<a href="S1Wstep.html#S1Wstep.7" target="right">&nbsp;1.2.4. Słodycze (syntactic sugar)</a><br>
+<a href="S1Wstep.html#S1Wstep.8" target="right">&nbsp;1.2.5. scala.Predef</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.9" target="right">&nbsp;2. Importy</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.10" target="right">&nbsp;2.1. Importy domyślne</a><br>
+<a href="S1Wstep.html#S1Wstep.11" target="right">&nbsp;2.2. Umiejscawianie</a><br>
+<a href="S1Wstep.html#S1Wstep.12" target="right">&nbsp;2.2.1. W nagłówku pliku</a><br>
+<a href="S1Wstep.html#S1Wstep.13" target="right">&nbsp;2.2.2. W klasie</a><br>
+<a href="S1Wstep.html#S1Wstep.14" target="right">&nbsp;2.2.3. W metodzie</a><br>
+<a href="S1Wstep.html#S1Wstep.15" target="right">&nbsp;2.2.4. W dowolnym bloku kodu</a><br>
+<a href="S1Wstep.html#S1Wstep.16" target="right">&nbsp;2.3. Możliwości importu</a><br>
+<a href="S1Wstep.html#S1Wstep.17" target="right">&nbsp;2.3.1. Import wielu klas z tego samego package</a><br>
+<a href="S1Wstep.html#S1Wstep.18" target="right">&nbsp;2.3.2. Import 'statyczny'</a><br>
+<a href="S1Wstep.html#S1Wstep.19" target="right">&nbsp;2.3.3. Import ze zmianą nazwy klasy, metody, pola</a><br>
+<a href="S1Wstep.html#S1Wstep.20" target="right">&nbsp;2.3.4. Importowanie z wyłączeniem</a><br>
+<a href="S1Wstep.html#S1Wstep.21" target="right">&nbsp;2.3.5. Hierarchiczność</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.22" target="right">&nbsp;3. Paczki</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.23" target="right">&nbsp;3.1. Paczka _root_</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.24" target="right">&nbsp;4. Klasy</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.25" target="right">&nbsp;4.1. Konstruktory</a><br>
+<a href="S1Wstep.html#S1Wstep.26" target="right">&nbsp;4.1.1. Definiowanie</a><br>
+<a href="S1Wstep.html#S1Wstep.27" target="right">&nbsp;4.1.2. Ciało konstruktora</a><br>
+<a href="S1Wstep.html#S1Wstep.28" target="right">&nbsp;4.1.3. Przeciążanie konstruktora podstawowego</a><br>
+<a href="S1Wstep.html#S1Wstep.29" target="right">&nbsp;4.1.4. Wywołanie konstruktora superklasy</a><br>
+<a href="S1Wstep.html#S1Wstep.30" target="right">&nbsp;4.2. Umiejscawianie</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.31" target="right">&nbsp;5. Obiekty</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.32" target="right">&nbsp;5.1. Statyczne klasy, metody, pola</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.33" target="right">&nbsp;6. Pola</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.34" target="right">&nbsp;6.1. Zmienne</a><br>
+<a href="S1Wstep.html#S1Wstep.35" target="right">&nbsp;6.2. Stałe</a><br>
+<a href="S1Wstep.html#S1Wstep.36" target="right">&nbsp;6.2.1. Stałe leniwe</a><br>
+<a href="S1Wstep.html#S1Wstep.37" target="right">&nbsp;6.3. Zasięg zmiennych i stałych (scope)</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.38" target="right">&nbsp;7. Metody</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.39" target="right">&nbsp;7.1. Definiowanie</a><br>
+<a href="S1Wstep.html#S1Wstep.40" target="right">&nbsp;7.2. Nazewnictwo</a><br>
+<a href="S1Wstep.html#S1Wstep.41" target="right">&nbsp;7.3. Zwracanie wartości</a><br>
+<a href="S1Wstep.html#S1Wstep.42" target="right">&nbsp;7.4. Przekazywanie argumentów</a><br>
+<a href="S1Wstep.html#S1Wstep.43" target="right">&nbsp;7.4.1. Zmienna ilość argumentów (varargs)</a><br>
+<a href="S1Wstep.html#S1Wstep.44" target="right">&nbsp;7.5. Umiejscawianie</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.45" target="right">&nbsp;8. Typy danych</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.46" target="right">&nbsp;8.1. Ogólna hierarchia typów</a><br>
+<a href="S1Wstep.html#S1Wstep.47" target="right">&nbsp;8.2. Tablice</a><br>
+<a href="S1Wstep.html#S1Wstep.48" target="right">&nbsp;8.3. Niezmienne (immutable)</a><br>
+<a href="S1Wstep.html#S1Wstep.49" target="right">&nbsp;8.4. Zmienne (mutable)</a><br>
+<a href="S1Wstep.html#S1Wstep.50" target="right">&nbsp;8.5. Generics</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.51" target="right">&nbsp;9. Punkt startowy programu</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.52" target="right">&nbsp;9.1. Metoda main()</a><br>
+<a href="S1Wstep.html#S1Wstep.53" target="right">&nbsp;9.2. Trait scala.Application</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.54" target="right">10. Dziedziczenie</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.55" target="right">10.1. Przesłanianie metod</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.56" target="right">11. Wyjątki</a><br>
+<div id="lev2">
+<a href="S1Wstep.html#S1Wstep.57" target="right">11.1. Przełapywanie wyjątkow</a><br>
+</div>
+<a href="S1Wstep.html#S1Wstep.58" target="right">12. Modyfikatory dostępu</a><br>
+
+</div>
+</body>
+</html>

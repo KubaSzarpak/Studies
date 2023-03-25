@@ -28,8 +28,8 @@ public class Main {
         int types = testDataList.size();
         int correctTypes = 0;
 
-        for (Data d : testDataList) {
-            correctTypes = func(k, d, trainingDataList, correctTypes, false);
+        for (Data data : testDataList) {
+            correctTypes = KNN(k, data, trainingDataList, correctTypes, false);
         }
 
 
@@ -51,7 +51,7 @@ public class Main {
             newK = Integer.parseInt(sysReader.nextLine());
 
             tmp = readData(line);
-            func(newK, tmp, trainingDataList, 0, true);
+            KNN(newK, tmp, trainingDataList, 0, true);
 
             System.out.println("Podaj wektor " + types + " wymiarowy lub napisz [exit] jeśli chcesz zakonczyc");
             line = sysReader.nextLine();
@@ -87,8 +87,8 @@ public class Main {
         for (DataWithDistance dwd : kShortest){ //Prints three closest points
             System.out.println("Data: " + dwd.data.getType() + " | Dystans: " + dwd.distance);
         }
+        System.out.println(" ");
         */
-
 
         return kShortest;
     }
@@ -101,25 +101,25 @@ public class Main {
         return new Data(vector, lineArr[lineArr.length - 1]);
     }
 
-    private static int func(int k, Data data, List<Data> trainingDataList, int correctTypes, boolean isHandGiven) {
+    private static int KNN(int k, Data data, List<Data> trainingDataList, int correctTypes, boolean isHandGiven) {
         DataWithDistance[] kShortest = findKShortest(k, trainingDataList, data);
 
         //Find correct type --------------
-        List<DataWithAmount> tmp = new ArrayList<>();
+        List<DataWithAmount> tmpList = new ArrayList<>();
         boolean exists;
 
         for (DataWithDistance dwd : kShortest) {
             exists = false;
-            for (DataWithAmount a : tmp) {
-                if (dwd.data.getType().equals(a.data.getType())) {
+            for (DataWithAmount dataWithAmount : tmpList) {
+                if (dwd.data.getType().equals(dataWithAmount.data.getType())) {
                     exists = true;
-                    a.amount++;
+                    dataWithAmount.amount++;
                     break;
                 }
             }
 
             if (!exists) {
-                tmp.add(new DataWithAmount(dwd.data, 1));
+                tmpList.add(new DataWithAmount(dwd.data, 1));
             }
         }
 
@@ -127,10 +127,10 @@ public class Main {
         DataWithAmount maxA = null;
         int maxAmount = 0;
 
-        for (DataWithAmount a : tmp) {
-            if (a.amount > maxAmount) {
-                maxA = a;
-                maxAmount = a.amount;
+        for (DataWithAmount dataWithAmount : tmpList) {
+            if (dataWithAmount.amount > maxAmount) {
+                maxA = dataWithAmount;
+                maxAmount = dataWithAmount.amount;
             }
         }
 

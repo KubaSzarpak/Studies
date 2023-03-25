@@ -1,0 +1,1413 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1250"> 
+    <meta name="author" content="Bartłomiej Starosta"> 
+    <meta name="description" content="opis"> 
+    <meta name="copyright" content="(c) Bartłomiej Starosta PJWSTK 2010"> 
+    <link rel="stylesheet" type="text/css" href="../STYLE/common.css"> 
+    <title>JMX 1</title>
+</head>
+<body>
+<div align="center">
+  <a name="JMX1"></a><h1>JMX - Część 1</h1>
+  <h1>Praktyczne wprowadzenie</h1>
+</div>
+<hr>
+<br>
+<i> 
+    <P>
+    JMX to skrót od <EM>Java Management Extensions</EM>.
+    Z jednej strony jest to technologia programowania rozproszonego,
+    z drugiej - metodologia projektowania aplikacji w taki sposób, 
+    aby można było je kontrolować i łatwo nimi zarządzać już na poziomie poszczególnych obiektów, 
+    również zdalnie, przy użyciu rozmaitych protokołów komunikacyjnych.
+    Ponadto JMX umożliwia nadzorowanie zasobów maszyny wirtualnej Javy.
+    </P>
+    <P>
+    Ważną zaletą tej technologii jest prostota i wyjątkowa łatwość w użyciu. 
+    Nie wymaga ona dużej ilości dodatkowego kodu do uzyskania gotowego rozwiązania. 
+    Jest przy tym uniwersalna i skalowalna - 
+    można ją stosować we wszelkiego rodzaju aplikacjach: 
+    od urządzeń mobilnych po wielkie serwery korporacyjne.
+    Ze względu na swe możliwości staje się coraz bardziej popularna na świecie i 
+    wielu dostawców oprogramowania biznesowego włącza ją do swoich 
+    <A HREF="http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/jmxadoption.jsp">produktów</A>
+    (np. IBM WebSphere, JBoss, BEA WebLogic, Tomcat).
+    </P>
+    Pierwszy z dwóch wykładów przedstawia podstawowe koncepcje JMX na prostych przykładach.   
+</i>
+
+
+<BR><HR><a name="JMX1.1"></a><H2>1. Szybki start</H2>
+
+<P>
+Przejdźmy od razu do rzeczy. 
+Zademonstrujemy bardzo prosty przykład. 
+Pokaże on, że JMX jest narzędziem o potężnych możliwościach 
+będąc jednocześnie bardzo prostym w użyciu. 
+Na początek dokonamy zdalnego pobrania  wartości pola pewnego obiektu oraz jego modyfikacji. 
+Oczywiście, możliwości JMX nie ograniczają się wyłącznie
+do odczytu i zapisu stanów obiektów. 
+Równie łatwo możemy np. rejestrować słuchaczy, którzy będą
+powiadamiani o zachodzących zmianach, co zobaczymy dalej. 
+</P>
+
+<H3>1.1. M-ziarno</H3>
+<P>
+W oparciu o specyfikację JMX stworzymy klasę, 
+której obiekty - tzw. m-ziarna (ang. <EM>mbean</EM>) - 
+będą mogły udostępniać swoją składową. 
+Dla uproszczenia będzie to jedyne pole tej klasy, 
+powiedzmy <CODE>value</CODE> typu <CODE>int</CODE>. 
+Klasa będzie się nazywać <CODE>SomeValue</CODE>. 
+Oto ona: 
+</P>
+<pre>
+public class SomeValue
+   implements SomeValueMBean {
+
+   public int getValue() {
+      System.out.println("Wywołano metodę getValue(), która zwróciła wynik: " + value);
+      return value;
+   }
+
+   public void setValue(int val) {
+      this.value = val;  
+      System.out.println("Wywołano metodę setValue() z argumentem: " + val);
+   }
+
+   /**
+    * Atrybut, który udostępniamy 
+    */
+   private int value = 0; 
+}
+</pre>
+<P>
+Klasa m-ziarna musi być publiczna i musi mieć publiczny konstruktor
+(tu domyślny). 
+</P>
+
+<H3>1.2. Interfejs zarządzania</H3>
+
+<P>
+Jak widać, klasa <CODE>SomeValue</CODE> nie zawiera nic
+wyjątkowego, poza implementacją interfejsu <CODE>SomeValueMBean</CODE>.
+Interfejs ten - zwany interfejsem zarządzania albo krócej:
+m-interfejsem - musimy sami stworzyć. 
+Opisuje on właściwości klasy poprzez deklaracje akcesorów - metod dostępu do atrybutów
+(może zawierać również deklaracje dowolnych innych metod - patrz dalej).
+Interfejs zarządzania - podobnie jak klasa m-ziarna - musi być
+publiczny. Oto on: 
+</P>
+<pre>
+public interface SomeValueMBean {
+    
+   /**
+    * Getter dla atrybutu "Value"
+    */
+   public int getValue();
+
+   /**
+    * Setter dla atrybutu "Value"
+    */
+   public void setValue(int value);
+
+}
+</pre>
+<P>
+Interfejs zarządzania <CODE>SomeValueMBean</CODE> zawiera 
+deklaracje gettera i settera dla atrybutu <CODE>"Value"</CODE>
+udostępnionego w klasie implementującej <CODE>SomeValue</CODE>.
+Nazwa tego atrybutu - jako napis, który będzie używany w infrastrukturze JMX - 
+zaczyna się dużą literą w przeciwieństwie do nazwy składowej <CODE>value</CODE>, 
+która zaczyna się literą małą. 
+</P>
+<P>
+Proszę zwrócić uwagę, że nazwa interfejsu zarządzania jest
+nazwą klasy, która go implementuje z dodanym obowiązkowym
+przyrostkiem <CODE>MBean</CODE>. Taki interfejs musimy zawsze
+dostarczyć i - w najprostszym przypadku - jest to jedyny wymóg
+wobec klasy, która chce udostępniać jakieś atrybuty poprzez
+JMX. Oczywiście, musimy przestrzegać standardowych reguł nazewniczych
+wobec akcesorów - setterów i getterów. Metody
+pobierające wartości muszą zaczynać się od przedrostka <CODE>get</CODE>
+a ustalające wartości - od przedrostka <CODE>set</CODE>. Po nich
+następuje nazwa atrybutu pisana dużą literą zakładając, że nazwa pola
+klasy zaczyna się literą małą. 
+</P>
+<P>
+Atrybuty udostępniane przez m-ziarna nie muszą być bezpośrednio
+związane ze składowymi klasy. Mogą to być dowolne wartości np.
+wyliczane dynamicznie przez jakieś metody. Jeśli nie dostarczymy
+settera, to atrybut będzie tylko do odczytu. Podobnie, jeśli nie
+dostarczymy gettera, to atrybut będzie tylko do zapisu. 
+</P>
+
+<H3>1.3. Agent</H3>
+
+<P>
+Aby uruchomić nasz przykładowy program potrzebujemy jeszcze
+agenta, który utworzy obiekt m-ziarna i zarejestruje go w serwerze m-ziaren,
+oraz klienta, który będzie z niego korzystał. 
+</P>
+<DIV CLASS=notec>
+<H4>m-serwer</H4>
+<P>
+Serwer m-ziaren - inaczej m-serwer - służy do przechowywania m-ziaren 
+i udostępniania ich na zewnątrz.
+Po stronie agenta jest reprezentowany przez interfejs <CODE>MBeanServer</CODE>
+pakietu <CODE>javax.management</CODE>,
+natomiast po stronie klienta przez jego nadinterfejs <CODE>MBeanServerConnection</CODE>
+(w związku z tym klient ma mniejsze możliwości w korzystaniu z m-serwera niż agent).
+</P>
+<P>
+Aplikacje mogą tworzyć własne m-serwery statycznymi metodami klasy <CODE>MBeanServerFactory</CODE>, 
+jednak zaleca się korzystanie z systemowego serwera m-ziaren zwracanego przez metodę
+<CODE>getPlatformMBeanServer()</CODE> klasy <CODE>ManagementFactory</CODE>
+(pakiet <CODE>java.lang.management</CODE>).
+</P>
+</DIV>
+<P>
+Oto kod agenta. 
+<pre>
+import java.lang.management.*;
+import javax.management.*;
+
+import javax.management.remote.*;
+
+public class Agent {
+
+   public static void main(String[] args) 
+      // dla uproszczenia przykładu nie obsługujemy wyjątków
+      throws Exception { 
+
+      // Pobieramy odniesienie do m-serwera systemowego
+      MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+      // Tworzymy nazwę dla m-ziarna, 
+      // pod którą zostanie on zarejestrowany
+      ObjectName name = new ObjectName("software.JMX:example=standard"); 
+
+      // Tworzymy m-ziarno SomeValue 
+      SomeValue mbean = new SomeValue();
+
+      // Rejestrujemy m-ziarno w m-serwerze
+      mbs.registerMBean(mbean, name);
+
+
+      // Czekamy na zgłoszenia klientów
+      System.out.println("Czekam na zgłoszenia...");
+      Thread.sleep(Long.MAX_VALUE);
+   }
+}
+</pre>
+</P>
+<P>
+Pierwszym krokiem, który zawsze musi wykonać agent jest pobranie odniesienia do m-serwera, 
+w którym zostanie zarejestrowane m-ziarno. 
+Wykorzystujemy do tego metodę <CODE>getPlatformMBeanServer()</CODE>, 
+która zwraca odniesienie do domyślnego m-serwera.
+Drugim krokiem jest utworzenie nazwy dla
+m-ziarna, pod którą zostanie ono zarejestrowane. Nazwa dla
+m-ziarna jest obiektem klasy <CODE>ObjectName</CODE> z pakietu
+<CODE>javax.management</CODE>. Opakowuje on napis - reprezentujący
+m-ziarno w sposób zrozumiały dla człowieka - w obiekt, który
+jest używany do identyfikacji tego m-ziarna. 
+W trzecim i ostatnim kroku - 
+metodą <CODE>registerMBean()</CODE> -
+rejestrujemy w m-serwerze sam obiekt m-ziarna. 
+Od tej pory m-ziarno jest dostępne dla klientów,
+którzy mogą odczytywać i modyfikować wartość jego atrybutu. 
+</P>
+
+<DIV CLASS=notec>
+<A NAME="MNAME"><H4>Nazwy m-ziaren</H4></A>
+<P>
+Nazwa dla m-ziarna - jako napis przekazywany do konstruktora klasy <CODE>ObjectName</CODE> -
+składa się z:
+<UL>
+  <LI>
+  nazwy dziedziny - dowolny napis (nie może zawierać znaku ":");
+  zgodnie z konwencją przyjmuje się odwróconą nazwę domeny internetowej dostawcy zakończoną kropką, 
+  po której następuje dowolny napis, np.:
+  <CODE>pl.edu.pjwstk.JMX</CODE>; w naszym przykładzie używaliśmy dziedziny <CODE>software.JMX</CODE>
+  </LI>
+  <LI>
+  znaku ":"
+  </LI>
+  <LI>
+  zestawu par <CODE>klucz=wartość</CODE> oddzielonych przecinkami; 
+  co najmniej jedna taka para musi wystąpić, kolejność nie jest istotna:
+  <UL>
+    <LI>
+    każdy <CODE>klucz</CODE> jest napisem niosącym jakąś informację o m-ziarnie;
+    w naszym przykładzie używaliśmy klucza <CODE>example</CODE>,
+    </LI>
+    <LI>
+    wartość skojarzoną z kluczem należy traktować jako informację uzupełniającą dla klucza.
+    </LI>
+    </UL>
+  </LI>
+  </UL>
+</P>
+</DIV>
+<P>
+W tym prostym przykładzie działanie aplikacji (np. serwera)
+udostępniającej m-ziarno zostało zasymulowane poprzez uśpienie wątku
+(gdybyśmy tego nie zrobili - program zakończyłby się). 
+Oczywiście, w rzeczywistych aplikacjach takie uśpienie jest zbędne,
+gdyż zwykle podejmują one jakieś działania po skonfigurowaniu środowiska.
+</P>
+
+<H3>1.4. Klient</H3>
+
+<P>
+Teraz pora na klienta. Jego jedynym zadaniem - w tym prostym
+przypadku - będzie pobranie i modyfikacja atrybutu "Value"
+z m-ziarna zarejestrowanego pod nazwą <CODE>"software.JMX:example=standard"</CODE>.
+Klient może być uruchomiony na maszynie lokalnej lub zdalnej - z
+punktu widzenia kodu nie robi to żadnej różnicy. Oto kod
+klienta: 
+</P>
+
+<pre>
+import javax.management.*;
+import javax.management.remote.*;
+
+public class Client {
+
+   public static void main(String[] args) 
+      // dla uproszczenia przykładu nie obsługujemy wyjątków
+      throws Exception { 
+
+      int port = 2006;
+      String host = "localhost";
+
+      if(args.length > 0)
+         host = args[0];
+      if(args.length > 1)
+         port = Integer.parseInt(args[1]);
+
+      String url = "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi";
+
+      // Nawiązujemy połączenie z m-serwerem w kilku krokach
+      JMXConnector jmxcon = JMXConnectorFactory.connect(new JMXServiceURL(url));
+      MBeanServerConnection server = jmxcon.getMBeanServerConnection();
+
+      // Tworzymy nazwę m-ziarna, z którego chcemy skorzystać
+      ObjectName name = new ObjectName("software.JMX:example=standard");
+
+
+      // Pobieramy wartość atrybutu Value z naszego m-ziarna
+      int value = (Integer)server.getAttribute(name, "Value");    
+      System.out.println("Wartość atrybutu Value: " + value);
+
+      // Zmieniamy wartość atrybutu
+      server.setAttribute(name, new Attribute("Value", value+1));
+
+      // Ponownie pobieramy wartość atrybutu Value
+      value = (Integer)server.getAttribute(name, "Value");    
+      System.out.println("Nowa wartość atrybutu: " + value);
+   }
+}
+</pre>
+<P>
+Najpierw pobieramy ewentualne argumenty: 
+nazwę hosta, z którym się połączymy oraz 
+numer portu, przez który będzie odbywać się komunikacja. 
+</P>
+<P>
+Pierwszym zadaniem klienta jest nawiązanie połączenia z m-serwerem, 
+w którym jest zarejestrowane nasze m-ziarno. 
+W tym celu musimy pozyskać obiekt typu <CODE>MBeanServerConnection</CODE>,
+który będzie reprezentował m-serwer po stronie klienta.
+Nie tworzymy go konstruktorem, 
+lecz pobieramy jako rezultat metody <CODE>getMBeanServerConnection()</CODE>
+wywołanej na rzecz łącznika typu <CODE>JMXConnector</CODE>.
+Z kolei łącznik ten jest uzyskany na podstawie URLa,
+który identyfikuje serwer m-ziaren.
+</P>
+<P>
+URL m-serwera jest reprezentowany przez obiekt klasy <CODE>JMXServiceURL</CODE>,
+który opakowuje napis postaci: <CODE>service:jmx:rmi:///jndi/rmi://host:port/jmxrmi</CODE>
+Jego jedynym zmiennym fragmentem (tj. takim, którym możemy manipulować) jest 
+nazwa hosta <CODE>host</CODE> (może to być jego adres IP) i numer portu <CODE>port</CODE>,
+poprzez który będzie odbywać się komunikacja z m-serwerem, a więc i m-ziarnem.
+Ten sam numer portu jest podawany agentowi podczas
+uruchamiania i może on przyjmować dowolne sensowne wartości. 
+</P>
+<P>
+Po nawiązaniu połączenia z m-serwerem tworzymy nazwę dla m-ziarna,
+podając konstruktorowi <CODE>ObjectName</CODE> dokładnie taki sam
+napis, jaki był użyty podczas rejestracji m-ziarna w m-serwerze. 
+</P>
+<P>
+Na zakończenie pobieramy wartość atrybutu <CODE>"Value"</CODE>
+(odnoszącego się w tym przykładzie do pola <CODE>value</CODE> klasy
+<CODE>SomeValue</CODE>). Proszę zwrócić uwagę, że wynik metody
+<CODE>getAttribute()</CODE> (typu <CODE>Object</CODE>) został
+zrzutowany na typ <CODE>Integer</CODE> a następnie przypisany na
+zmienną typu <CODE>int</CODE>. Ma tu miejsce tzw. <EM>unboxing</EM>
+obecny w Javie od wersji 1.5. Metoda <CODE>setAttribute(ObjectName name, Attribute attr)</CODE> służy do nadania nowej wartości
+atrybutowi reprezentowanemu przez nazwę <CODE>name</CODE>. Nowa
+wartość atrybutu jest opakowana w obiekt klasy <CODE>Attribute</CODE>.
+Jej konstruktorowi przekazujemy jako argumenty: nazwę atrybutu (nie
+nazwę składowej!) oraz nową wartość jako obiekt. Podobnie jak przy
+pobieraniu wartości wykorzystujemy tu <EM>autoboxing</EM>, dzięki
+któremu zmienna typu <CODE>int</CODE> zostanie automatycznie
+opakowana w obiekt klasy <CODE>Integer</CODE>. Aby przekonać się, że
+zmiana rzeczywiście zaszła, ponownie pobieramy i wypisujemy wartość
+atrybutu. 
+</P>
+
+<H3>1.5. Uruchomienie</H3>
+
+<P>
+Teraz pozostało już tylko uruchomić nasz przykład, składający się
+z dwóch programów: agenta (który rejestruje
+m-ziarno i udaje działającą aplikację) oraz klienta (który
+łączy się z m-serwerem i korzysta z m-ziarna). Agentowi musimy
+przekazać specjalne opcje podczas uruchamiania, które
+spowodują nadanie odpowiednich wartości właściwościom maszyny
+wirtualnej związanym z infrastrukturą JMX.
+W szczególności musimy przekazać numer
+portu, poprzez który będzie odbywać się komunikacja z
+klientami. 
+Oto sposób uruchomienia agenta:
+</P>
+<DIV CLASS=listingful STYLE=white-space:pre;>java -Dcom.sun.management.jmxremote.port=2006 
+     -Dcom.sun.management.jmxremote.ssl=false 
+     -Dcom.sun.management.jmxremote.authenticate=false 
+      Agent
+</DIV>
+<P>
+Po uruchomieniu na konsoli agenta pojawi się napis 
+<CODE>Czekam na zgłoszenia...</CODE>. 
+Teraz uruchamiamy klienta. Jako argumenty
+podajemy nazwę hosta na którym działa agent oraz numer portu
+taki sam jak przy uruchamianiu agenta. 
+</P>
+<DIV CLASS=listingful STYLE=white-space:pre;>java Client localhost 2006
+</DIV>
+<P>
+W tym momencie na konsoli klienta pojawi się napis 
+</P>
+<DIV CLASS=listingful STYLE=white-space:pre;>Wartość atrybutu Value: 0
+Nowa wartość atrybutu: 1
+</DIV>
+<P>
+natomiast na konsoli agenta - na skutek wywołania metod <CODE>getValue()</CODE>
+i <CODE>setValue()</CODE>- pojawi się napis: 
+</P>
+<DIV CLASS=listingful STYLE=white-space:pre;>Wywołano metodę getValue(), która zwróciła wynik: 0
+Wywołano metodę setValue() z argumentem: 1
+Wywołano metodę getValue(), która zwróciła wynik: 1
+</DIV>
+<P>
+Wyniki działania programu można zaobserwować na zrzutkach 1 i 2.
+<P>
+<IMG SRC="images/Agent_1.png">
+</P>
+<P>
+<IMG SRC="images/Client_1.png">
+</P>
+</P>
+<P>
+W ten prosty sposób dostaliśmy się do wnętrza obiektu
+zlokalizowanego być może na innej maszynie. Ważne jest, że narzut - w
+sensie dodatkowych instrukcji kodu niezbędnych do wykorzystania JMX -
+jest niewielki i do tego stały, w zasadzie niezależny od poziomu
+skomplikowania aplikacji. Zatem technologia ta jest łatwo skalowalna.
+</P>
+
+<BR><HR><a name="JMX1.2"></a><H2>2. Sygnały i operacje</H2>
+
+<P>
+Możliwości operowania na m-ziarnach nie ograniczają się do
+odczytywania i modyfikowania wartości atrybutów tych obiektów.
+Możemy wywoływać dowolne (publiczne) metody przekazując im argumenty
+i odbierając wyniki ich działania. Możemy również odbierać
+sygnały. 
+</P>
+
+<H3>2.1. Sygnały</H3>
+
+<P>
+Sygnał jest obiektem klasy <CODE>Notification</CODE> (pakiet
+<CODE>javax.management</CODE>) niosącym informację o jakimś
+zdarzeniu. Taki obiekt może zostać wyemitowany przez m-ziarno.
+Zostanie wtedy dostarczony do słuchaczy sygnałów
+zarejestrowanych wcześniej w tym m-ziarnie. Typowym przykładem
+takiego zdarzenia jest modyfikacja atrybutu. Odpowiada mu dedykowana
+klasa <CODE>AttributeChangeNotification</CODE>, będąca podklasą klasy
+<CODE>Notification</CODE>. Obiekt tej klasy zawiera informacje o
+starej i nowej wartości atrybutu. 
+</P>
+
+<P>Klasa m-ziarna chcącego wysyłać sygnały musi implementować
+interfejs <CODE>NotificationEmitter</CODE> z pakietu
+<CODE>javax.management</CODE>. W praktyce dziedziczy się klasę
+<CODE>NotificationBroadcasterSupport</CODE>, która
+implementuje ten interfejs dostarczając dodatkowo użytecznych metod. 
+</P>
+
+<P>
+Emisja sygnału następuje na skutek wywołania metody
+<CODE>sendNotification(Notification)</CODE> odziedziczonej z klasy
+<CODE>NotificationBroadcasterSupport</CODE>. Obiekt sygnału
+przekazany jako argument zostanie rozesłany do słuchaczy (obiektów
+klas implementujących interfejs <CODE>NotificationListener</CODE>)
+zarejestrowanych wcześniej metodą <CODE>addNotificationListener()</CODE>.
+</P>
+
+<H3>2.2. Pełny przykład</H3>
+
+<P>
+Rozszerzymy nasz wstępny przykład o możliwość wywoływania metod i
+emisji sygnałów. Metodą, którą będziemy wywoływać
+będzie <CODE>void reset()</CODE> (dodamy ją do klasy m-ziarna),
+natomiast sygnał będzie wysyłany na skutek modyfikacji atrybutu
+<CODE>"Value"</CODE>. W tym celu trzeba będzie zmodyfikować
+metodę <CODE>set(int)</CODE>. 
+</P>
+
+<H4>2.2.1. Interfejs zarządzania</H4>
+
+<P>
+Ponieważ dodaliśmy do m-ziarna metodę, musimy uwzględnić to w
+m-interfejsie. 
+</P>
+
+<pre>
+public interface SomeValueMBean {
+    
+   public int getValue();
+
+   public void setValue(int value);
+
+   /*
+    * Dodatkowa metoda
+    */
+   public int reset();
+    
+}
+</pre>
+
+<H4>2.2.2. Klasa m-ziarna</H4>
+
+<P>
+Do klasy <CODE>SomeValue</CODE> dodamy implementację metody
+<CODE>reset()</CODE> i zmodyfikujemy metodę <CODE>set()</CODE> tak,
+by po zmianie wartości składowej <CODE>value</CODE> był wysyłany
+sygnał. Proszę zwrócić uwagę na dodatkowe prywatne pole
+<CODE>sequenceNumber</CODE>. Będzie ono przechowywać kolejny numer
+sygnału (bowiem każdy sygnał ma swój numer). 
+</P>
+<pre>
+import javax.management.*;
+
+public class SomeValue
+   extends NotificationBroadcasterSupport
+   implements SomeValueMBean {
+
+
+   public int getValue() {
+      return value;
+   }
+
+   public void setValue(int val) {
+
+      Notification notify =             // tworzymy sygnał
+         new AttributeChangeNotification(
+            this,                       // źródło sygnału
+            sequenceNumber++,           // numer sygnału
+            System.currentTimeMillis(), // czas wysłania
+            "Wartość zmieniona",        // wiadomość    
+            "Value",                    // nazwa atrybutu
+            "int",                      // typ atrybutu
+            value,                      // stara wartość
+            val                         // nowa wartość
+         );
+
+      this.value = val;  
+      sendNotification(notify);         // rozsyłamy sygnał    
+
+      System.out.println("Nowa wartość atrybutu \\\\\\\\"Value\\\\\\\\": " + value);
+   }
+
+   public int reset() {
+      if (value == 0)
+         return 0;
+      int oldval = value;
+      setValue(0); 
+      return oldval;
+   }
+
+   /**
+    * Numer sygnału
+    */
+   private long sequenceNumber = 1;      // dodatkowy pole
+
+   private int value = 0; 
+}
+</pre>
+<P>
+Tworząc obiekt sygnału (w tym wypadku klasy
+<CODE>AttributeChangeNotification</CODE>) przekazujemy konstruktorowi
+jako argumenty: źródło sygnału, kolejny numer, czas emisji,
+komunikat słowny, nazwę atrybutu, jego typ oraz starą i nową wartość.
+Ta informacja dotrze do słuchaczy. 
+</P>
+
+<H4>2.2.3. Klient</H4>
+
+<P>
+Kod klienta w zasadzie nie różni się od poprzedniego przypadku 
+(obsługa błędów została uszczegółowiona).
+Tym razem wywołujemy metodę <CODE>reset()</CODE> 
+(modyfikując wcześniej wartość atrybutu "Value" tak by była różna od 0). 
+Oprócz tego tworzymy obiekt słuchacza sygnałów i rejestrujemy go w m-serwerze, 
+który po stronie klienta jest reprezentowany przez obiekt klasy <CODE>MBeanServerConnection</CODE>. 
+</P>
+
+<pre>
+import javax.management.*;
+import javax.management.remote.*;
+import java.io.*;
+
+public class Client {
+
+   public static void main(String[] args) {
+
+      int port = 2006;
+      String host = "localhost";
+
+      if(args.length > 0)
+         host = args[0];
+      if(args.length > 1)
+         port = Integer.parseInt(args[1]);
+
+      String url = "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi";
+      ObjectName name = null;
+      JMXConnector jmxcon = null;
+      MBeanServerConnection srvcon = null;
+
+      try {
+         // Nawiązujemy połączenie z m-serwerem
+         JMXServiceURL jmxurl = new JMXServiceURL(url);
+         jmxcon = JMXConnectorFactory.connect(jmxurl);
+         srvcon = jmxcon.getMBeanServerConnection();
+
+         // Tworzymy nazwę m-ziarna, z którego chcemy skorzystać
+         name = new ObjectName("software.JMX:example=standard");
+
+         // Tworzymy nasłuch
+         ClientListener listener = new ClientListener();
+         srvcon.addNotificationListener(name, listener, null, null);
+      }
+      catch(JMException e){
+         System.err.println(e);
+      }
+      catch(IOException e){
+         System.err.println(e);
+      }
+
+      try {
+         // Zmieniamy wartość atrybutu tak by była != od 0
+         srvcon.setAttribute(name, new Attribute("Value", 1));
+      
+         // I wywołujemy metodę reset:
+         Object[] params = new Object[0];
+         String[] signature = new String[0];
+         int retval = (Integer)srvcon.invoke(name, "reset", params, signature);
+      }
+      catch(JMException e){
+         System.err.println(e);
+      }
+      catch(IOException e){
+         System.err.println(e);
+      }
+
+      // Musimy poczekać na nadejście sygnału.
+      try {
+         Thread.sleep(1000);
+      }
+      catch(InterruptedException e){
+      }
+   }
+}
+</pre>
+<P>
+Dodając słuchacza w metodzie <CODE>addNotificationListener()</CODE>
+podajemy jako argumenty: nazwę dla m-ziarna będącego źródłem
+zdarzenia, obiekt słuchacza, ewentualny filtr sygnałów (tutaj
+<CODE>null</CODE>) oraz opcjonalny obiekt (dowolnej klasy), który
+będzie przekazywany pomiędzy źródłem a słuchaczem w celu
+identyfikacji (tu również <CODE>null</CODE>). 
+</P>
+<P>
+Metodę <CODE>reset()</CODE> z naszego m-ziarna wywołujemy pośrednio,
+poprzez wywołanie <CODE>invoke()</CODE> ze zdalnego reprezentanta m-serwera.
+Jako argumenty przekazujemy jej: 
+<UL>
+  <LI>
+  nazwę m-ziarna (typu <CODE>ObjectName</CODE>), z którego będziemy wywoływać metodę,
+  </LI>
+  <LI>
+  nazwę wywoływanej metody, 
+  </LI>
+  <LI>
+  tablicę (typu <CODE>Object[]</CODE>) z argumentami, 
+  jeśli metoda jest bezargumentowa to tablica musi mieć długość 0,
+  </LI>
+  <LI>
+  sygnaturę - tablicę napisów z nazwami typów parametrów (w przypadku klas są to nazwy kwalifikowane).
+  </LI>
+</UL>
+Wynik jest typu <CODE>Object</CODE>.
+Ponieważ nasza metoda <CODE>reset()</CODE> zwraca <CODE>int</CODE>,
+więc faktycznym typem wyniku jest <CODE>Integer</CODE>.
+Po zrzutowaniu wykorzystujemy <EM>unboxing</EM> aby wyłuskać ze zwróconego obiektu 
+wartość pierwotnego typu <CODE>int</CODE>.
+</P>
+<P>
+Uśpienie wątku na końcu programu jest potrzebne, aby maszyna
+wirtualna nie zakończyła działania przed nadejściem sygnału. 
+Oczywiście, w przypadku rzeczywistej aplikacji jest to zbędne.
+</P>
+<P>
+Słuchacz sygnałów musi dostarczyć implementacji metody
+<CODE>handleNotification()</CODE> wymuszonej przez interfejs nasłuchu
+<CODE>NotificationListener</CODE>. Będzie ona wywoływana (poprzez
+<EM>callback</EM>) zawsze, kiedy nadejdzie sygnał. 
+</P>
+<pre>
+import java.util.Date;
+import javax.management.*;
+
+public class ClientListener 
+   implements NotificationListener {
+    
+   public void handleNotification(Notification notification, Object handback) {
+      System.out.println("Odebrano sygnał:");
+      System.out.println("Wiadomość:         " + notification.getMessage());
+      System.out.println("Numer:             " + notification.getSequenceNumber());
+      System.out.println("Wysłano:           " + new Date(notification.getTimeStamp()));
+      System.out.println("Dane użytkownika:  " + notification.getUserData());
+
+      AttributeChangeNotification attrNotif = (AttributeChangeNotification)notification;
+      System.out.println("Stara wartość:     " + attrNotif.getOldValue());
+      System.out.println("Nowa wartość:      " + attrNotif.getNewValue());
+   }
+}
+</pre>
+<P>
+Obiektu sygnału <CODE>notification</CODE>, 
+który jest przekazany jako argument możemy wypytać o szczegóły dotyczące zdarzenia. 
+Oprócz niego, jako dodatkowy argument, jest dostępny obiekt identyfikujący (<CODE>handback</CODE>), 
+który był przekazany podczas rejestracji słuchacza (tu go ignorujemy). 
+</P>
+
+<H4>2.2.4. Uruchomienie</H4>
+
+<P>
+Kod agenta jest identyczny jak w poprzednim przypadku. 
+Sposób uruchomienia również. 
+Na konsoli agenta powinniśmy zobaczyć taki komunikat: 
+</P>
+
+<DIV CLASS=listingful STYLE=white-space:pre;>Czekam na zgłoszenia...
+Nowa wartość atrybutu "Value": 1
+Nowa wartość atrybutu "Value": 0
+</DIV>
+
+<P>
+Natomiast po stronie klienta zobaczymy opisy sygnałów wysłanych po
+zmianie wartości atrybutu a następnie wywołaniu <CODE>reset()</CODE>: 
+</P>
+
+<DIV CLASS=listingful STYLE=white-space:pre;>Odebrano sygnał:
+Wiadomość:         Wartość zmieniona
+Numer:             1
+Wysłano:           Wed Mar 08 21:35:35 CET 2006
+Dane użytkownika:  null
+Stara wartość:     0
+Nowa wartość:      1
+Odebrano sygnał:
+Wiadomość:         Wartość zmieniona
+Numer:             2
+Wysłano:           Wed Mar 08 21:35:35 CET 2006
+Dane użytkownika:  null
+Stara wartość:     1
+Nowa wartość:      0
+</DIV>
+
+<P>
+Wynik działania jest widoczny na obrazkach:
+<P>
+<IMG SRC="images/Agent_2.png">
+</P>
+<P>
+<IMG SRC="images/Client_2.png">
+</P>
+</P>
+
+<P>
+Proszę zwrócić uwagę, że po stronie klienta 
+nie jest potrzebna znajomość interfejsu zarządzania m-ziarna 
+(ani tym bardziej jego klasy)!
+Wystarczy znajomość nazw i typów atrybutów, ewentualnie sygnatur metod. 
+Jest to niezwykle wygodne dla klientów,
+zwłaszcza jeśli oprogramowanie m-ziarna podlega zmianom,
+bądź jego interfejs nie może być udostępniony ze względów komercyjnych czy innych.
+</P>
+
+<BR><HR><a name="JMX1.3"></a><H2>3. Użycie pośrednika</H2>
+
+<P>
+Jeśli interfejs zarządzania jest dostępny po stronie klienta, 
+to cały proces dostępu do m-ziarna jest jeszcze prostszy i szybszy. 
+Jest on zwłaszcza wygodny przy operowaniu m-ziarnami maszyny wirtualnej, 
+co opiszemy w dalszej części. 
+</P>
+<P>
+Skoro mamy dostęp do interfejsu zarządzania, to znamy sygnatury
+wszystkich metod, również akcesorów - a przez to i
+atrybuty m-ziarna (zakładając, że zostało zbudowane zgodnie z
+konwencjami). Moglibyśmy je wywoływać bezpośrednio, ale niestety
+klasa m-ziarna z reguły nie jest dostępna po stronie klienta. W
+związku z tym infrastruktura JMX dostarcza tzw. pośrednika (ang.
+<EM>proxy</EM>). Jest to obiekt klasy implementującej interfejs
+zarządzania, który deleguje wywołania wszystkich metod do
+właściwego m-ziarna (poprzez sieć). 
+</P>
+<P>
+Wykorzystamy klasę m-ziarna i interfejs zarządzania z poprzedniego
+przykładu. Kod agenta jest identyczny. Inny będzie tylko kod klienta,
+jednak różnice - z punktu widzenia kodu - będą minimalne. Jak
+zwykle, na początku klient musi wykonać standardowe czynności
+polegające na uzyskaniu połączenia z m-serwerem i utworzeniu nazwy
+dla m-ziarna. 
+</P>
+<pre>
+import javax.management.*;
+import javax.management.remote.*;
+import java.io.*;
+
+public class ProxyClient {
+
+   public static void main(String[] args) {
+
+      int port = 2006;
+      String host = "localhost";
+
+      if(args.length > 0)
+         host = args[0];
+      if(args.length > 1)
+         port = Integer.parseInt(args[1]);
+
+      String url = "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi";
+      ObjectName name = null;
+      JMXConnector jmxcon = null;
+      MBeanServerConnection srvcon = null;
+
+      try {
+         // Nawiązujemy połączenie z m-serwerem
+         JMXServiceURL jmxurl = new JMXServiceURL(url);
+         jmxcon = JMXConnectorFactory.connect(jmxurl);
+         srvcon = jmxcon.getMBeanServerConnection();
+
+         // Tworzymy nazwę m-ziarna
+         name = new ObjectName("software.JMX:example=standard");
+
+         // Tworzymy nasłuch
+         ClientListener listener = new ClientListener();
+         srvcon.addNotificationListener(name, listener, null, null);
+      }
+      catch(JMException e){
+         System.err.println(e);
+      }
+      catch(IOException e){
+         System.err.println(e);
+      }
+
+      // Tworzymy pośrednika
+      SomeValueMBean someValueMBeanProxy = (SomeValueMBean)
+         MBeanServerInvocationHandler.newProxyInstance(
+            srvcon, name, SomeValueMBean.class, false
+         );
+      // Wywołujemy metody:
+      someValueMBeanProxy.setValue(2);        
+      someValueMBeanProxy.getValue();        
+      someValueMBeanProxy.reset();        
+
+        
+      // Musimy poczekać na nadejście sygnału.
+      try {
+         Thread.sleep(500);
+      }
+      catch(InterruptedException e){
+      }
+   }
+
+}
+</pre>
+<P>
+Następnie - za pomocą statycznej metody <CODE>newProxyInstance</CODE>
+z klasy <CODE>MBeanServerInvocationHandler</CODE> (pakiet
+<CODE>javax.management</CODE>) - tworzymy obiekt pośrednika
+<CODE>someValueMBeanProxy</CODE> typu <CODE>SomeValueMBean</CODE>, a
+więc takiego samego typu jak m-ziarno. Jako argumenty przekazujemy
+tej metodzie: 
+</P>
+
+<UL>
+<LI>odniesienie do zdalnego reprezentanta m-serwera (<CODE>srvcon</CODE>), 
+<LI>nazwę obiektu m-ziarna (<CODE>name</CODE>),
+<LI>interfejs zarządzania m-ziarna, który ma być implementowany przez zwróconego
+     pośrednika, oraz 
+<LI>informację, czy zwrócony obiekt ma implementować
+     interfejs <CODE>NotificationEmitter</CODE> dzięki czemu będziemy
+     mogli zdalnie dodawać i usuwać słuchaczy sygnałów. 
+</UL>
+
+<P>
+Obiektu <CODE>someValueMBeanProxy</CODE> używamy w zwykły sposób wywołując metody,
+tak jakby m-ziarno znajdowało się w lokalnej maszynie wirtualnej.
+Osoby obeznane z RMI zauważą tu pewne podobieństwa.
+W istocie, JMX wykorzystuje RMI jako jeden z możliwych protokołów komunikacji.
+</P>
+<P>
+Uruchomienie tego przykładu jest identyczne jak w poprzednim przypadku.
+Metody <CODE>setValue()</CODE> i <CODE>reset()</CODE> powodują emisję sygnału,
+co można zaobserwować na zrzutkach.
+</P>
+<P>
+<P>
+<IMG SRC="images/Agent_3.png">
+</P>
+<P>
+<IMG SRC="images/Client_3.png">
+</P>
+</P>
+
+<P>
+Ten sposób użycia m-ziarna jest preferowany, 
+jeśli klient ma dostęp do interfejsu zarządzania już na etapie kompilacji,
+co nie zawsze jest możliwe.
+</P>
+
+<BR><HR><a name="JMX1.4"></a><H2>4. Nadzorowanie maszyny wirtualnej</H2>
+
+<P>
+Począwszy od wersji 5 maszyna wirtualna Javy udostępnia niektóre swoje zasoby 
+jako tzw. m-ziarna systemowe (ang. <EM>platform mxbean</EM>) - inaczej mx-ziarna. 
+Są one reprezentowane przez interfejsy zarządzania pakietu <CODE>java.lang.management</CODE>. 
+Mx-ziarna umożliwiają monitorowanie i zarządzanie następującymi zasobami JVM: 
+</P>
+<UL>
+<LI>załadowane klasy i wykonywane wątki, 
+<LI>czas działania JVM, jej argumenty wywołania i właściwości systemowe, 
+<LI>stany wątków, wgląd w stos działającego wątku, wykrywanie blokad, 
+<LI>zużycie pamięci, odśmiecanie. 
+</UL>
+
+<P>
+Obiekty mx-ziaren są tworzone przez JVM a odniesienia do nich 
+zwracają statyczne metody klasy <CODE>ManagementFactory</CODE>
+(pakiet <CODE>java.lang.management</CODE>). 
+Po uzyskaniu odniesienia możemy takiego obiektu używać (lokalnie) w zwykły sposób, np.: 
+</P>
+
+<pre>RuntimeMXBean runmxb = ManagementFactory.getRuntimeMXBean();
+long start = runmxb.getStartTime(); 
+</pre>
+
+<P>
+Powyższy kod zwróci czas uruchomienia JVM. 
+</P>
+<P>
+To podejście ma istotne ograniczenie: pozwala na odpytywanie
+wyłącznie tej maszyny wirtualnej, na której się wykonuje.
+Jeśli chcemy skorzystać z mx-ziaren zdalnej maszyny wirtualnej,
+musimy uzyskać dostęp do nich w jeden z wyżej opisanych sposobów:
+</P>
+<UL>
+<LI>posługując się nazwami atrybutów i metod 
+   (i wywołując <CODE>set/getAttribute()</CODE> i <CODE>invoke()</CODE>);
+   nazwy atrybutów można wydedukować z nazw akcesorów zadeklarowanych w tych interfejsach,
+<LI>korzystając z pośrednika. 
+</UL>
+<P>
+Drugi sposób jest prostszy i możemy go zastosować, 
+ponieważ interfejsy zarządzania odpowiednich mx-ziaren są dostępne w
+standardowym pakiecie <CODE>java.lang.management</CODE>,
+a więc są obecne w JDK.
+</P>
+
+<H3>4.1. Przykład</H3>
+
+<P>
+Podłączymy się do działającej maszyny wirtualnej, w której
+jest uruchomiony jakiś program i sprawdzimy ilość używanej pamięci.
+Oto program klienta pobierającego informacje: 
+</P>
+<pre>
+import java.io.*;
+import java.net.*;
+import javax.management.*;
+import javax.management.remote.*;
+import java.lang.management.*;
+
+import static java.lang.management.ManagementFactory.*;
+
+
+public class MXClient {
+
+   public static void main(String[] args) {
+
+      int port = 2006;
+      String host = "localhost";
+
+      if(args.length > 0)
+         host = args[0];
+      if(args.length > 1)
+         port = Integer.parseInt(args[1]);
+
+      String url = "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi";
+
+      JMXServiceURL jmxurl = null;
+      JMXConnector jmxcon = null;
+      MBeanServerConnection srvcon = null;
+      MemoryMXBean memxbean = null;
+
+      try {
+         jmxurl = new JMXServiceURL(url);
+      }
+      catch(MalformedURLException e){
+         System.err.println(e);
+      }
+
+      try {
+         // Nawiązujemy połączenie z m-serwerem
+         jmxcon = JMXConnectorFactory.connect(jmxurl);
+         srvcon = jmxcon.getMBeanServerConnection();
+
+         // Pobieramy mx-ziarno reprezentujące pamięć
+         memxbean = newPlatformMXBeanProxy(srvcon, MEMORY_MXBEAN_NAME, MemoryMXBean.class);
+      }
+      catch(IOException e){
+         System.err.println(e);
+      }
+
+      // Pobieramy rozmiar sterty i uruchamiamy odśmiecanie.
+      long used = memxbean.getHeapMemoryUsage().getUsed();
+      System.out.println("Rozmiar sterty: " + used);
+
+      memxbean.gc();
+      System.out.println("Odśmiecanie...");
+
+      used = memxbean.getHeapMemoryUsage().getUsed();
+      System.out.println("Rozmiar sterty: " + used);
+   }
+}
+</pre>
+<P>
+Po wykonaniu standardowych czynności tworzymy pośrednika dla mx-ziarna reprezentującego pamięć. 
+W tym celu wywołujemy statyczną metodę <CODE>newPlatformMXBeanProxy()</CODE> 
+z klasy <CODE>ManagementFactory</CODE> 
+(proszę zwrócić uwagę na statyczny import tej klasy, 
+dzięki któremu można używać jej statycznych składowych bez kwalifikacji). 
+Jako argumenty przekazujemy: 
+</P>
+<UL>
+<LI>odniesienie do reprezentanta połączenia <CODE>srvcon</CODE>, 
+<LI>statyczną stałą <CODE>MEMORY_MXBEAN_NAME</CODE>
+   z tej samej klasy, będącą nazwą dla mx-ziarna reprezentującego pamięć oraz 
+<LI>interfejs zarządzania żądanego mx-ziarna. 
+</UL>
+<P>
+Teraz możemy już operować mx-ziarnem wywołując z niego metody
+bezpośrednio. W tym przykładzie pobieramy rozmiar używanej pamięci, a
+następnie wywołujemy odśmiecacz (metodą <CODE>gc()</CODE>). W ten
+prosty sposób można dokonać zdalnego odśmiecenia maszyny
+wirtualnej. Ten przykład dobitnie pokazuje jak potężnym
+narzędziem jest JMX. 
+</P>
+
+<H3>4.2. Uruchomienie</H3>
+
+<P>
+Powyższego klienta można podłączyć do dowolnej maszyny wirtualnej
+- nie musi ona wykonywać specjalnie przygotowanego
+kodu. Natomiast musi być w specjalny sposób uruchomiona (tzn.
+tak jak poprzednie programy agenta). Dla przykładu uruchomimy program
+demonstracyjny zawarty w archiwum SwingSet2.jar (dostępny wraz z JDK
+w katalogu <EM>demo/jfc</EM>, o ile zainstalowano): 
+</P>
+<DIV CLASS=listingful STYLE=white-space:pre;>java -Dcom.sun.management.jmxremote.port=2006 
+     -Dcom.sun.management.jmxremote.ssl=false 
+     -Dcom.sun.management.jmxremote.authenticate=false 
+     -jar SwingSet2.jar
+</DIV>
+<P>
+Następnie uruchamiamy klienta (oczywiście, zamiast localhost
+wstawiamy odpowiednią nazwę hosta, a numer portu ma być taki, jak
+podano podczas uruchamiania badanej maszyny wirtualnej): 
+</P>
+<DIV CLASS=listingful STYLE=white-space:pre;>java MXClient localhost 2006
+Rozmiar sterty: 23156624
+Odśmiecanie...
+Rozmiar sterty: 20929312
+</DIV>
+<P>
+Sposób uruchomienia i komunikaty prezentują obrazki:
+<P>
+<IMG SRC="images/JVM.png">
+</P>
+<P>
+<IMG SRC="images/MXClient.png">
+</P>
+</P>
+
+<P>
+Jak widzimy zdalne odśmiecanie odniosło skutek! 
+</P>
+
+<BR><HR><a name="JMX1.5"></a><H2>5. Aplikacja jconsole</H2>
+
+<P>
+JDK zawiera program narzędziowy jconsole, który można wykorzystać jako uniwersalnego
+klienta m-ziaren. W szczególności można go używać do badania
+stanu maszyny wirtualnej poprzez odpytywanie mx-ziaren, zarówno
+lokalnej jak i zdalnej (choć z uwagi na swoją zasobożerność twórcy
+odradzają stosowanie go do nadzorowania maszyny lokalnej). 
+</P>
+<P>
+Maszyna wirtualna, do której chcemy przyłączyć jconsole
+musi być uruchomiona w specjalny sposób. Może ona wykonywać
+dowolny program, w szczególności taki, który tworzy i
+rejestruje m-ziarna. Jeśli chcemy umożliwić wyłącznie lokalne
+połączenia z jconsole, to należy ustalić właściwość
+<CODE>com.sun.management.jmxremote</CODE>: 
+</P>
+<DIV CLASS=notel33>
+Począwszy od wersji JDK 6, lokalne połączenia z jconsole są dostępne automatycznie.
+Nie trzeba zatem ustalać właściwości <CODE>com.sun.management.jmxremote</CODE> 
+podczas uruchamiania nadzorowanej maszyny wirtualnej.
+Dotyczy to wyłącznie połączeń w obrębie jednego hosta.
+</DIV>
+<DIV CLASS=listingful STYLE=white-space:pre;>java -Dcom.sun.management.jmxremote Klasa
+</DIV>
+<P>
+gdzie <CODE>Klasa</CODE> jest jakimś programem. Spowoduje to
+uaktywnienie warstwy JMX dla połączeń lokalnych. Aby umożliwić
+również zdalne połączenia należy maszynę uruchomić tak: 
+</P>
+<DIV CLASS=listingful STYLE=white-space:pre;>java -Dcom.sun.management.jmxremote.port=PORT 
+     -Dcom.sun.management.jmxremote.ssl=false 
+     -Dcom.sun.management.jmxremote.authenticate=false 
+      Klasa
+</DIV>
+<P>
+Tu <CODE>PORT</CODE> jest numerem portu, przez który będzie
+odbywać się komunikacja. 
+</P>
+
+<P>Do tak uruchomionej maszyny możemy przyłączyć jconsole. Na
+początku pojawia się okno dialogowe służące do wyboru JVM, z którą
+będziemy się łączyć. 
+</P>
+
+<P>
+<IMG SRC="images/jconsole-select-local.png">
+</P>
+
+<P>
+Zawiera ono panel zakładkowy z trzema zakładkami odpowiadającymi
+trzem możliwym sposobom łączenia się z maszynami wirtualnymi: 
+</P>
+<UL>
+<LI>lokalnie (zakładka Local) - łączymy się JVM uruchomioną przez tego samego użytkownika na tej
+    samej maszynie. Uwierzytelnianie jest wykonywane na podstawie
+    informacji zawartych w systemie plików. 
+<LI>zdalnie (zakładka Remote) -
+ podajemy nazwę hosta i numer portu (przez który będzie odbywać się komunikacja - 
+ został on określony podczas uruchamiania badanej JVM).
+ Jeśli nie zrezygnowano z autoryzacji podczas uruchamiania badanej JVM
+ (właściwość <CODE>com.sun.management.jmxremote.authenticate</CODE> ustalono na <CODE>true</CODE>),
+ to należy również podać nazwę użytkownika i hasło (szczegóły w <A HREF="../JMX2/JMX2.html#SECURITY">następnym wykładzie</A>),
+<LI>sposób ogólny (zakładka Advanced) - jest stosowany jeśli używamy innych (niż domyślny) 
+ protokołów do komunikacji z docelową maszyną lub jest ona starszej wersji (1.4.*).
+ W tym wypadku należy podać url usługi, z którą się łączymy oraz nazwę użytkownika i hasło. 
+</UL>
+<P>
+Domyślna zakładka Local prezentuje działające w macierzystym systemie 
+maszyny wirtualne z aktywnym agentem JMX, do których mamy dostęp. 
+Na obrazku widać, że w lokalnym systemie działają dwie maszyny wirtualne - 
+jedna wykonuje program zawarty w archiwum SwingSet2.jar a druga klasę Agent. 
+Zaznaczamy jedną z nich i klikamy przycisk "Connect".
+</P>
+<P>
+<IMG SRC="images/jconsole-select-remote.png">
+</P>
+
+<P>
+Aby zbadać możliwości aplikacji jconsole uruchommy klasę <CODE>Agent</CODE>
+z poprzedniego przykładu. Następnie - być może na innej maszynie -
+odpalamy jconsole i łączymy się z JVM, na której działa <CODE>Agent</CODE>.
+Powinniśmy zobaczyć podsumowanie podstawowych informacji o maszynie wirtualnej, 
+z którą się połączyliśmy. 
+</P>
+<P>
+<IMG SRC="images/jconsole-summary.png">
+</P>
+<P>
+Wybieramy zakładkę <CODE>MBeans</CODE>. Prezentuje ona informacje
+o wszystkich m-ziarnach zarejestrowanych w JVM. Pozwala na pełny
+dostęp do zasobów nadzorowanej maszyny wirtualnej - w tym
+również umożliwia manipulowanie własnymi m-ziarnami. 
+</P>
+<P>
+<IMG SRC="images/jconsole-mbeans-attributes.png">
+</P>
+
+<P>
+W lewym panelu otwieramy węzeł "software.JMX". Powinien
+ukazać się liść "standard" odpowiadający m-ziarnu
+zarejestrowanemu przez agenta. Zaznaczamy go, co powoduje
+uaktywnienie prawego panelu zakładkowego. W nim możemy dokonywać
+operacji na m-ziarnie. Zakładka <CODE>Attributes</CODE> prezentuje
+atrybuty m-ziarna i umożliwia nadawanie im wartości poprzez zwykłe
+wpisanie nowych danych w kolumnie "Value". Otwieramy
+zakładkę "Notifications". Zawarty tam panel prezentuje
+sygnały emitowane przez m-ziarno i odebrane przez jconsole. Aby
+zarejestrować się jako słuchacz klikamy przycisk "Subscribe".
+Od tej pory zmiany wartości atrybutu <CODE>"Value"</CODE> w
+naszym m-ziarnie będą powodować emisję sygnału. 
+</P>
+<P>
+<IMG SRC="images/jconsole-mbeans-notifications.png">
+</P>
+
+<P>
+Spróbujmy. W zakładce "Attributes" nadajemy nową
+wartość atrybutowi "Value". W tym momencie na etykiecie
+zakładki "Notifications" pojawia się liczba 1 oznaczająca,
+że nadszedł sygnał. Możemy się mu przyjrzeć otwierając zakładkę
+"Notifications". A teraz otwieramy zakładkę "Operations".
+Pozwala ona na wywoływanie metod m-ziarna. Aby wywołać metodę <CODE>reset()</CODE>
+klikamy na przycisk znajdujący się w panelu. W tym momencie pojawia
+się okno dialogowe prezentujące wartość zwróconą przez metodę,
+a na etykiecie zakładki "Notifications" pojawia się liczba
+odpowiadająca kolejnemu odebranemu sygnałowi (jak pamiętamy metoda
+<CODE>reset()</CODE> powodowała emisję sygnału poprzez wywołanie
+<CODE>set()</CODE>). 
+</P>
+<P>
+<IMG SRC="images/jconsole-mbeans-operations.png">
+</P>
+
+<H3>5.1 Nadzorowanie wątków i wykrywanie blokad</H3>
+<P>
+Zakładka <VAR>Threads</VAR> prezentuje informacje dotyczące działających wątków.
+Zaznaczając wątek na liście (w lewym-dolnym rogu) możemy obejrzeć zawartość jego stosu i
+inne dane.
+Pole <VAR>Filter</VAR> pozwala filtrować wątki pojawiające się na liście:
+będzie ona zawierać tylko te, których nazwy zawierają napis podany w tym polu.
+</P>
+<P>
+Więcej informacji możemy uzyskać posługując się mx-ziarnami bezpośrednio.
+Wybieramy zakładkę <VAR>MBeans</VAR> a w drzewie m-ziaren rozwijamy gałąź <VAR>java.lang</VAR>
+i zaznaczamy element <VAR>Threading</VAR> (odpowiada on mx-ziarnu <CODE>ThreadMXBean</CODE>).
+Zakładka <VAR>Operations</VAR> prawego panelu pozwala wywoływać metody tego mx-ziarna.
+W szczególności możemy dowiedzieć się ile czasu wykonywał się dany wątek.
+</P>
+<DIV CLASS=important>
+Te właściwości są szczególnie przydatne, 
+jeśli chcemy sprawdzić czy nasz program się nie zawiesił
+lub też czy nie doszło do blokady.
+</DIV>
+<P>
+Zobaczymy jak wykryć ewentualną blokadę.
+W tym celu uruchomimy przykładowy program z katalogu 
+<SAMP><VAR>JDK_HOME</VAR>/demo/management/FullThreadDump/</SAMP>,
+który demonstruje to zjawisko uruchamiając trzy wzajemnie blokujące się wątki.
+Następnie, na innej maszynie uruchomimy konsolę i wywołamy metodę 
+<CODE>findMonitorDeadlockedThreads()</CODE> z mx-ziarna <CODE>ThreadMXBean</CODE>.
+Przy okazji zobaczymy jak uruchamiać program aby umożliwić jego zdalne nadzorowanie.
+</P>
+<P>
+<DIV CLASS=notel>
+Program demonstrujący blokadę uruchamiamy na komputerze o adresie <SAMP>192.168.0.2</SAMP>.
+</DIV>
+Oto sposób uruchomienia powyższego programu, demonstrującego blokadę:
+<DIV CLASS=listingful STYLE=white-space:pre;>java -Dcom.sun.management.jmxremote.port=1234 
+     -Dcom.sun.management.jmxremote.ssl=false 
+     -Dcom.sun.management.jmxremote.authenticate=false 
+     -cp FullThreadDump.jar Deadlock
+</DIV>
+Pierwsze trzy wiersze powinny być już jasne (instalujemy łącznik na porcie <CODE>1234</CODE>).
+Klasa <CODE>Deadlock</CODE> - zawierająca metodę startową - 
+jest zawarta w archiwum <CODE>FullThreadDump.jar</CODE>,
+stąd opcja <SAMP>-cp FullThreadDump.jar</SAMP>.
+Program tworzy trzy wątki, które wpadają w blokadę, ponieważ każdy z nich wymaga do działania
+zasobu zajętego przez inny.
+W efekcie program nie może się wykonywać i trzeba go zakończyć.
+Oto wydruk jego działania:
+<DIV CLASS=listingful STYLE=white-space:pre;>Deadlock found :-
+"DeadlockedThread-3" Id=13 in BLOCKED on lock=java.lang.Object@1820dda
+     owned by DeadlockedThread-1 Id=11
+    at Deadlock$DeadlockThread3.A(Deadlock.java:185)
+    at Deadlock$DeadlockThread3.C(Deadlock.java:173)
+    at Deadlock$DeadlockThread3.run(Deadlock.java:162)
+
+"DeadlockedThread-1" Id=11 in BLOCKED on lock=java.lang.Object@15b7986
+     owned by DeadlockedThread-2 Id=12
+    at Deadlock$DeadlockThread1.B(Deadlock.java:118)
+    at Deadlock$DeadlockThread1.A(Deadlock.java:106)
+    at Deadlock$DeadlockThread1.run(Deadlock.java:95)
+
+"DeadlockedThread-2" Id=12 in BLOCKED on lock=java.lang.Object@87816d
+     owned by DeadlockedThread-3 Id=13
+    at Deadlock$DeadlockThread2.C(Deadlock.java:151)
+    at Deadlock$DeadlockThread2.B(Deadlock.java:139)
+    at Deadlock$DeadlockThread2.run(Deadlock.java:128)
+
+
+Press &lt;Enter&gt; to exit this Deadlock program.
+
+</DIV>
+</P>
+<P>
+Teraz uruchamiamy konsolę w zwykły sposób wybierając zakładkę <VAR>Remote</VAR> i
+wypełniając ją tak, jak to wcześniej opisano.
+Ponieważ uruchamiając badaną JVM zrezygnowaliśmy z autoryzacji
+(właściwość <CODE>com.sun.management.jmxremote.authenticate=false</CODE>), 
+podawanie identyfikacji użytkownika nie jest konieczne.
+Zatem wystarczy w zakładce <VAR>Remote</VAR> wpisać coś takiego:
+<DIV CLASS=notel>
+Łączymy się z komputerem o adresie <SAMP>192.168.0.2</SAMP>.
+Numer portu <SAMP>1234</SAMP> został podany podczas uruchamiania maszyny docelowej.
+</DIV>
+<CENTER><IMG SRC="images/jconsole_select_remote_simple.gif"></CENTER>
+</P>
+<P>
+Teraz otwieramy zakładkę <VAR>MBeans</VAR>, w drzewie m-ziaren rozwijamy gałąź 
+<VAR>java.lang</VAR> i zaznaczamy element <VAR>Threading</VAR>.
+Z prawego panelu wybieramy zakładkę <VAR>Operations</VAR> i klikamy przycisk z nazwą metody
+<CODE>findMonitorDeadlockedThreads()</CODE>.
+Pojawi się okienko z numerami wątków, które są w stanie blokady.
+</P>
+<CENTER><IMG SRC="images/jconsole-deadlock.gif"></CENTER>
+<P>
+Jak widać, wątki o identyfikatorach <VAR>11, 12, 13</VAR> są w stanie blokady.
+W zakładce <VAR>Threads</VAR> możemy przeanalizować zawartość stosu każdego z nich
+aby się dowiedzieć, co powoduje blokadę.
+Można też - podobnie jak metodę wykrywającą blokadę - 
+wywołać metodę <CODE>getThreadInfo(long id, int maxDepth)</CODE> z tego samego mx-ziarna.
+Pozwala ona szczegółowo analizować zawartość stosu
+(trzeba jej przekazać numer wątku i głębokość na jaką chcemy wniknąć w stos).
+</P>
+<P>
+Możliwość zdalnego wykrycia blokady jest bardzo cenna,
+ponieważ pozwala rozstrzygnąć dlaczego program się nie wykonuje.
+Przyczyn zawsze może być wiele.
+Niektóre z nich ustępują - inne wymagają siłowego zakończenia programu.
+<DIV CLASS=important>
+Zauważmy, że analizując dane udostępniane przez mx-ziarna za pośrednictwem konsoli
+możemy również wykryć, czy jakiś wątek naszego programu się nie zawiesza.
+</DIV>
+</P>
+
+<BR><HR><a name="JMX1.6"></a><H2>6. Ćwiczenia</H2>
+<P>
+<UL>
+<LI>
+Uruchomić dowolny program - na przykład któryś z katalogu <SAMP>demo/jfc/</SAMP> - 
+i podłączyć do niego <SAMP>jconsole</SAMP>.
+</LI>
+<LI>
+Uruchomić zaprezentowane przykładowe programy i dołączyć do nich <SAMP>jconsole</SAMP>.
+Następnie odnaleźć nasze m-ziarna (zakładka <SAMP>MBeans</SAMP>) i
+manipulować atrybutami oraz wykonywać operacje.
+Zarejestrować <SAMP>jconsole</SAMP> jako odbiorcę sygnałów.
+</LI>
+<LI>
+Wykonywać obydwa ćwiczenia dla lokalnej i zdalnej JVM.
+</LI>
+</UL>
+</P>
+
+<BR><HR><a name="JMX1.7"></a><H2>7. Dokumentacja, literatura, aplikacje</H2>
+
+<VAR>JDK_HOME</VAR> oznacza katalog instalacji JDK 6.
+
+<H3>Elektroniczna</H3>
+<P>
+Dokumentacja podstawowa:
+</P>
+<UL>
+  <LI>
+    Witryna <A HREF="http://java.sun.com/products/JavaManagement">java.sun.com/products/JavaManagement</A> - strona domowa JMX.
+  </LI>
+  <LI>Specyfikacja API - pakiety:
+    <UL type="i">
+      <LI>
+         <CODE>javax.management</CODE> wraz z podpakietami
+      </LI>
+      <LI>
+        <CODE>java.lang.management</CODE>
+      </LI>
+    </UL>
+  </LI>
+  <LI>
+    Dokument <A HREF="http://java.sun.com/javase/6/docs/technotes/guides/management/">java.sun.com/javase/6/docs/technotes/guides/management/</A>
+    (wersja lokalna: JDK_HOME/docs/technotes/guide/management/index.html)
+    wprowadza w koncepcje nadzorowania i zarządzania dla języka Java.
+  </LI>
+  <LI>
+    Dokument <A HREF="http://java.sun.com/javase/6/docs/technotes/guides/jmx/index.html">java.sun.com/javase/6/docs/technotes/guides/jmx/index.html</A>
+    (wersja lokalna JDK_HOME/docs/technotes/guide/jmx/index.html)
+    zawiera odnośniki do specyfikacji i tutoriala wraz z przykładami.
+  </LI>
+  <LI>
+    Wątek w Java Tutorial poświęcony JMX: <A HREF="http://java.sun.com/docs/books/tutorial/jmx/">java.sun.com/docs/books/tutorial/jmx/</A>.
+  </LI>
+</UL>
+
+<H3>Papierowa</H3>
+<P>
+Po polsku:
+<UL>
+  <LI>
+   artykuł: "JMX - Zdalne zarządzanie aplikacjami i maszyną wirtualną Javy", Bartłomiej Starosta, Software Developer's Journal, 06.2006, str. 54-63.   
+  </LI>
+  <LI>
+   książka: "JMX. Zarządzanie aplikacjami w języku Java", Bartłomiej Starosta, PJWSTK 2006.
+  </LI>
+</UL>
+Dostępnych jest również kilka książek w języku angielskim.
+</P>
+
+<H3>Oprogramowanie</H3>
+<P>
+Przykładowe programy znajdują się w katalogach:
+<UL>
+  <LI>
+   <SAMP><VAR>JDK_HOME</VAR>/demo/management/</SAMP>   
+  </LI>
+  <LI>
+   <SAMP><VAR>JDK_HOME</VAR>/sample/jmx/</SAMP>   
+  </LI>
+  <LI>
+   na stronie <A HREF="http://coldjava.hypermart.net/jmx/jmx-html.htm">coldjava.hypermart.net/jmx/jmx-html.htm</A> znajduje się adapter dla języka HTML. 
+  </LI>    
+</UL>
+Witryna <A HREF="http://java-source.net/open-source/jmx">java-source.net/open-source/jmx</A> udostępnia narzędzia <EM>open-source</EM> dla JMX.
+</P>
+<HR>
+    
+</body>
+</html>
