@@ -1,1 +1,0 @@
-start "Durable subscriber" run DurableSubscriber topic1 %1
