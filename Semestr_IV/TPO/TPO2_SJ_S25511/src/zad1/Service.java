@@ -31,6 +31,7 @@ public class Service {
     public String getWeather(String city) {
         try {
             URL url = new URL("http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + countyCode + "&APPID=0ebe2b0bd2ccb170afe2e8e536148894");
+            System.out.println("http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + countyCode + "&APPID=0ebe2b0bd2ccb170afe2e8e536148894");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             Scanner reader = new Scanner(connection.getInputStream());
@@ -46,7 +47,7 @@ public class Service {
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return "Error";
         }
     }
 

@@ -143,7 +143,7 @@ public class GUI extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 currency = currText.getText();
-                currLabel.setText("");
+                currText.setText("");
             }
         });
 

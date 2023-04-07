@@ -2,60 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2d033843-2300-472a-bf05-ae9e5cb0568b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.classpath" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/UTP7_SJ_S25511.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/gson_2_10_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.project" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UTP41.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hs_err_pid4844.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/AbstractLayout.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/DimensionInfo.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/GridConstraints.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/GridLayoutManager.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/HorizontalInfo.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/LayoutState.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/Spacer.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/SupportCode$TextWithMnemonic.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/SupportCode.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/Util.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/com/intellij/uiDesigner/core/VerticalInfo.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$1.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$2.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$3.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$4.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$5.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$6.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/JsonRateFor.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Main.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zad1/GUI.form" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zad1/GUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zad1/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zad1/Service.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../Semestr IV/TPO/TPO1_SJ_S25511/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../Semestr IV/TPO/TPO1_SJ_S25511/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Code/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Code/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Data/iris.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Data/iris.data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Data/iris.test.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Data/iris.test.data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Code/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Code/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.data" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.test.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.test.data" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/gson_2_10_1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UTP41.iml" beforeDir="false" afterPath="$PROJECT_DIR$/UTP41.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hs_err_pid4844.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$5.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$5.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$6.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI$6.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/JsonRateFor.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/JsonRateFor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/GUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/zad1/Service.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/Service.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileColors">
-    <fileColor scope="Open Files" color="Rose" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -67,6 +31,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="jar://$USER_HOME$/.jdks/corretto-1.8.0_332/src.zip!/java/awt/Font.java" root0="SKIP_INSPECTION" />
@@ -84,15 +49,17 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;UI_DESIGNER_EDITOR_MODE.PaletteManager.SHOW&quot;: &quot;false&quot;,
+    &quot;UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.SHOW&quot;: &quot;false&quot;,
     &quot;UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH&quot;: &quot;319&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/kubas/Downloads/gson-2.10.1.jar&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/kubas/Desktop/Studia/Semestr_IV/TPO/TPO2_SJ_S25511/lib&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.file-colors&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -101,6 +68,7 @@
       <recent name="UTP41" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\kubas\Desktop\Studia\Semestr_IV\TPO\TPO2_SJ_S25511\lib" />
       <recent name="C:\Users\kubas\Desktop\Studia\Semestr III\UTP\Projects\Project_5\UTP7_SJ_S25511\src" />
       <recent name="C:\Users\kubas\Desktop\Studia\Semestr III\UTP\Projects\Project_5\UTP7_SJ_S25511\src\UTP41" />
     </key>
@@ -232,7 +200,13 @@
       <workItem from="1679416412378" duration="715000" />
       <workItem from="1679513801675" duration="12073000" />
       <workItem from="1679528128727" duration="1906000" />
-      <workItem from="1679565982011" duration="6984000" />
+      <workItem from="1679565982011" duration="9963000" />
+      <workItem from="1679589550244" duration="18561000" />
+      <workItem from="1679661126356" duration="890000" />
+      <workItem from="1679665601976" duration="63000" />
+      <workItem from="1679667502252" duration="2670000" />
+      <workItem from="1680019844320" duration="1822000" />
+      <workItem from="1680029964027" duration="570000" />
     </task>
     <servers />
   </component>
@@ -244,7 +218,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
