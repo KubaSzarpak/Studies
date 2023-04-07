@@ -32,7 +32,11 @@ public class Perceptron {
     }
 
     private double Net(PrcptrnVector vector) {
+<<<<<<< HEAD
         double net = 0.0;
+=======
+        double net = 0;
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
 
         for (int i = 0; i < Math.max(vector.lenght(), weight.lenght()); i++) {
             net += vector.getElem(i) * weight.getElem(i);
@@ -54,11 +58,19 @@ public class Perceptron {
             return "ERROR";
         }
 
+<<<<<<< HEAD
         int y = activationFunc(vector);
 
         if (y == values.getV1()) {
             return values.getT1();
         } else if (y == values.getV2()) {
+=======
+        int x = activationFunc(vector);
+
+        if (x == values.getV1()) {
+            return values.getT1();
+        } else if (x == values.getV2()) {
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
             return values.getT2();
         }
         return "ERROR";
@@ -78,11 +90,19 @@ public class Perceptron {
 
             status = Status.LEARNING;
             weightDraw(trainingData.get(0).lenght());
+<<<<<<< HEAD
             double Emax = 0.01;
             double E;
             int i = 0;
 
             do {
+=======
+            double Emax = 0.0;
+            double E = 0.0;
+            int i = 0;
+
+            while (E >= Emax && i < 1000) {
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
                 double sum = 0.0;
                 for (PrcptrnVector vector : trainingData) {
                     int y = activationFunc(vector);
@@ -106,7 +126,10 @@ public class Perceptron {
                 E = (1.0 / trainingData.size()) * sum;
                 i++;
             }
+<<<<<<< HEAD
             while (E >= Emax && i < 10000);
+=======
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
 
             status = Status.LEARNED;
         }

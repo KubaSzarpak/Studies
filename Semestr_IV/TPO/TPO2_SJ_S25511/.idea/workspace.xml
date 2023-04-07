@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2d033843-2300-472a-bf05-ae9e5cb0568b" name="Changes" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/libraries/gson_2_10_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UTP41.iml" beforeDir="false" afterPath="$PROJECT_DIR$/UTP41.iml" afterDir="false" />
@@ -15,6 +16,30 @@
       <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Service.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/zad1/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/GUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/zad1/Service.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/zad1/Service.java" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/../../../Semestr IV/TPO/TPO1_SJ_S25511/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../Semestr IV/TPO/TPO1_SJ_S25511/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Code/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Code/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Data/iris.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Data/iris.data" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Data/iris.test.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/out/production/P1/Data/iris.test.data" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Code/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Code/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.data" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.test.data" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P1/src/Data/iris.test.data" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../NAI/Projects/P2/.gitiqnore" beforeDir="false" afterPath="$PROJECT_DIR$/../../NAI/Projects/P2/.gitiqnore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/flatlaf_3_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/flatlaf_3_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/flatlaf_intellij_themes_3_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/flatlaf_intellij_themes_3_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/gson_2_10_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/gson_2_10_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/UTP41/zad1/Frame.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI2$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI2$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI2$3.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI2$4.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI2$5.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI2$6.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/UTP41/zad1/GUI2.class" beforeDir="false" />
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +69,7 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
@@ -60,8 +86,24 @@
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.file-colors&quot;
+=======
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH": "319",
+    "WebServerToolWindowFactoryState": "false",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "last_opened_file_path": "C:/Users/kubas/.libr/gson-2.10.1.jar",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settings.ide.settings.file-colors"
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="zad1" />
@@ -205,8 +247,11 @@
       <workItem from="1679661126356" duration="890000" />
       <workItem from="1679665601976" duration="63000" />
       <workItem from="1679667502252" duration="2670000" />
+<<<<<<< HEAD
       <workItem from="1680019844320" duration="1822000" />
       <workItem from="1680029964027" duration="570000" />
+=======
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
     </task>
     <servers />
   </component>

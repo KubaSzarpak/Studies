@@ -7,7 +7,11 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
         String trainingPath = args[0];
+<<<<<<< HEAD
         String testPath = args[1];
+=======
+        String testPath = args[0];
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
         List<PrcptrnVector> trainingData = new ArrayList<>();
         List<PrcptrnVector> testData = new ArrayList<>();
 
@@ -16,17 +20,25 @@ public class Main {
 
         Perceptron perceptron = new Perceptron(trainingData);
 
+<<<<<<< HEAD
 
         while (perceptron.status != Perceptron.Status.LEARNED) {
             Thread.sleep(100);
         }
 
+=======
+        Thread.sleep(2000);
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
         int ilosc = testData.size();
         int celnosc = 0;
 
         for (PrcptrnVector vector : testData) {
             String result = perceptron.func(vector);
+<<<<<<< HEAD
 //            System.out.println("Oczekiwany: " + vector.getType() + " | Obliczony: " + result);
+=======
+            System.out.println("Oczekiwany: " + vector.getType() + " | Obliczony: " + result);
+>>>>>>> 9e6b0da5ff96043bf31f46709925d666b56986dc
 
             if (vector.getType().equals(result))
                 celnosc++;

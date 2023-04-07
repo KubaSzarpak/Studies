@@ -17,7 +17,7 @@ public class Main {
     Double rate2 = s.getNBPRate();
     // ...
     // część uruchamiająca GUI
-    SwingUtilities.invokeLater(GUI::new);
+    SwingUtilities.invokeLater(Frame::new);
     
   }
 }

@@ -53,7 +53,7 @@ public class Service {
 
     public Double getRateFor(String currency) {
         try {
-            URL url = new URL("https://api.exchangerate.host/latest?base=" + this.currency);
+            URL url = new URL("https://api.exchangerate.host/latest?base=" + currency);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             Scanner reader = new Scanner(connection.getInputStream());
             String json = reader.nextLine();
@@ -61,7 +61,7 @@ public class Service {
             Gson gson = new Gson();
             Map<String, Double> mapa = gson.fromJson(json, JsonRateFor.class).getRates();
 
-            return mapa.get(currency);
+            return mapa.get(this.currency);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -71,7 +71,7 @@ public class Service {
     public Double getNBPRate() {
         try {
             URL urlA = new URL("http://api.nbp.pl/api/exchangerates/rates/A/" + currency + "?format=json");
-            URL urlB = new URL("http://api.nbp.pl/api/exchangerates/rates/B/" + currency + "?format=json");
+            URL urlB = new URL("http://api.nbp.pl/api/exchangerates/tables/B/" + currency + "?format=json");
             HttpURLConnection connection = (HttpURLConnection) urlA.openConnection();
 
             if (connection.getResponseCode() > 299) {
