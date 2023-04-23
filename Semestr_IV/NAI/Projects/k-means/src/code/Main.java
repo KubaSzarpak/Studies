@@ -3,7 +3,6 @@ package code;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,11 +21,13 @@ public class Main {
         double distanceInIteration2 = -1;
         List<Group> groups = new ArrayList<>();
 
-//        for (int i = 0; i < k; i++) {
-//            groups.add(new Group(String.valueOf(i), dataList.get(0).length()));
-//        }
+        for (int i = 0; i < k; i++) {
+            Group g = new Group(String.valueOf(i));
+            g.setCentroid(dataList.get((int)(Math.random() * dataList.size())));
+            groups.add(g);
+        } //Inicjalizacja losowych wektorów jako centroidy
 
-        Group g1 = new Group("Iris-setosa", dataList.get(0).length());
+/*        Group g1 = new Group("Iris-setosa", dataList.get(0).length());
         Group g2 = new Group("Iris-versicolor", dataList.get(0).length());
         Group g3 = new Group("Iris-virginica", dataList.get(0).length());
 
@@ -36,7 +37,7 @@ public class Main {
 
         groups.add(g1);
         groups.add(g2);
-        groups.add(g3);
+        groups.add(g3);*/
 
         int j = 1;
         while (distanceInIteration1 != distanceInIteration2) {
@@ -58,15 +59,11 @@ public class Main {
 
             System.out.println("Iteracja " + j + ": " + tmpDistance);
             j++;
+        } // główna pętla algorytmu
 
-
-        }
         for (Group group : groups){
             System.out.println(group);
         }
-
-
-
     }
 
     public static void readFile(String path, List<MyVector> list) throws FileNotFoundException {

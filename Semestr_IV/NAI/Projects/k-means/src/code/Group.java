@@ -9,14 +9,11 @@ public class Group {
     private final List<MyVector> vectors;
     private double distance;
 
-    public Group(String type, int vectorDimension) {
+    public Group(String type) {
         this.type = type;
         vectors = new ArrayList<>();
         centroid = new MyVector();
         distance = 0;
-        for (int j = 0; j < vectorDimension; j++){
-            centroid.getData().add((Math.random()*5)+3);
-        }
     }
 
     public MyVector getCentroid() {
@@ -46,22 +43,24 @@ public class Group {
     }
 
     public void calculateNewCentroid(){
+        if (vectors.size() == 0)
+            return;
         for (int i = 0; i < centroid.length(); i++){
-            double tmp = 0;
+            double avg = 0;
             for (MyVector vector : vectors){
-                tmp += vector.getData().get(i);
+                avg += vector.getData().get(i);
             }
-            centroid.getData().set(i, tmp/vectors.size());
+            centroid.getData().set(i, avg/vectors.size());
         }
     }
 
     @Override
     public String toString() {
         StringBuilder resultString = new StringBuilder();
-        resultString.append("type: " + type);
+        resultString.append("type: ").append(type);
 
         for (MyVector vector : vectors){
-            resultString.append("\n\t[ ").append(vector).append(" ]");
+            resultString.append("\n\t").append(vector);
         }
 
         resultString.append("\n");
