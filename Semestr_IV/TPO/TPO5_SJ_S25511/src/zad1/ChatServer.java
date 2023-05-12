@@ -80,6 +80,7 @@ public class ChatServer {
                                 SocketChannel socketChannel = server.accept();
                                 socketChannel.configureBlocking(false);
                                 socketChannel.register(selector, SelectionKey.OP_READ);
+                                names.remove(key);
                                 continue;
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
@@ -180,17 +181,16 @@ public class ChatServer {
 
 
                 try {
-                    for (String s : responses.get(currentKey))
-                        buf.put(s.getBytes());
+                    buf.put(addMsg.getBytes());
+                    buf.put("\n".getBytes());
                     buf.put("\r".getBytes());
-                    buf.flip();
 
-                    SocketChannel clientSocket = (SocketChannel) currentKey.channel();
-                    clientSocket.write(buf);
-                    buf.clear();
+                    for (SelectionKey key : names.keySet()) {
+                        buf.flip();
 
-                    responses.get(currentKey).clear();
-
+                        SocketChannel clientSocket = (SocketChannel) key.channel();
+                        clientSocket.write(buf);
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
